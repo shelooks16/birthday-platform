@@ -4,14 +4,13 @@
   "description": "",
   "scripts": {
     "lint": "eslint --ext .ts .",
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "vite build",
+    "dev": "vite build --watch",
     "logs": "firebase functions:log"
   },
   "engines": {
     "node": "16"
   },
-  "main": "build/index.js",
   "dependencies": {
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
@@ -21,7 +20,8 @@
     "eslint": "^8.9.0",
     "eslint-config-base": "*",
     "typescript": "^4.9.5",
-    "tsconfig": "*"
+    "tsconfig": "*",
+    "rollup-plugin-generate-package-json": "^3.2.0"
   },
   "private": true
 }

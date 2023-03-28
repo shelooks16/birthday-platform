@@ -1,19 +1,12 @@
 {
   "functions": [
     {
-      "source": "apps/functions",
+      "source": "apps/functions/build",
       "codebase": "birthday",
-      "ignore": [
-        "node_modules",
-        ".git",
-        ".turbo",
-        "src",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
-      ],
+      "ignore": ["node_modules", ".git"],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint",
-        "npm --prefix \"$RESOURCE_DIR\" run build"
+        "npm --prefix \"$RESOURCE_DIR\"/.. run lint",
+        "npm --prefix \"$RESOURCE_DIR\"/.. run build"
       ]
     }
   ],
