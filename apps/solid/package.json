@@ -1,0 +1,24 @@
+{
+  "name": "solid",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "lint": "eslint --ext .tsx ."
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^4.1.1",
+    "vite-plugin-solid": "^2.5.0",
+    "eslint": "^8.9.0",
+    "eslint-config-base": "*",
+    "eslint-plugin-solid": "^0.12.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "solid-js": "^1.6.10"
+  }
+}

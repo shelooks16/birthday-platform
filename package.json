@@ -10,16 +10,16 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "emulators": "firebase emulators:start"
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
-    "prettier": "latest",
-    "turbo": "latest"
+    "eslint-config-base": "*",
+    "prettier": "2.8.7",
+    "turbo": "1.8.6",
+    "wait-on": "^7.0.1"
   },
   "engines": {
-    "node": ">=14.0.0"
-  },
-  "dependencies": {},
-  "packageManager": "npm@8.5.5"
+    "node": ">=16.0.0"
+  }
 }

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Functions",
+  "extends": "tsconfig/node.json",
+  "compilerOptions": {
+    "outDir": "build"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

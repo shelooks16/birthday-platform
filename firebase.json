@@ -1,0 +1,35 @@
+{
+  "functions": [
+    {
+      "source": "apps/functions",
+      "codebase": "birthday",
+      "ignore": [
+        "node_modules",
+        ".git",
+        ".turbo",
+        "src",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ],
+  "emulators": {
+    "ui": {
+      "port": 4000,
+      "enabled": true
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    }
+  }
+}

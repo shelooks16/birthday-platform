@@ -1,18 +1,13 @@
 {
-  "name": "ui",
+  "name": "test-lib",
   "version": "0.0.0",
-  "main": "./index.tsx",
-  "types": "./index.tsx",
+  "main": "./index.ts",
+  "types": "./index.ts",
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@types/react": "^18.0.22",
-    "eslint": "^7.32.0",
-    "eslint-config-custom": "*",
-    "react": "^18.2.0",
-    "tsconfig": "*",
-    "typescript": "^4.5.2"
+    "@types/node": "18.15.10"
   }
 }
