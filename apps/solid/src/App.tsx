@@ -1,26 +1,25 @@
-import type { Component } from "solid-js";
-
-import logo from "./logo.svg";
-import styles from "./App.module.css";
+import { Component, Suspense } from "solid-js";
+import { A, Router, useRoutes } from "@solidjs/router";
+import { HopeProvider } from "@hope-ui/solid";
+import { routes } from "./routes";
 
 const App: Component = () => {
+  const Routes = useRoutes(routes);
+
   return (
-    <div class={styles.App}>
-      <header class={styles.header}>
-        <img src={logo} class={styles.logo} alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          class={styles.link}
-          href="https://github.com/solidjs/solid"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Solid
-        </a>
-      </header>
-    </div>
+    <Router>
+      <A class="nav" href="/">
+        Home
+      </A>
+      <A class="nav" href="/dash">
+        Dash
+      </A>
+      <Suspense>
+        <HopeProvider>
+          <Routes />
+        </HopeProvider>
+      </Suspense>
+    </Router>
   );
 };
 
