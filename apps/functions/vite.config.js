@@ -8,7 +8,11 @@ import { defineConfig } from "vite";
 import generatePackageJson from "rollup-plugin-generate-package-json";
 import pckJson from "./package.json";
 
-const externalDepsList = [];
+const externalDepsList = [
+  "node:path",
+  "firebase-admin/app",
+  "firebase-admin/firestore",
+];
 const externalDepsObj = {};
 
 Object.keys(pckJson.dependencies).forEach((packageName) => {

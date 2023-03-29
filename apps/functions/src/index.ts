@@ -1,11 +1,11 @@
-import * as functions from "firebase-functions";
-import { name } from "ui";
+import "firebase-functions";
+import { initializeApp } from "firebase-admin/app";
+import { initServiceAccount } from "./utils";
 
-// // Start writing functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-export const helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", { structuredData: true });
+initServiceAccount();
+initializeApp();
 
-  response.send(`Hello, ${name} from Firebase!`);
-});
+export {
+  checkNotifications,
+  debugCheckNotifications,
+} from "./checkNotifications";

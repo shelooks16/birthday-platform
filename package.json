@@ -11,7 +11,7 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "emulators": "npx wait-on apps/functions/build/package.json && firebase emulators:start"
+    "emulators": "npx wait-on apps/functions/build/package.json && firebase emulators:start  --import=./.emulatordb --export-on-exit=./.emulatordb"
   },
   "devDependencies": {
     "eslint-config-base": "*",
