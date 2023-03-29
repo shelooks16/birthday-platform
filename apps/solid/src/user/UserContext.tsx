@@ -1,7 +1,7 @@
 import type { User } from "firebase/auth";
 import { createStore, reconcile } from "solid-js/store";
 import { createContext, onMount, ParentProps, useContext } from "solid-js";
-import { userService } from "../lib/user.service";
+import { userService } from "./user.service";
 import { LocalStorage } from "../lib/local-storage";
 
 type UserState = {

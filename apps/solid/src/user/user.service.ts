@@ -1,6 +1,6 @@
 import type { NextOrObserver, ErrorFn, CompleteFn, User } from "firebase/auth";
-import { isMobileView } from "./browser";
-import { asyncLoadAuth } from "./firebase";
+import { isMobileView } from "../lib/browser";
+import { asyncLoadAuth } from "../lib/firebase";
 
 export const userService = {
   async signinWithGoogle() {

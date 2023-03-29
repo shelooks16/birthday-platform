@@ -1,6 +1,6 @@
 import { useNavigate } from "@solidjs/router";
 import { onMount } from "solid-js";
-import { userService } from "../lib/user.service";
+import { userService } from "./user.service";
 import { useUserCtx } from "./UserContext";
 
 export const useGoogleSignin = (redirectLocation = "/dash") => {
