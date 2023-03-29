@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // match /test/{uid} {
+    //   allow get: if request.auth.uid == uid;
+    // }
+
+    match /{document=**} {
+      allow write: if true;
+      allow read: if true;
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAuthUser(uid) {
+      return request.auth.uid == uid;
+    }
+  }
+}
