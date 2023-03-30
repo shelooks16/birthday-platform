@@ -16,3 +16,5 @@ export {
   checkNotifications,
   debugCheckNotifications
 } from './checkNotifications';
+
+export { setNotifications } from './setNotifications';

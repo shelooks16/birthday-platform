@@ -58,6 +58,11 @@ export const createOnWriteFunction = (
 
       const changeType = getChangeType(change);
 
+      functions.logger.info(`Processing document ${documentPath}`, {
+        changeType,
+        docId: change.after?.id ?? change.before.id
+      });
+
       switch (changeType) {
         case 'create':
           await onCreate(change.after, ctx);
