@@ -1,7 +1,7 @@
-import { Button } from "@hope-ui/solid";
-import { Component, Match, Show, Switch } from "solid-js";
-import { useGoogleSignin, useSignOut } from "../user/signin";
-import { useUserCtx } from "../user/UserContext";
+import { Button } from '@hope-ui/solid';
+import { Component, Match, Show, Switch } from 'solid-js';
+import { useGoogleSignin, useSignOut } from '../user/signin';
+import { useUserCtx } from '../user/UserContext';
 
 const Home: Component = () => {
   const [usrCtx] = useUserCtx();

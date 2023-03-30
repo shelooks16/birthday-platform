@@ -2,21 +2,21 @@ module.exports = {
   root: true,
   env: {
     es6: true,
-    browser: true,
+    browser: true
   },
-  extends: ["base", "plugin:solid/typescript"],
-  plugins: ["solid"],
+  extends: ['base', 'plugin:solid/typescript'],
+  plugins: ['solid'],
   parserOptions: {
-    sourceType: "module",
+    sourceType: 'module',
     ecmaVersion: 2021,
     ecmaFeatures: {
-      jsx: true,
-    },
+      jsx: true
+    }
   },
   settings: {
     react: {
-      version: "detect",
-    },
+      version: 'detect'
+    }
   },
-  rules: {},
+  rules: {}
 };

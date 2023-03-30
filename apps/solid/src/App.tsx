@@ -1,8 +1,8 @@
-import { Component, Suspense } from "solid-js";
-import { A, Router, useRoutes } from "@solidjs/router";
-import { HopeProvider } from "@hope-ui/solid";
-import { routes } from "./routes";
-import { UserContextProvider } from "./user/UserContext";
+import { Component, Suspense } from 'solid-js';
+import { A, Router, useRoutes } from '@solidjs/router';
+import { HopeProvider } from '@hope-ui/solid';
+import { routes } from './routes';
+import { UserContextProvider } from './user/UserContext';
 
 const App: Component = () => {
   const Routes = useRoutes(routes);

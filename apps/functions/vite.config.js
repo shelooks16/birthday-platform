@@ -3,20 +3,20 @@
  * imported from within monorepo into output.
  * This solves problem with firebase deployment.
  */
-import { resolve } from "path";
-import { defineConfig } from "vite";
-import generatePackageJson from "rollup-plugin-generate-package-json";
-import pckJson from "./package.json";
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
+import generatePackageJson from 'rollup-plugin-generate-package-json';
+import pckJson from './package.json';
 
 const externalDepsList = [
-  "node:path",
-  "firebase-admin/app",
-  "firebase-admin/firestore",
+  'node:path',
+  'firebase-admin/app',
+  'firebase-admin/firestore'
 ];
 const externalDepsObj = {};
 
 Object.keys(pckJson.dependencies).forEach((packageName) => {
-  if (pckJson.dependencies[packageName] !== "*") {
+  if (pckJson.dependencies[packageName] !== '*') {
     externalDepsList.push(packageName);
     externalDepsObj[packageName] = pckJson.dependencies[packageName];
   }
@@ -25,12 +25,12 @@ Object.keys(pckJson.dependencies).forEach((packageName) => {
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
-      name: "functions",
-      fileName: "index",
-      formats: ["es", "umd"],
+      entry: resolve(__dirname, 'src/index.ts'),
+      name: 'functions',
+      fileName: 'index',
+      formats: ['es', 'umd']
     },
-    outDir: "build",
+    outDir: 'build',
 
     rollupOptions: {
       external: externalDepsList,
@@ -40,18 +40,18 @@ export default defineConfig({
             name: pckJson.name,
             version: pckJson.version,
             engines: pckJson.engines,
-            main: "./index.umd.js",
-            module: "./index.js",
+            main: './index.umd.js',
+            module: './index.js',
             exports: {
-              ".": {
-                import: "./index.js",
-                require: "./index.umd.js",
-              },
-            },
+              '.': {
+                import: './index.js',
+                require: './index.umd.js'
+              }
+            }
           },
-          additionalDependencies: externalDepsObj,
-        }),
-      ],
-    },
-  },
+          additionalDependencies: externalDepsObj
+        })
+      ]
+    }
+  }
 });

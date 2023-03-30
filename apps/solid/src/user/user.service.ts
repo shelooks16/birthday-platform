@@ -1,6 +1,6 @@
-import type { NextOrObserver, ErrorFn, CompleteFn, User } from "firebase/auth";
-import { isMobileView } from "../lib/browser";
-import { asyncLoadAuth } from "../lib/firebase";
+import type { NextOrObserver, ErrorFn, CompleteFn, User } from 'firebase/auth';
+import { isMobileView } from '../lib/browser';
+import { asyncLoadAuth } from '../lib/firebase';
 
 export const userService = {
   async signinWithGoogle() {
@@ -29,5 +29,5 @@ export const userService = {
     const [auth, { getRedirectResult }] = await asyncLoadAuth();
 
     return getRedirectResult(auth);
-  },
+  }
 };

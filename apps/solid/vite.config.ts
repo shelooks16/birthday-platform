@@ -1,13 +1,13 @@
-import { defineConfig } from "vite";
-import solidPlugin from "vite-plugin-solid";
+import { defineConfig } from 'vite';
+import solidPlugin from 'vite-plugin-solid';
 
 export default defineConfig({
   plugins: [solidPlugin()],
   server: {
-    port: 3000,
+    port: 3000
   },
   build: {
-    target: "es2015",
-    outDir: "build",
-  },
+    target: 'es2015',
+    outDir: 'build'
+  }
 });

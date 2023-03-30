@@ -21,6 +21,6 @@ export function firestoreSnapshotToData<T = any>(
 
   return {
     ...data,
-    id: docSnapshot.ref.id,
+    id: docSnapshot.ref.id
   };
 }

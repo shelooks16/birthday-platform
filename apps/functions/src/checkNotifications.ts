@@ -1,15 +1,15 @@
-import * as functions from "firebase-functions";
+import * as functions from 'firebase-functions';
 import {
   createDebugHttpFn,
-  createScheduledFunction,
-} from "./utils/createFunction";
+  createScheduledFunction
+} from './utils/createFunction';
 
 async function notifyUsersIfNeeded() {
-  functions.logger.info("hello from notifdy");
+  functions.logger.info('hello from notifdy');
 }
 
 export const checkNotifications = createScheduledFunction(
-  "every 15 seconds",
+  'every 15 seconds',
   async () => {
     await notifyUsersIfNeeded();
   }

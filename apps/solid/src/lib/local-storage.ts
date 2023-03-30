@@ -1,12 +1,12 @@
-type LS_KEY = "uid";
+type LS_KEY = 'uid';
 
 const withCatch = <T>(cb: () => T): T | undefined => {
   try {
     return cb();
   } catch (error) {
-    console.log("Local storage err", {
+    console.log('Local storage err', {
       type: error.name,
-      msg: error.message,
+      msg: error.message
     });
   }
 };
@@ -17,7 +17,7 @@ export const LocalStorage = {
   get<T = string>(key: LS_KEY, fallback?: T): T {
     const val = withCatch(() => localStorage.getItem(resolveKey(key)));
     const deserialized =
-      typeof val === "string" ? withCatch<T>(() => JSON.parse(val)) : val;
+      typeof val === 'string' ? withCatch<T>(() => JSON.parse(val)) : val;
 
     return deserialized ?? fallback ?? (val as any);
   },
@@ -28,5 +28,5 @@ export const LocalStorage = {
   },
   remove(key: LS_KEY): void {
     withCatch(() => localStorage.removeItem(resolveKey(key)));
-  },
+  }
 };

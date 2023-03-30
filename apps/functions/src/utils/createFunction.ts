@@ -1,25 +1,25 @@
-import * as functions from "firebase-functions";
-import type { DocumentSnapshot } from "firebase-admin/firestore";
-import { isEmulator } from "./emulator";
+import * as functions from 'firebase-functions';
+import type { DocumentSnapshot } from 'firebase-admin/firestore';
+import { isEmulator } from './emulator';
 
-const REGION = "europe-west1";
+const REGION = 'europe-west1';
 
-type ChangeType = "create" | "update" | "delete";
+type ChangeType = 'create' | 'update' | 'delete';
 
 const getChangeType = (
   change: functions.Change<DocumentSnapshot>
 ): ChangeType => {
   if (!change.after.exists) {
-    return "delete";
+    return 'delete';
   }
   if (!change.before.exists) {
-    return "create";
+    return 'create';
   }
-  return "update";
+  return 'update';
 };
 
 const logUnhandledType = (changeType: ChangeType) => {
-  functions.logger.warn("Unhandled function change type", { changeType });
+  functions.logger.warn('Unhandled function change type', { changeType });
 };
 
 export type OnCreateHandler = (
@@ -51,21 +51,21 @@ export const createOnWriteFunction = (
     .firestore.document(documentPath)
     .onWrite(async (change, ctx) => {
       const {
-        onCreate = () => logUnhandledType("create"),
-        onUpdate = () => logUnhandledType("update"),
-        onDelete = () => logUnhandledType("delete"),
+        onCreate = () => logUnhandledType('create'),
+        onUpdate = () => logUnhandledType('update'),
+        onDelete = () => logUnhandledType('delete')
       } = handlers;
 
       const changeType = getChangeType(change);
 
       switch (changeType) {
-        case "create":
+        case 'create':
           await onCreate(change.after, ctx);
           break;
-        case "delete":
+        case 'delete':
           await onDelete(change.before, ctx);
           break;
-        case "update":
+        case 'update':
           await onUpdate(change.before, change.after, ctx);
           break;
         default: {
@@ -79,7 +79,11 @@ export const createScheduledFunction = (
   schedule: string,
   handler: (context: functions.EventContext) => any
 ) => {
-  return functions.region(REGION).pubsub.schedule(schedule).onRun(handler);
+  return functions
+    .region(REGION)
+    .pubsub.schedule(schedule)
+    .timeZone('UTC')
+    .onRun(handler);
 };
 
 export const createDebugHttpFn = (
@@ -87,7 +91,7 @@ export const createDebugHttpFn = (
 ) => {
   return isEmulator
     ? functions.region(REGION).https.onRequest(async (req, res) => {
-        let body: any = { status: "ok" };
+        let body: any = { status: 'ok' };
 
         try {
           if (cb) {

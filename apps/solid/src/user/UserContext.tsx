@@ -1,8 +1,8 @@
-import type { User } from "firebase/auth";
-import { createStore, reconcile } from "solid-js/store";
-import { createContext, onMount, ParentProps, useContext } from "solid-js";
-import { userService } from "./user.service";
-import { LocalStorage } from "../lib/local-storage";
+import type { User } from 'firebase/auth';
+import { createStore, reconcile } from 'solid-js/store';
+import { createContext, onMount, ParentProps, useContext } from 'solid-js';
+import { userService } from './user.service';
+import { LocalStorage } from '../lib/local-storage';
 
 type UserState = {
   /**
@@ -38,7 +38,7 @@ export function UserContextProvider(props: ParentProps) {
     user: null,
     isHandlingRedirect: false,
     isLoading: true,
-    error: null,
+    error: null
   });
 
   const setUser = (authUser?: User | null, error?: Error | null) => {
@@ -47,14 +47,14 @@ export function UserContextProvider(props: ParentProps) {
         isLoading: false,
         isHandlingRedirect: false,
         error: error ?? null,
-        user: authUser ?? null,
+        user: authUser ?? null
       })
     );
 
     if (authUser) {
-      LocalStorage.set("uid", authUser.uid);
+      LocalStorage.set('uid', authUser.uid);
     } else {
-      LocalStorage.remove("uid");
+      LocalStorage.remove('uid');
     }
   };
 

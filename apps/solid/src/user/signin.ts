@@ -1,9 +1,9 @@
-import { useNavigate } from "@solidjs/router";
-import { onMount } from "solid-js";
-import { userService } from "./user.service";
-import { useUserCtx } from "./UserContext";
+import { useNavigate } from '@solidjs/router';
+import { onMount } from 'solid-js';
+import { userService } from './user.service';
+import { useUserCtx } from './UserContext';
 
-export const useGoogleSignin = (redirectLocation = "/dash") => {
+export const useGoogleSignin = (redirectLocation = '/dash') => {
   const [, { setUser }] = useUserCtx();
   const navigate = useNavigate();
 
@@ -26,7 +26,7 @@ export const useGoogleSignin = (redirectLocation = "/dash") => {
   };
 };
 
-export const useSignOut = (redirectLocation = "/") => {
+export const useSignOut = (redirectLocation = '/') => {
   const [, { setUser }] = useUserCtx();
   const navigate = useNavigate();
 
