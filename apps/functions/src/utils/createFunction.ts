@@ -58,7 +58,7 @@ export const createOnWriteFunction = (
 
       const changeType = getChangeType(change);
 
-      switch (getChangeType(change)) {
+      switch (changeType) {
         case "create":
           await onCreate(change.after, ctx);
           break;
