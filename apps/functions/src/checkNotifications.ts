@@ -1,17 +1,20 @@
 import * as functions from "firebase-functions";
-import { createDebugHttpFn } from "./utils";
+import {
+  createDebugHttpFn,
+  createScheduledFunction,
+} from "./utils/createFunction";
 
 async function notifyUsersIfNeeded() {
   functions.logger.info("hello from notifdy");
 }
 
-export const checkNotifications = functions
-  .region("europe-west1")
-  .pubsub.schedule("every 15 seconds")
-  .onRun(async () => {
+export const checkNotifications = createScheduledFunction(
+  "every 15 seconds",
+  async () => {
     await notifyUsersIfNeeded();
-  });
+  }
+);
 
 export const debugCheckNotifications = createDebugHttpFn(async () => {
-  await notifyUsersIfNeeded();
+  return notifyUsersIfNeeded();
 });
