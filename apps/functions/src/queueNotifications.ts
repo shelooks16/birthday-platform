@@ -1,4 +1,5 @@
-import { getFirestore } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import {
   createDebugHttpFn,
   createScheduledFunction
@@ -6,25 +7,17 @@ import {
 import { firestoreSnapshotToData } from '@shared/firestore-utils';
 import {
   FireCollection,
+  NotificationChannelType,
   NotificationDocument,
-  SendNotificationDocument
+  SendEmailData,
+  SendNotificationDocument,
+  SendNotificationDocumentData
 } from '@shared/types';
 import { mailTemplate } from './email/templates';
-
-const parseChannels = (notifyChannels: string[]) => {
-  const emailPrefix = 'email:';
-  const emails: string[] = [];
-
-  notifyChannels.forEach((channel) => {
-    if (channel.startsWith(emailPrefix)) {
-      emails.push(channel.replace(emailPrefix, ''));
-    }
-  });
-
-  return {
-    emails
-  };
-};
+import {
+  getEmailFromEmailChannel,
+  isEmailChannel
+} from '@shared/notification-channels';
 
 const buildSendNotificationDocData = (
   data: Omit<SendNotificationDocument, 'id' | 'createdAt' | 'isSent'>
@@ -34,67 +27,141 @@ const buildSendNotificationDocData = (
   isSent: false
 });
 
-const queueNotificationSingle = async (notification: NotificationDocument) => {
+const queueNotificationInChannel = async (
+  notificationId: string,
+  channel: string
+) => {
   const firestore = getFirestore();
-  const { emails } = parseChannels(notification.notifyChannels);
 
-  const batch = firestore.batch();
+  let channelType: NotificationChannelType | undefined;
+  let data: SendNotificationDocumentData | undefined;
 
-  if (emails.length > 0) {
-    const mailTo = emails.join(',');
-
-    const isAlreadyQueued = await firestore
+  if (isEmailChannel(channel)) {
+    const existingQueueDoc = await firestore
       .collection(FireCollection.sendNotificationQueue)
-      .where('channelType', '==', 'email')
-      .where('sourceNotificationId', '==', notification.id)
-      .where('data.to', '==', mailTo)
-      .where('isSent', '==', true)
+      .where('sourceNotificationId', '==', notificationId)
+      .where('data.to', '==', getEmailFromEmailChannel(channel))
       .limit(1)
       .get()
-      .then((r) => !!r.docs[0]);
+      .then((r) => (r.size > 0 ? r.docs[0] : null));
 
-    if (!isAlreadyQueued) {
-      batch.create(
-        firestore.collection(FireCollection.sendNotificationQueue).doc(),
-        buildSendNotificationDocData({
-          sourceNotificationId: notification.id,
-          channelType: 'email',
-          data: {
-            to: emails.join(','),
-            subject: mailTemplate.birthdaySoon.subject(),
-            html: mailTemplate.birthdaySoon.html()
-          }
-        })
+    if (existingQueueDoc) return existingQueueDoc;
+
+    channelType = 'email';
+    data = {
+      to: getEmailFromEmailChannel(channel),
+      subject: mailTemplate.birthdaySoon.subject(),
+      html: mailTemplate.birthdaySoon.html()
+    } as SendEmailData;
+  }
+
+  if (!channelType || !data) {
+    throw new Error('Unhandled channel type');
+  }
+
+  const queueDoc = firestore
+    .collection(FireCollection.sendNotificationQueue)
+    .doc();
+
+  await queueDoc.set(
+    buildSendNotificationDocData({
+      sourceNotificationId: notificationId,
+      channelType,
+      data
+    })
+  );
+
+  return queueDoc;
+};
+
+const processNotification = async (notification: NotificationDocument) => {
+  const firestore = getFirestore();
+  const queuedNotifications: Record<string, string> = {
+    ...(notification.queuedNotifications ?? {})
+  };
+  const queueErrors: Record<string, string> = {};
+  const notQueudChannels = notification.notifyChannels.filter(
+    (c) => !queuedNotifications[c]
+  );
+
+  for (const channel of notQueudChannels) {
+    try {
+      const queueDocRef = await queueNotificationInChannel(
+        notification.id,
+        channel
       );
+
+      queuedNotifications[channel] = queueDocRef.id;
+    } catch (err) {
+      queueErrors[channel] = err.message ?? err.description ?? 'Unknown error';
     }
   }
 
-  await batch.commit();
+  const isAllChannelsQueued =
+    Object.keys(queuedNotifications).length ===
+    notification.notifyChannels.length;
+
+  const updateForNotification: Partial<NotificationDocument> = {
+    queuedNotifications,
+    queueErrors: isAllChannelsQueued
+      ? (FieldValue.delete() as any)
+      : queueErrors,
+    isAllChannelsQueued
+  };
+
+  await firestore
+    .collection(FireCollection.notifications)
+    .doc(notification.id)
+    .set(updateForNotification, { merge: true });
+
+  return isAllChannelsQueued;
 };
 
-async function queueNotificationsIfNeeded() {
+async function checkNotifications() {
   const firestore = getFirestore();
 
+  functions.logger.info('Checking notifications to be sent');
+
   const notifications = await firestore
-    .collection('notification')
+    .collection(FireCollection.notifications)
     .where('notifyAt', '<=', new Date().toISOString())
+    .where('isAllChannelsQueued', '==', false)
     .get()
     .then((r) =>
       r.docs.map((d) => firestoreSnapshotToData<NotificationDocument>(d)!)
     );
 
-  await Promise.all(notifications.map((n) => queueNotificationSingle(n)));
+  let totalPartiallyOrNotQueued = 0;
+  let totalFullyQueued = 0;
+
+  await Promise.all(
+    notifications.map(async (n) => {
+      const isAllChannelsQueued = await processNotification(n);
+
+      if (isAllChannelsQueued) {
+        totalFullyQueued++;
+      } else {
+        totalPartiallyOrNotQueued++;
+      }
+    })
+  );
+
+  functions.logger.info('Notifications processed', {
+    totalProcessed: notifications.length,
+    totalFullyQueued,
+    totalPartiallyOrNotQueued
+  });
 
   return notifications;
 }
 
 export const queueNotifications = createScheduledFunction(
-  'every 15 seconds',
+  'every 15 minutes',
   async () => {
-    await queueNotificationsIfNeeded();
+    await checkNotifications();
   }
 );
 
 export const debugQueueNotifications = createDebugHttpFn(async () => {
-  return queueNotificationsIfNeeded();
+  return checkNotifications();
 });

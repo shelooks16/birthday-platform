@@ -60,7 +60,8 @@ const buildNotificationDocData = (
   return {
     sourceBirthdayId: birthdayDoc.id,
     notifyChannels: birthdayDoc.notifyChannels,
-    notifyAt: timestamp
+    notifyAt: timestamp,
+    isAllChannelsQueued: false
   };
 };
 

@@ -28,19 +28,28 @@ export type NotificationDocument = {
   notifyAt: string;
   notifyChannels: string[];
   /**
+   * Indicates whether notification was queued for all channels
+   */
+  isAllChannelsQueued: boolean;
+  /**
+   * Map of notifications which are placed to be sent.
+   *
    * Map keys are `notifyChannels`. Map values point to @SendNotificationDocument
    */
-  notifiedNotifyChannels?: Record<string, string>;
+  queuedNotifications?: Record<string, string>;
+  queueErrors?: Record<string, string>;
 };
 
 export type SendEmailData = {
-  /** Recipient email, or comma separated list of recipient emails */
+  /** Recipient email */
   to: string;
   /** Email subject */
   subject: string;
   /** Markup for the email */
   html: string;
 };
+
+export type SendNotificationDocumentData = SendEmailData;
 
 export type SendNotificationDocument = {
   id: string;
@@ -50,7 +59,7 @@ export type SendNotificationDocument = {
   sourceNotificationId: string;
   createdAt: string;
   channelType: NotificationChannelType;
-  data: SendEmailData;
+  data: SendNotificationDocumentData;
   isSent: boolean;
   sentAt?: string;
 };
