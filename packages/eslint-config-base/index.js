@@ -8,6 +8,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   ignorePatterns: ['build/**/*', '.eslintrc.js', 'eslint-config-base'],
   rules: {
-    '@typescript-eslint/no-explicit-any': 'off'
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off'
   }
 };

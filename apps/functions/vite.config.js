@@ -23,6 +23,7 @@ Object.keys(pckJson.dependencies).forEach((packageName) => {
 });
 
 export default defineConfig({
+  publicDir: 'env',
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -31,6 +32,7 @@ export default defineConfig({
       formats: ['es', 'umd']
     },
     outDir: 'build',
+    copyPublicDir: process.env.FUNCTIONS_BUILD_MODE !== 'production',
 
     rollupOptions: {
       external: externalDepsList,

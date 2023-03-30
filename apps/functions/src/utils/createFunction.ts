@@ -58,7 +58,7 @@ export const createOnWriteFunction = (
 
       const changeType = getChangeType(change);
 
-      functions.logger.info(`Processing document ${documentPath}`, {
+      functions.logger.info(`Document write ${documentPath}`, {
         changeType,
         docId: change.after?.id ?? change.before.id
       });
@@ -77,6 +77,22 @@ export const createOnWriteFunction = (
           throw new Error(`Invalid change type: ${changeType}`);
         }
       }
+    });
+};
+
+export const createOnCreateFunction = (
+  documentPath: string,
+  handler: (snapshot: DocumentSnapshot, context: functions.EventContext) => any
+) => {
+  return functions
+    .region(REGION)
+    .firestore.document(documentPath)
+    .onCreate(async (snapshot, ctx) => {
+      functions.logger.info(`Document created ${documentPath}`, {
+        docId: snapshot.id
+      });
+
+      await handler(snapshot, ctx);
     });
 };
 

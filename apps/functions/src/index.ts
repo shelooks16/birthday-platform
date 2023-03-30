@@ -12,9 +12,9 @@ if (isEmulator) {
 
 initializeApp();
 
+export { setNotifications } from './setNotifications';
+export { sendNotification } from './sendNotifications';
 export {
   checkNotifications,
   debugCheckNotifications
 } from './checkNotifications';
-
-export { setNotifications } from './setNotifications';

@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["FUNCTIONS_EMULATOR"],
+  "globalEnv": ["FUNCTIONS_EMULATOR", "FUNCTIONS_BUILD_MODE"],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
