@@ -1,7 +1,7 @@
 export type FrequencyUnit = 'm' | 'h' | 'd';
 export type NotifyFrequency = '30m' | '1h' | '6h' | '1d' | '3d' | '7d';
 
-export type NotificationChannel = 'email';
+export type NotificationChannelType = 'email';
 
 export type BirthdayDocument = {
   id: string;
@@ -30,12 +30,15 @@ export type NotificationDocument = {
   /**
    * Map keys are `notifyChannels`. Map values point to @SendNotificationDocument
    */
-  queuedNotifyChannels?: Record<string, string>;
+  notifiedNotifyChannels?: Record<string, string>;
 };
 
 export type SendEmailData = {
-  to: string | string[];
+  /** Recipient email, or comma separated list of recipient emails */
+  to: string;
+  /** Email subject */
   subject: string;
+  /** Markup for the email */
   html: string;
 };
 
@@ -46,7 +49,7 @@ export type SendNotificationDocument = {
    */
   sourceNotificationId: string;
   createdAt: string;
-  channel: NotificationChannel;
+  channelType: NotificationChannelType;
   data: SendEmailData;
   isSent: boolean;
   sentAt?: string;

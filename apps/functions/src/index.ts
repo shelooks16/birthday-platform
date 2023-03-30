@@ -15,6 +15,6 @@ initializeApp();
 export { setNotifications } from './setNotifications';
 export { sendNotification } from './sendNotifications';
 export {
-  checkNotifications,
-  debugCheckNotifications
-} from './checkNotifications';
+  queueNotifications,
+  debugQueueNotifications
+} from './queueNotifications';
