@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import { getFirestore } from 'firebase-admin/firestore';
 import {
   BirthdayDocument,
+  FireCollection,
   FrequencyUnit,
   NotificationDocument
 } from '@shared/types';
@@ -44,6 +45,7 @@ const calculateNotificationTimestamp = (
 
 const buildNotificationDocData = (
   birthdayDoc: BirthdayDocument,
+  notifyChannel: string,
   frequencyFormula: string
 ): Omit<NotificationDocument, 'id'> => {
   const birthdayDate = new Date(
@@ -59,9 +61,9 @@ const buildNotificationDocData = (
 
   return {
     sourceBirthdayId: birthdayDoc.id,
-    notifyChannels: birthdayDoc.notifyChannels,
+    notifyChannel,
     notifyAt: timestamp,
-    isAllChannelsQueued: false
+    isQueued: false
   };
 };
 
@@ -70,7 +72,7 @@ const getNotificationsForBirthday = async (
   birthdayId: string
 ) => {
   return firestore
-    .collection('notification')
+    .collection(FireCollection.notifications)
     .where('sourceBirthdayId', '==', birthdayId)
     .get()
     .then((r) =>
@@ -85,9 +87,25 @@ const deleteNotificationDocsWithinBatch = (
   firestore: FirebaseFirestore.Firestore,
   notificationDocs: NotificationDocument[]
 ) => {
+  let count = 0;
+
   notificationDocs.forEach((doc) => {
-    batch.delete(firestore.collection('notification').doc(doc.id));
+    batch.delete(
+      firestore.collection(FireCollection.notifications).doc(doc.id)
+    );
+
+    if (doc.queueDocId) {
+      batch.delete(
+        firestore
+          .collection(FireCollection.sendNotificationQueue)
+          .doc(doc.queueDocId)
+      );
+    }
+
+    count++;
   });
+
+  return count;
 };
 
 const createNotificationDocsWithinBatch = (
@@ -95,30 +113,41 @@ const createNotificationDocsWithinBatch = (
   firestore: FirebaseFirestore.Firestore,
   birthdayDoc: BirthdayDocument
 ) => {
+  let count = 0;
+
   birthdayDoc.notifyAtBefore.forEach((formula) => {
-    batch.create(
-      firestore.collection('notification').doc(),
-      buildNotificationDocData(birthdayDoc, formula)
-    );
+    birthdayDoc.notifyChannels.forEach((channel) => {
+      batch.create(
+        firestore.collection(FireCollection.notifications).doc(),
+        buildNotificationDocData(birthdayDoc, channel, formula)
+      );
+      count++;
+    });
   });
+
+  return count;
 };
 
 const onCreate: OnCreateHandler = async (docSnap) => {
   const firestore = getFirestore();
   const birthdayDoc = firestoreSnapshotToData<BirthdayDocument>(docSnap)!;
-  const { id, notifyAtBefore } = birthdayDoc;
+  const { id } = birthdayDoc;
 
   functions.logger.info('Creating notifications for birthday', { id });
 
   const batch = firestore.batch();
 
-  createNotificationDocsWithinBatch(batch, firestore, birthdayDoc);
+  const createCount = createNotificationDocsWithinBatch(
+    batch,
+    firestore,
+    birthdayDoc
+  );
 
   await batch.commit();
 
   functions.logger.info('Notifications created for birthday', {
     id,
-    createCount: notifyAtBefore.length
+    createCount
   });
 };
 
@@ -160,13 +189,17 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
   const batch = firestore.batch();
 
   deleteNotificationDocsWithinBatch(batch, firestore, currentNotifications);
-  createNotificationDocsWithinBatch(batch, firestore, birthdayAfter);
+  const updateCount = createNotificationDocsWithinBatch(
+    batch,
+    firestore,
+    birthdayAfter
+  );
 
   await batch.commit();
 
   functions.logger.info('Updated notifications for birthday', {
     id: birthdayAfter.id,
-    updateCount: birthdayAfter.notifyAtBefore.length
+    updateCount
   });
 };
 
@@ -180,13 +213,17 @@ const onDelete: OnDeleteHandler = async (docSnap) => {
 
   const batch = firestore.batch();
 
-  deleteNotificationDocsWithinBatch(batch, firestore, notifications);
+  const deleteCount = deleteNotificationDocsWithinBatch(
+    batch,
+    firestore,
+    notifications
+  );
 
   await batch.commit();
 
   functions.logger.info('Notifications deleted for birthday', {
     id,
-    deleteCount: notifications.length
+    deleteCount
   });
 };
 

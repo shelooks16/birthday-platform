@@ -3,7 +3,7 @@ export type NotifyFrequency = '30m' | '1h' | '6h' | '1d' | '3d' | '7d';
 
 export type NotificationChannelType = 'email';
 
-export type BirthdayDocument = {
+export interface BirthdayDocument {
   id: string;
   userId: string;
   buddyName: string;
@@ -17,41 +17,39 @@ export type BirthdayDocument = {
   notifyAtBefore: NotifyFrequency[];
   updatedAt: string;
   createdAt: string;
-};
+}
 
-export type NotificationDocument = {
+export interface NotificationDocument {
   id: string;
   /**
    * Points to @BirthdayDocument
    */
   sourceBirthdayId: string;
   notifyAt: string;
-  notifyChannels: string[];
+  notifyChannel: string;
+  isQueued: boolean;
   /**
-   * Indicates whether notification was queued for all channels
+   * Points to @SendNotificationDocument
    */
-  isAllChannelsQueued: boolean;
+  queueDocId?: string;
   /**
-   * Map of notifications which are placed to be sent.
-   *
-   * Map keys are `notifyChannels`. Map values point to @SendNotificationDocument
+   * Error if notification fails to be pushed into sending queue
    */
-  queuedNotifications?: Record<string, string>;
-  queueErrors?: Record<string, string>;
-};
+  queueError?: string;
+}
 
-export type SendEmailData = {
+export interface SendEmailData {
   /** Recipient email */
   to: string;
   /** Email subject */
   subject: string;
   /** Markup for the email */
   html: string;
-};
+}
 
 export type SendNotificationDocumentData = SendEmailData;
 
-export type SendNotificationDocument = {
+export interface SendNotificationDocument {
   id: string;
   /**
    * Points to @NotificationDocument
@@ -62,7 +60,7 @@ export type SendNotificationDocument = {
   data: SendNotificationDocumentData;
   isSent: boolean;
   sentAt?: string;
-};
+}
 
 export enum FireCollection {
   birthdays = 'birthday',

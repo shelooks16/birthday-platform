@@ -76,37 +76,26 @@ const queueNotificationInChannel = async (
 
 const processNotification = async (notification: NotificationDocument) => {
   const firestore = getFirestore();
-  const queuedNotifications: Record<string, string> = {
-    ...(notification.queuedNotifications ?? {})
-  };
-  const queueErrors: Record<string, string> = {};
-  const notQueudChannels = notification.notifyChannels.filter(
-    (c) => !queuedNotifications[c]
-  );
 
-  for (const channel of notQueudChannels) {
-    try {
-      const queueDocRef = await queueNotificationInChannel(
-        notification.id,
-        channel
-      );
+  let queueError: string | undefined;
+  let queueDocRef:
+    | FirebaseFirestore.QueryDocumentSnapshot
+    | FirebaseFirestore.DocumentReference
+    | undefined;
 
-      queuedNotifications[channel] = queueDocRef.id;
-    } catch (err) {
-      queueErrors[channel] = err.message ?? err.description ?? 'Unknown error';
-    }
+  try {
+    queueDocRef = await queueNotificationInChannel(
+      notification.id,
+      notification.notifyChannel
+    );
+  } catch (err) {
+    queueError = err.message ?? err.description ?? 'Unknown error';
   }
 
-  const isAllChannelsQueued =
-    Object.keys(queuedNotifications).length ===
-    notification.notifyChannels.length;
-
   const updateForNotification: Partial<NotificationDocument> = {
-    queuedNotifications,
-    queueErrors: isAllChannelsQueued
-      ? (FieldValue.delete() as any)
-      : queueErrors,
-    isAllChannelsQueued
+    isQueued: !!queueDocRef,
+    queueDocId: queueDocRef?.id ?? (FieldValue.delete() as any),
+    queueError: queueError ?? (FieldValue.delete() as any)
   };
 
   await firestore
@@ -114,7 +103,7 @@ const processNotification = async (notification: NotificationDocument) => {
     .doc(notification.id)
     .set(updateForNotification, { merge: true });
 
-  return isAllChannelsQueued;
+  return updateForNotification.isQueued;
 };
 
 async function checkNotifications() {
@@ -125,31 +114,28 @@ async function checkNotifications() {
   const notifications = await firestore
     .collection(FireCollection.notifications)
     .where('notifyAt', '<=', new Date().toISOString())
-    .where('isAllChannelsQueued', '==', false)
+    .where('isQueued', '==', false)
     .get()
     .then((r) =>
       r.docs.map((d) => firestoreSnapshotToData<NotificationDocument>(d)!)
     );
 
-  let totalPartiallyOrNotQueued = 0;
-  let totalFullyQueued = 0;
+  let totalQueued = 0;
 
   await Promise.all(
     notifications.map(async (n) => {
-      const isAllChannelsQueued = await processNotification(n);
+      const isQueued = await processNotification(n);
 
-      if (isAllChannelsQueued) {
-        totalFullyQueued++;
-      } else {
-        totalPartiallyOrNotQueued++;
+      if (isQueued) {
+        totalQueued++;
       }
     })
   );
 
   functions.logger.info('Notifications processed', {
     totalProcessed: notifications.length,
-    totalFullyQueued,
-    totalPartiallyOrNotQueued
+    totalNotQueued: notifications.length - totalQueued,
+    totalQueued
   });
 
   return notifications;
