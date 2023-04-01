@@ -15,7 +15,7 @@ import {
 } from '../utils/createFunction';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
 import { sendEmail } from './sendEmail';
-import { createEmailChannel } from '@shared/notification-channels';
+import { makeEmailChannel } from '@shared/notification-channels';
 import { mailTemplate } from './templates';
 
 function randomizeInRange(min: number, max: number) {
@@ -57,7 +57,7 @@ async function throwIfAlreadyVerified(userId: string, email: string) {
     );
   }
 
-  if (userProfile.verifiedNotifyChannels.includes(createEmailChannel(email))) {
+  if (userProfile.verifiedNotifyChannels.includes(makeEmailChannel(email))) {
     throw new functions.https.HttpsError(
       'failed-precondition',
       `${email} already verified`
@@ -164,7 +164,7 @@ export const confirmEmailOtp = createCallableFunction(
 
     const profileUpdates: Partial<ProfileDocument> = {
       verifiedNotifyChannels: FieldValue.arrayUnion(
-        createEmailChannel(verification.email)
+        makeEmailChannel(verification.email)
       ) as any
     };
 

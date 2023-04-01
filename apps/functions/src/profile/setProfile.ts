@@ -3,7 +3,7 @@ import { FireCollection, ProfileDocument } from '@shared/types';
 import { createAuthFunction } from '../utils/createFunction';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getTimestamp } from '@shared/firestore-utils';
-import { createEmailChannel } from '@shared/notification-channels';
+import { makeEmailChannel } from '@shared/notification-channels';
 
 export const createProfileForUser = createAuthFunction(
   'onCreate',
@@ -16,7 +16,7 @@ export const createProfileForUser = createAuthFunction(
       createdAt: getTimestamp(),
       displayName: user.displayName || user.email || user.uid,
       verifiedNotifyChannels:
-        user.email && user.emailVerified ? [createEmailChannel(user.email)] : []
+        user.email && user.emailVerified ? [makeEmailChannel(user.email)] : []
     };
 
     await firestore
