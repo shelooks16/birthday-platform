@@ -64,20 +64,6 @@ const calculateNotificationTimestamp = (
   return getTimestamp(timestamp);
 };
 
-const buildNotificationDocDataForYear = (
-  sourceBirthdayId: string,
-  notifyAt: string,
-  notifyChannel: string
-): Omit<NotificationDocument, 'id'> => {
-  return {
-    sourceBirthdayId,
-    notifyAt,
-    notifyChannel,
-    isScheduled: false,
-    isSent: false
-  };
-};
-
 const deleteNotificationDocsWithinBatch = (
   batch: FirebaseFirestore.WriteBatch,
   notificationDocs: NotificationDocument[]
@@ -119,11 +105,13 @@ const createNotificationDocsWithinBatch = async (
 
           if (notifyAt < getTimestamp()) return;
 
-          const data = buildNotificationDocDataForYear(
-            birthdayDoc.id,
+          const data: Omit<NotificationDocument, 'id'> = {
+            sourceBirthdayId: birthdayDoc.id,
             notifyAt,
-            channel
-          );
+            notifyChannel: channel,
+            isScheduled: false,
+            isSent: false
+          };
 
           if (checkForDuplicates) {
             const alreadyExists = await getNotifications(
