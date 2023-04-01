@@ -1,6 +1,6 @@
 type SnapshotLike = {
   data: (...args: any[]) => any;
-  exists: boolean;
+  exists: boolean | (() => boolean);
   ref: {
     id: string;
   };
@@ -15,7 +15,12 @@ export function firestoreSnapshotToData<T = any>(
 ): T | null {
   const data = docSnapshot.data() as T | undefined;
 
-  if (!docSnapshot.exists || !data) {
+  if (
+    !(typeof docSnapshot.exists === 'boolean'
+      ? docSnapshot.exists
+      : docSnapshot.exists()) ||
+    !data
+  ) {
     return null;
   }
 
@@ -24,3 +29,13 @@ export function firestoreSnapshotToData<T = any>(
     id: docSnapshot.ref.id
   };
 }
+/**
+ * Maps each snapshot to snapshot.data() with id field attached.
+ */
+export function firestoreSnapshotListToData<T = any>(
+  snapshots: SnapshotLike[]
+): T[] {
+  return snapshots.map((d) => firestoreSnapshotToData<T>(d)!);
+}
+
+export const getTimestamp = (date?: Date) => (date ?? new Date()).toISOString();

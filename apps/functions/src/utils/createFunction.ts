@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import type { UserRecord } from 'firebase-admin/auth';
 import type { DocumentSnapshot } from 'firebase-admin/firestore';
 import { isEmulator } from './emulator';
 
@@ -96,6 +97,26 @@ export const createOnCreateFunction = (
     });
 };
 
+export const createOnUpdateFunction = (
+  documentPath: string,
+  handler: (
+    change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
+    context: functions.EventContext
+  ) => any
+) => {
+  return functions
+    .region(REGION)
+    .firestore.document(documentPath)
+    .onUpdate(async (change, ctx) => {
+      functions.logger.info(`Document updated ${documentPath}`, {
+        docId: change.after.id
+      });
+
+      await handler(change, ctx);
+    });
+};
+
+/** Timezone is always UTC */
 export const createScheduledFunction = (
   schedule: string,
   handler: (context: functions.EventContext) => any
@@ -125,4 +146,29 @@ export const createDebugHttpFn = (
         res.json(body);
       })
     : null;
+};
+
+export const createAuthFunction = (
+  triggerType: 'onDelete' | 'onCreate',
+  handler: (user: UserRecord, context: functions.EventContext) => any
+) => {
+  return functions
+    .region(REGION)
+    .auth.user()
+    [triggerType](async (user, ctx) => {
+      functions.logger.info(
+        triggerType === 'onCreate' ? 'User created' : 'User deleted',
+        {
+          userId: user.uid
+        }
+      );
+
+      await handler(user, ctx);
+    });
+};
+
+export const createCallableFunction = (
+  handler: (data: any, context: functions.https.CallableContext) => any
+) => {
+  return functions.region(REGION).https.onCall(handler);
 };

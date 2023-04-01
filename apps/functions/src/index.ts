@@ -12,9 +12,6 @@ if (isEmulator) {
 
 initializeApp();
 
-export { setNotifications } from './setNotifications';
-export { sendNotification } from './sendNotifications';
-export {
-  queueNotifications,
-  debugQueueNotifications
-} from './queueNotifications';
+export * from './email';
+export * from './notifications';
+export * from './profile';
