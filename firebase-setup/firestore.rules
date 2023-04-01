@@ -1,22 +1,73 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /birthday/{id} {
+      function isValidNotifyAtBefore(val) {
+        return val is list && val.size() >= 1 && val.hasOnly(['30m', '1h', '6h', '1d', '3d', '7d', '1M'])
+      }
+      function isValidNotifyChannel(val) {
+        return isNotEmptyString(val, 60) && val.matches('^email[:](.*){0,25}@(.*){0,15}');
+      }
+      function isValidNotifyChannels(val) {
+        return val is list 
+          && val.size() >= 1 && isValidNotifyChannel(val[0])
+          && (val.size() == 2 ? isValidNotifyChannel(val[1]) : true)
+          && (val.size() == 3 ? isValidNotifyChannel(val[2]) : true)
+          && (val.size() == 4 ? isValidNotifyChannel(val[3]) : true)
+          && (val.size() == 5 ? isValidNotifyChannel(val[4]) : true)
+          && (val.size() == 6 ? isValidNotifyChannel(val[5]) : true);
+      }
 
-    // match /test/{uid} {
-    //   allow get: if request.auth.uid == uid;
-    // }
+      // todo validate createdAt, updatedAt
+      allow read: if existingData().userId == request.auth.uid;
+      allow create: if
+        verifyFieldsPresence([
+          'userId',
+          'birth',
+          'buddyName',
+          'notifyAtBefore',
+          'notifyChannels',
+          'createdAt',
+          'updatedAt'
+        ], ['buddyDescription']) 
+        && incomingData().userId == request.auth.uid
+        && verifyObjectFieldsPresence(incomingData().birth, ['year', 'month', 'day'], [])
+        && incomingData().birth.year < request.time.year() && incomingData().birth.year > 1950
+        && incomingData().birth.month >= 0 && incomingData().birth.month <= 11
+        && incomingData().birth.day >= 0 && incomingData().birth.day <= 31
+        && isNotEmptyString(incomingData().buddyName, 30)
+        && isOptionalNotEmptyString(incomingData(), 'buddyDescription', 100)
+        && isValidNotifyAtBefore(incomingData().notifyAtBefore)
+        && isValidNotifyChannels(incomingData().notifyChannels);
+    }
+
+    match /profile/{uid} {
+      allow read: if uid == request.auth.uid;
+    }
 
     match /{document=**} {
-      allow write: if true;
-      allow read: if true;
-    }
-    
-    function isSignedIn() {
-      return request.auth != null;
+      allow write: if false;
+      allow read: if false;
     }
 
-    function isAuthUser(uid) {
-      return request.auth.uid == uid;
+    function incomingData() {
+      return request.resource.data;
+    }
+    function existingData() {
+      return resource.data;
+    }
+    function verifyObjectFieldsPresence(mapObj, requiredFields, optionalFields) {
+      let allFields = requiredFields.concat(optionalFields);
+      return mapObj is map && mapObj.keys().hasAll(requiredFields) && mapObj.keys().hasOnly(allFields);
+    }
+    function verifyFieldsPresence(requiredFields, optionalFields) {
+      return verifyObjectFieldsPresence(request.resource.data, requiredFields, optionalFields);
+    }
+    function isNotEmptyString(data, stringSize) {
+      return data is string && data != '' && data.size() <= stringSize;
+    }
+    function isOptionalNotEmptyString(data, field, stringSize) {
+      return data.keys().hasAny([field]) ? isNotEmptyString(data[field], stringSize) : true;
     }
   }
 }
