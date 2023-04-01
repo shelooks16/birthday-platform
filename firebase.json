@@ -5,14 +5,25 @@
       "codebase": "birthday",
       "ignore": ["node_modules", ".git"],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\"/.. run lint",
-        "npm --prefix \"$RESOURCE_DIR\"/.. run build"
+        "npm run lint -- --scope functions",
+        "npm run build -- --scope functions"
       ]
     }
   ],
   "firestore": {
     "indexes": "firebase-setup/firestore.indexes.json",
     "rules": "firebase-setup/firestore.rules"
+  },
+  "hosting": {
+    "public": "apps/solid/build",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "predeploy": ["npm run build -- --scope solid"]
   },
   "emulators": {
     "ui": {
