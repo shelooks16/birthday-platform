@@ -13,7 +13,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,md}\"",
     "emulators": "npx wait-on apps/functions/build/package.json && sh firebase-emulators.sh",
     "setup-env": "sh setup-env.sh",
-    "export-indexes": "firebase firestore:indexes > firebase-setup/firestore.indexes.json"
+    "export-indexes": "firebase firestore:indexes > firestore.indexes.json"
   },
   "devDependencies": {
     "eslint-config-base": "*",
