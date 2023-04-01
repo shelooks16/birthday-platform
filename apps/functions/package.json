@@ -6,8 +6,7 @@
     "lint": "eslint --ext .ts .",
     "build": "cross-env FUNCTIONS_BUILD_MODE=production vite build",
     "dev": "vite build --watch",
-    "logs": "firebase functions:log",
-    "secrets:pull": "firebase functions:config:get > env/.runtimeconfig.test.json"
+    "logs": "firebase functions:log"
   },
   "engines": {
     "node": "16"
