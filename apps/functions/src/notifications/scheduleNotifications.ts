@@ -36,7 +36,7 @@ async function checkNotifications() {
 
   const notifications = await getNotifications(
     ['isScheduled', '==', false],
-    ['notifyAt', '>=', new Date().getFullYear().toString()],
+    ['notifyAt', '>=', new Date().getUTCFullYear().toString()],
     ['notifyAt', '<=', getTimestamp()]
   );
 

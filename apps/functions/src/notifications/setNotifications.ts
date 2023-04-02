@@ -21,6 +21,7 @@ import {
 } from '../utils/createFunction';
 import { getNotifications, getNotificationsForBirthday } from './queries';
 import { batchMany } from '../utils/batch';
+import { getTimezoneOffset } from '../utils/timezone';
 
 const calculateNotificationTimestamp = (
   birthday: BirthdayDocument,
@@ -35,6 +36,12 @@ const calculateNotificationTimestamp = (
     birthday.birth.month,
     birthday.birth.day
   );
+
+  const offsetInMin =
+    timestamp.getTimezoneOffset() +
+    getTimezoneOffset(birthday.notifyTimeZone, timestamp);
+
+  timestamp.setTime(timestamp.getTime() - offsetInMin * 60 * 1000);
 
   switch (unit) {
     case FrequencyUnit.days: {
@@ -174,7 +181,11 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
     Array.from(birthdayBefore.notifyAtBefore).sort().toString() ==
     Array.from(birthdayAfter.notifyAtBefore).sort().toString();
 
-  const isUnchanged = isBirthDateTheSame && isNotificationTimeTheSame;
+  const isTimeZoneTheSame =
+    birthdayBefore.notifyTimeZone == birthdayAfter.notifyTimeZone;
+
+  const isUnchanged =
+    isBirthDateTheSame && isNotificationTimeTheSame && isTimeZoneTheSame;
 
   if (isUnchanged) {
     functions.logger.info('Skipping notifications update', {
@@ -189,14 +200,14 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
     id: birthdayAfter.id
   });
 
-  const targetYear = new Date().getFullYear();
+  const targetYearForExisting = new Date().getUTCFullYear();
 
   const currentNotifications = await getNotificationsForBirthday(
     birthdayAfter.id,
     ['isScheduled', '==', false],
     ['isSent', '==', false],
-    ['notifyAt', '>=', targetYear.toString()],
-    ['notifyAt', '<=', targetYear + '\uf8ff']
+    ['notifyAt', '>=', targetYearForExisting.toString()],
+    ['notifyAt', '<=', targetYearForExisting + '\uf8ff']
   );
 
   const batch = firestore.batch();
@@ -205,7 +216,7 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
   const updateCount = await createNotificationDocsWithinBatch(
     batch,
     birthdayAfter,
-    targetYear
+    new Date().getFullYear()
   );
 
   await batch.commit();

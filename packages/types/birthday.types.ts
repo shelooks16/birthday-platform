@@ -15,6 +15,7 @@ export interface BirthdayDocument {
   };
   notifyChannels: string[];
   notifyAtBefore: NotifyFrequency[];
+  notifyTimeZone: string;
   updatedAt: string;
   createdAt: string;
 }

@@ -27,6 +27,7 @@ service cloud.firestore {
           'buddyName',
           'notifyAtBefore',
           'notifyChannels',
+          'notifyTimeZone',
           'createdAt',
           'updatedAt'
         ], ['buddyDescription']) 
@@ -38,7 +39,8 @@ service cloud.firestore {
         && isNotEmptyString(incomingData().buddyName, 30)
         && isOptionalNotEmptyString(incomingData(), 'buddyDescription', 100)
         && isValidNotifyAtBefore(incomingData().notifyAtBefore)
-        && isValidNotifyChannels(incomingData().notifyChannels);
+        && isValidNotifyChannels(incomingData().notifyChannels)
+        && isNotEmptyString(incomingData().notifyTimeZone, 30);
     }
 
     match /profile/{uid} {
