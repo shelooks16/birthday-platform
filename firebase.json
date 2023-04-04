@@ -11,8 +11,8 @@
     }
   ],
   "firestore": {
-    "indexes": "firebase-setup/firestore.indexes.json",
-    "rules": "firebase-setup/firestore.rules"
+    "indexes": "firestore.indexes.json",
+    "rules": "firestore.rules"
   },
   "hosting": {
     "public": "apps/solid/build",
