@@ -11,6 +11,7 @@ import {
   firestoreSnapshotToData,
   getTimestamp
 } from '@shared/firestore-utils';
+import { getTimezoneOffset } from '@shared/dates';
 import {
   createDebugHttpFn,
   createOnWriteFunction,
@@ -21,7 +22,6 @@ import {
 } from '../utils/createFunction';
 import { getNotifications, getNotificationsForBirthday } from './queries';
 import { batchMany } from '../utils/batch';
-import { getTimezoneOffset } from '../utils/timezone';
 
 const calculateNotificationTimestamp = (
   birthday: BirthdayDocument,
