@@ -23,8 +23,8 @@ import {
 import { getNotifications, getNotificationsForBirthday } from './queries';
 import { batchMany } from '../utils/batch';
 
-const calculateNotificationTimestamp = (
-  birthday: BirthdayDocument,
+export const calculateNotificationTimestamp = (
+  birthday: Pick<BirthdayDocument, 'birth' | 'notifyTimeZone'>,
   frequencyFormula: string,
   targetYear: number
 ) => {
@@ -37,11 +37,13 @@ const calculateNotificationTimestamp = (
     birthday.birth.day
   );
 
-  const offsetInMin =
-    timestamp.getTimezoneOffset() +
-    getTimezoneOffset(birthday.notifyTimeZone, timestamp);
+  const targetTzOffset_min = getTimezoneOffset(
+    birthday.notifyTimeZone,
+    timestamp
+  );
+  const totalTzOffset_min = timestamp.getTimezoneOffset() + targetTzOffset_min;
 
-  timestamp.setTime(timestamp.getTime() - offsetInMin * 60 * 1000);
+  timestamp.setTime(timestamp.getTime() - totalTzOffset_min * 6e4);
 
   switch (unit) {
     case FrequencyUnit.days: {
@@ -64,8 +66,16 @@ const calculateNotificationTimestamp = (
   }
 
   // consider New Year's change
+  // (1) localtime in new year, utc is in old year
   if (timestamp.getFullYear() - targetYear === -1) {
     timestamp.setFullYear(targetYear);
+  }
+
+  // (2) utc in new year, localtime is in old year
+  const withTz = new Date(timestamp.getTime() + targetTzOffset_min * 6e4);
+
+  if (withTz.getFullYear() - targetYear === -1) {
+    timestamp.setFullYear(targetYear + 1);
   }
 
   return getTimestamp(timestamp);
@@ -200,14 +210,11 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
     id: birthdayAfter.id
   });
 
-  const targetYearForExisting = new Date().getUTCFullYear();
-
   const currentNotifications = await getNotificationsForBirthday(
     birthdayAfter.id,
     ['isScheduled', '==', false],
     ['isSent', '==', false],
-    ['notifyAt', '>=', targetYearForExisting.toString()],
-    ['notifyAt', '<=', targetYearForExisting + '\uf8ff']
+    ['notifyAt', '>=', new Date().getUTCFullYear().toString()]
   );
 
   const batch = firestore.batch();
