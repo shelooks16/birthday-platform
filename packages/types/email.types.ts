@@ -30,6 +30,7 @@ export interface SendEmailVerificationPayload {
 }
 
 export interface SendEmailVerificationResult {
+  email: string;
   expiresAt: string;
 }
 

@@ -90,6 +90,7 @@ export const sendEmailVerification = createCallableFunction(
       .add(emailVerificationData);
 
     const result: SendEmailVerificationResult = {
+      email: emailVerificationData.email,
       expiresAt: emailVerificationData.expiresAt
     };
 
