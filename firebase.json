@@ -6,6 +6,7 @@
       "ignore": ["node_modules", ".git"],
       "predeploy": [
         "npm run lint -- --scope functions",
+        "npm run test -- --scope functions",
         "npm run build -- --scope functions"
       ]
     }
