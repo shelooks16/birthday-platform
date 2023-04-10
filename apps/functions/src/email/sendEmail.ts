@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import { SendEmailData } from '@shared/types';
 import { isEmulator } from '../utils/emulator';
-import { emailClient } from './emailClient';
+import { createEmailCleint } from './emailClient';
 
 export const sendEmail = async (options: SendEmailData) => {
   if (isEmulator) {
@@ -10,6 +10,8 @@ export const sendEmail = async (options: SendEmailData) => {
     });
     return;
   }
+
+  const emailClient = await createEmailCleint();
 
   await emailClient.sendMail(options);
 };
