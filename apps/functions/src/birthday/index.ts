@@ -1,0 +1,1 @@
+export { generateCongratulationText } from './congratulate';

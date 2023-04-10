@@ -170,5 +170,11 @@ export const createAuthFunction = (
 export const createCallableFunction = (
   handler: (data: any, context: functions.https.CallableContext) => any
 ) => {
-  return functions.region(REGION).https.onCall(handler);
+  return functions.region(REGION).https.onCall(async (data, ctx) => {
+    try {
+      return handler(data, ctx);
+    } catch (err) {
+      throw new functions.https.HttpsError('internal', err.message);
+    }
+  });
 };

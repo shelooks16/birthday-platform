@@ -8,6 +8,9 @@ interface Secrets {
     port: string;
     secure: 'true' | 'false';
   };
+  openai?: {
+    secretkey?: string;
+  };
 }
 
 export const secrets = functions.config() as Secrets;

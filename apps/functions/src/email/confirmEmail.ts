@@ -13,6 +13,7 @@ import {
   createCallableFunction,
   createOnCreateFunction
 } from '../utils/createFunction';
+import { requireAuth } from '../utils/auth';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
 import { sendEmail } from './sendEmail';
 import { makeEmailChannel } from '@shared/notification-channels';
@@ -30,15 +31,6 @@ function generateOTP(length = 6, allowedChars = '0123456789') {
     otp += allowedChars[charIndex];
   }
   return otp;
-}
-
-function requireAuth(ctx: functions.https.CallableContext) {
-  if (!ctx.auth) {
-    throw new functions.https.HttpsError(
-      'failed-precondition',
-      'The function must be called while authenticated.'
-    );
-  }
 }
 
 async function throwIfAlreadyVerified(userId: string, email: string) {

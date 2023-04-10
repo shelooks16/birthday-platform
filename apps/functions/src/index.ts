@@ -15,3 +15,4 @@ initializeApp();
 export * from './email';
 export * from './notifications';
 export * from './profile';
+export * from './birthday';

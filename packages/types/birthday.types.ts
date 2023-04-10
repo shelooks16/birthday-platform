@@ -19,3 +19,11 @@ export interface BirthdayDocument {
   updatedAt: string;
   createdAt: string;
 }
+
+export interface GenerateCongratulationTextPayload {
+  birthdayId: string;
+}
+
+export interface GenerateCongratulationTextResult {
+  text?: string;
+}
