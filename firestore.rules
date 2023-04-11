@@ -17,6 +17,12 @@ service cloud.firestore {
           && (val.size() == 5 ? isValidNotifyChannel(val[4]) : true)
           && (val.size() == 6 ? isValidNotifyChannel(val[5]) : true);
       }
+      function validateNotificationSettings(val) {
+          return verifyObjectFieldsPresence(val, ['notifyChannels', 'notifyAtBefore', 'timeZone'], [])
+          && isValidNotifyChannels(val.notifyChannels)
+          && isValidNotifyAtBefore(val.notifyAtBefore)
+          && isOptionalNotEmptyString(val.timeZone, 'notifyTimeZone', 30);
+      }
 
       // todo validate createdAt, updatedAt
       allow read: if existingData().userId == request.auth.uid;
@@ -25,11 +31,9 @@ service cloud.firestore {
           'userId',
           'birth',
           'buddyName',
-          'notifyAtBefore',
-          'notifyChannels',
-          'notifyTimeZone',
           'createdAt',
-          'updatedAt'
+          'updatedAt',
+          'notificationSettings'
         ], ['buddyDescription']) 
         && incomingData().userId == request.auth.uid
         && verifyObjectFieldsPresence(incomingData().birth, ['year', 'month', 'day'], [])
@@ -38,9 +42,9 @@ service cloud.firestore {
         && incomingData().birth.day >= 0 && incomingData().birth.day <= 31
         && isNotEmptyString(incomingData().buddyName, 30)
         && isOptionalNotEmptyString(incomingData(), 'buddyDescription', 100)
-        && isValidNotifyAtBefore(incomingData().notifyAtBefore)
-        && isValidNotifyChannels(incomingData().notifyChannels)
-        && isNotEmptyString(incomingData().notifyTimeZone, 30);
+        && (incomingData().notificationSettings == null
+            ? true 
+            : validateNotificationSettings(incomingData().notificationSettings));
     }
 
     match /profile/{uid} {

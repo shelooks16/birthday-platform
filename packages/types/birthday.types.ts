@@ -1,4 +1,14 @@
-import { NotifyFrequency } from './notification.types';
+export interface BirthDate {
+  year: number;
+  month: number;
+  day: number;
+}
+
+export interface BirthdayNotificationSettings {
+  notifyChannels: string[];
+  notifyAtBefore: string[];
+  timeZone: string;
+}
 
 export interface BirthdayDocument {
   id: string;
@@ -8,14 +18,8 @@ export interface BirthdayDocument {
   userId: string;
   buddyName: string;
   buddyDescription?: string;
-  birth: {
-    year: number;
-    month: number;
-    day: number;
-  };
-  notifyChannels: string[];
-  notifyAtBefore: NotifyFrequency[];
-  notifyTimeZone: string;
+  birth: BirthDate;
+  notificationSettings: BirthdayNotificationSettings | null;
   updatedAt: string;
   createdAt: string;
 }

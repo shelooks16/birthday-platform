@@ -1,7 +1,9 @@
 import * as functions from 'firebase-functions';
 import { getFirestore } from 'firebase-admin/firestore';
 import {
+  BirthDate,
   BirthdayDocument,
+  BirthdayNotificationSettings,
   FireCollection,
   FrequencyUnit,
   NotificationDocument
@@ -23,24 +25,26 @@ import {
 import { getNotifications, getNotificationsForBirthday } from './queries';
 import { batchMany } from '../utils/batch';
 
+const isTheSameArr = (arr1?: any[], arr2?: any[]) =>
+  Array.from(arr1 ?? [])
+    .sort()
+    .toString() ===
+  Array.from(arr2 ?? [])
+    .sort()
+    .toString();
+
 export const calculateNotificationTimestamp = (
-  birthday: Pick<BirthdayDocument, 'birth' | 'notifyTimeZone'>,
+  birthDate: BirthDate,
   frequencyFormula: string,
-  targetYear: number
+  targetYear: number,
+  timeZone: string
 ) => {
   const unitValue = parseInt(frequencyFormula, 10);
   const unit = frequencyFormula.replace(/\d/g, '') as FrequencyUnit;
 
-  const timestamp = new Date(
-    targetYear,
-    birthday.birth.month,
-    birthday.birth.day
-  );
+  const timestamp = new Date(targetYear, birthDate.month, birthDate.day);
 
-  const targetTzOffset_min = getTimezoneOffset(
-    birthday.notifyTimeZone,
-    timestamp
-  );
+  const targetTzOffset_min = getTimezoneOffset(timeZone, timestamp);
   const totalTzOffset_min = timestamp.getTimezoneOffset() + targetTzOffset_min;
 
   timestamp.setTime(timestamp.getTime() - totalTzOffset_min * 6e4);
@@ -101,7 +105,9 @@ const deleteNotificationDocsWithinBatch = (
 
 const createNotificationDocsWithinBatch = async (
   batch: FirebaseFirestore.WriteBatch,
-  birthdayDoc: BirthdayDocument,
+  birthdayId: string,
+  birthDate: BirthDate,
+  notificationSettings: BirthdayNotificationSettings,
   year: number,
   checkForDuplicates = false
 ) => {
@@ -111,19 +117,20 @@ const createNotificationDocsWithinBatch = async (
 
   // wth, no wayyyeee
   await Promise.all(
-    birthdayDoc.notifyChannels.map(async (channel) => {
+    notificationSettings.notifyChannels.map(async (channel) => {
       await Promise.all(
-        birthdayDoc.notifyAtBefore.map(async (formula) => {
+        notificationSettings.notifyAtBefore.map(async (formula) => {
           const notifyAt = calculateNotificationTimestamp(
-            birthdayDoc,
+            birthDate,
             formula,
-            year
+            year,
+            notificationSettings.timeZone
           );
 
           if (notifyAt < getTimestamp()) return;
 
           const data: Omit<NotificationDocument, 'id'> = {
-            sourceBirthdayId: birthdayDoc.id,
+            sourceBirthdayId: birthdayId,
             notifyAt,
             notifyChannel: channel,
             isScheduled: false,
@@ -156,7 +163,14 @@ const createNotificationDocsWithinBatch = async (
 const onCreate: OnCreateHandler = async (docSnap) => {
   const firestore = getFirestore();
   const birthdayDoc = firestoreSnapshotToData<BirthdayDocument>(docSnap)!;
-  const { id } = birthdayDoc;
+  const { id, notificationSettings, birth } = birthdayDoc;
+
+  if (!notificationSettings) {
+    functions.logger.info('Exiting. Birthday comes without notifications', {
+      id
+    });
+    return;
+  }
 
   functions.logger.info('Creating notifications for birthday', { id });
 
@@ -164,7 +178,9 @@ const onCreate: OnCreateHandler = async (docSnap) => {
 
   const createCount = await createNotificationDocsWithinBatch(
     batch,
-    birthdayDoc,
+    id,
+    birth,
+    notificationSettings,
     new Date().getFullYear()
   );
 
@@ -187,15 +203,25 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
     birthdayBefore.birth.month === birthdayAfter.birth.month &&
     birthdayBefore.birth.year === birthdayAfter.birth.year;
 
-  const isNotificationTimeTheSame =
-    Array.from(birthdayBefore.notifyAtBefore).sort().toString() ==
-    Array.from(birthdayAfter.notifyAtBefore).sort().toString();
+  const isNotificationTimeTheSame = isTheSameArr(
+    birthdayBefore.notificationSettings?.notifyAtBefore,
+    birthdayAfter.notificationSettings?.notifyAtBefore
+  );
+
+  const isNotificationChannelsTheSame = isTheSameArr(
+    birthdayBefore.notificationSettings?.notifyChannels,
+    birthdayAfter.notificationSettings?.notifyChannels
+  );
 
   const isTimeZoneTheSame =
-    birthdayBefore.notifyTimeZone == birthdayAfter.notifyTimeZone;
+    birthdayBefore.notificationSettings?.timeZone ==
+    birthdayAfter.notificationSettings?.timeZone;
 
   const isUnchanged =
-    isBirthDateTheSame && isNotificationTimeTheSame && isTimeZoneTheSame;
+    isBirthDateTheSame &&
+    isNotificationTimeTheSame &&
+    isNotificationChannelsTheSame &&
+    isTimeZoneTheSame;
 
   if (isUnchanged) {
     functions.logger.info('Skipping notifications update', {
@@ -217,14 +243,23 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
     ['notifyAt', '>=', new Date().getUTCFullYear().toString()]
   );
 
+  let updateCount = 0;
+
   const batch = firestore.batch();
 
   deleteNotificationDocsWithinBatch(batch, currentNotifications);
-  const updateCount = await createNotificationDocsWithinBatch(
-    batch,
-    birthdayAfter,
-    new Date().getFullYear()
-  );
+
+  if (birthdayAfter.notificationSettings) {
+    updateCount = await createNotificationDocsWithinBatch(
+      batch,
+      birthdayAfter.id,
+      birthdayAfter.birth,
+      birthdayAfter.notificationSettings,
+      new Date().getFullYear()
+    );
+  } else {
+    updateCount = currentNotifications.length;
+  }
 
   await batch.commit();
 
@@ -285,14 +320,18 @@ const createNotificationsForNewYear = async () => {
   let totalNotificationsCreated = 0;
 
   await batchMany(birthdays, async (batch, birthday) => {
-    const createdForBirthdayCount = await createNotificationDocsWithinBatch(
-      batch,
-      birthday,
-      targetYear,
-      true
-    );
+    if (birthday.notificationSettings) {
+      const createdForBirthdayCount = await createNotificationDocsWithinBatch(
+        batch,
+        birthday.id,
+        birthday.birth,
+        birthday.notificationSettings,
+        targetYear,
+        true
+      );
 
-    totalNotificationsCreated += createdForBirthdayCount;
+      totalNotificationsCreated += createdForBirthdayCount;
+    }
   });
 
   functions.logger.info('Birthdays processed', {
