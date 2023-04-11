@@ -8,6 +8,11 @@ import { createCallableFunction } from '../utils/createFunction';
 import { getBirthdayById } from './queries';
 import { createOpenAiClient } from './openAiClient';
 
+const langMap = {
+  en: 'english',
+  ru: 'russian'
+};
+
 export const generateCongratulationText = createCallableFunction(
   async (data: GenerateCongratulationTextPayload, ctx) => {
     requireAuth(ctx);
@@ -21,7 +26,9 @@ export const generateCongratulationText = createCallableFunction(
       );
     }
 
-    const prompt = `Write birthday congratulations for ${birthday!.buddyName}`;
+    const prompt = `Write birthday congratulations for ${
+      birthday!.buddyName
+    } in ${langMap[data.language ?? 'en']}`;
 
     const openai = await createOpenAiClient();
 

@@ -26,6 +26,7 @@ export interface BirthdayDocument {
 
 export interface GenerateCongratulationTextPayload {
   birthdayId: string;
+  language?: string;
 }
 
 export interface GenerateCongratulationTextResult {
