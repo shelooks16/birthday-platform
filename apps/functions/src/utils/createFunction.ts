@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import type { UserRecord } from 'firebase-admin/auth';
 import type { DocumentSnapshot } from 'firebase-admin/firestore';
 import { isEmulator } from './emulator';
+import { logger } from './logger';
 
 const REGION = 'europe-west1';
 
@@ -20,7 +21,7 @@ const getChangeType = (
 };
 
 const logUnhandledType = (changeType: ChangeType) => {
-  functions.logger.warn('Unhandled function change type', { changeType });
+  logger.warn('Unhandled function change type', { changeType });
 };
 
 export type OnCreateHandler = (
@@ -59,7 +60,7 @@ export const createOnWriteFunction = (
 
       const changeType = getChangeType(change);
 
-      functions.logger.info(`Document write ${documentPath}`, {
+      logger.info(`Document write ${documentPath}`, {
         changeType,
         docId: change.after?.id ?? change.before.id
       });
@@ -89,7 +90,7 @@ export const createOnCreateFunction = (
     .region(REGION)
     .firestore.document(documentPath)
     .onCreate(async (snapshot, ctx) => {
-      functions.logger.info(`Document created ${documentPath}`, {
+      logger.info(`Document created ${documentPath}`, {
         docId: snapshot.id
       });
 
@@ -108,7 +109,7 @@ export const createOnUpdateFunction = (
     .region(REGION)
     .firestore.document(documentPath)
     .onUpdate(async (change, ctx) => {
-      functions.logger.info(`Document updated ${documentPath}`, {
+      logger.info(`Document updated ${documentPath}`, {
         docId: change.after.id
       });
 
@@ -156,7 +157,7 @@ export const createAuthFunction = (
     .region(REGION)
     .auth.user()
     [triggerType](async (user, ctx) => {
-      functions.logger.info(
+      logger.info(
         triggerType === 'onCreate' ? 'User created' : 'User deleted',
         {
           userId: user.uid

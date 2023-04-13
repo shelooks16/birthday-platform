@@ -1,11 +1,11 @@
-import * as functions from 'firebase-functions';
+import { logger } from '../utils/logger';
 import { SendEmailData } from '@shared/types';
 import { isEmulator } from '../utils/emulator';
 import { createEmailCleint } from './emailClient';
 
 export const sendEmail = async (options: SendEmailData) => {
   if (isEmulator) {
-    functions.logger.warn('Emulator detected, email will not be sent', {
+    logger.warn('Emulator detected, email will not be sent', {
       emailOptions: options
     });
     return;

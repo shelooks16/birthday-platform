@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import { logger } from '../utils/logger';
 import { getFirestore } from 'firebase-admin/firestore';
 import {
   BirthDate,
@@ -166,13 +166,13 @@ const onCreate: OnCreateHandler = async (docSnap) => {
   const { id, notificationSettings, birth } = birthdayDoc;
 
   if (!notificationSettings) {
-    functions.logger.info('Exiting. Birthday comes without notifications', {
+    logger.info('Exiting. Birthday comes without notifications', {
       id
     });
     return;
   }
 
-  functions.logger.info('Creating notifications for birthday', { id });
+  logger.info('Creating notifications for birthday', { id });
 
   const batch = firestore.batch();
 
@@ -186,7 +186,7 @@ const onCreate: OnCreateHandler = async (docSnap) => {
 
   await batch.commit();
 
-  functions.logger.info('Notifications created for birthday', {
+  logger.info('Notifications created for birthday', {
     id,
     createCount
   });
@@ -224,7 +224,7 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
     isTimeZoneTheSame;
 
   if (isUnchanged) {
-    functions.logger.info('Skipping notifications update', {
+    logger.info('Skipping notifications update', {
       birthdayId: birthdayAfter.id
     });
     return;
@@ -232,7 +232,7 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
 
   const firestore = getFirestore();
 
-  functions.logger.info('Updating notifications for birthday', {
+  logger.info('Updating notifications for birthday', {
     id: birthdayAfter.id
   });
 
@@ -263,7 +263,7 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
 
   await batch.commit();
 
-  functions.logger.info('Updated notifications for birthday', {
+  logger.info('Updated notifications for birthday', {
     id: birthdayAfter.id,
     updateCount
   });
@@ -273,7 +273,7 @@ const onDelete: OnDeleteHandler = async (docSnap) => {
   const firestore = getFirestore();
   const { id } = firestoreSnapshotToData<BirthdayDocument>(docSnap)!;
 
-  functions.logger.info('Deleting pending notifications for birthday', { id });
+  logger.info('Deleting pending notifications for birthday', { id });
 
   const notifications = await getNotificationsForBirthday(
     id,
@@ -287,7 +287,7 @@ const onDelete: OnDeleteHandler = async (docSnap) => {
 
   await batch.commit();
 
-  functions.logger.info('Pending notifications deleted for birthday', {
+  logger.info('Pending notifications deleted for birthday', {
     id,
     deleteCount
   });
@@ -305,10 +305,9 @@ export const setNotifications = createOnWriteFunction(
 const createNotificationsForNewYear = async () => {
   const targetYear = new Date().getFullYear();
 
-  functions.logger.info(
-    'Creating notifications for all birthdays in target year',
-    { targetYear }
-  );
+  logger.info('Creating notifications for all birthdays in target year', {
+    targetYear
+  });
 
   const firestore = getFirestore();
 
@@ -334,7 +333,7 @@ const createNotificationsForNewYear = async () => {
     }
   });
 
-  functions.logger.info('Birthdays processed', {
+  logger.info('Birthdays processed', {
     totalProcessed: birthdays.length,
     totalNotificationsCreated
   });

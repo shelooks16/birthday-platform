@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import { logger } from '../utils/logger';
 import { getFirestore } from 'firebase-admin/firestore';
 import {
   createDebugHttpFn,
@@ -25,14 +25,14 @@ const scheduleSingleNotification = async (
 
     return true;
   } catch (err) {
-    functions.logger.warn('Failed to schedule notification', err);
+    logger.warn('Failed to schedule notification', err);
 
     return false;
   }
 };
 
 async function checkNotifications() {
-  functions.logger.info('Checking notifications to be sent');
+  logger.info('Checking notifications to be sent');
 
   const notifications = await getNotifications(
     ['isScheduled', '==', false],
@@ -52,7 +52,7 @@ async function checkNotifications() {
     })
   );
 
-  functions.logger.info('Notifications processed', {
+  logger.info('Notifications processed', {
     totalProcessed: notifications.length,
     totalNotScheduled: notifications.length - totalScheduled,
     totalScheduled

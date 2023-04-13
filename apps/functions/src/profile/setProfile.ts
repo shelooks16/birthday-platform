@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import { logger } from '../utils/logger';
 import { FireCollection, ProfileDocument } from '@shared/types';
 import { createAuthFunction } from '../utils/createFunction';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -8,7 +8,7 @@ import { makeEmailChannel } from '@shared/notification-channels';
 export const createProfileForUser = createAuthFunction(
   'onCreate',
   async (user) => {
-    functions.logger.info('Creating profile for user', { uid: user.uid });
+    logger.info('Creating profile for user', { uid: user.uid });
 
     const firestore = getFirestore();
 
@@ -24,20 +24,20 @@ export const createProfileForUser = createAuthFunction(
       .doc(user.uid)
       .set(profile);
 
-    functions.logger.info('Created user profile', { uid: user.uid });
+    logger.info('Created user profile', { uid: user.uid });
   }
 );
 
 export const deleteProfileForUser = createAuthFunction(
   'onDelete',
   async (user) => {
-    functions.logger.info('Deleting profile for user', { uid: user.uid });
+    logger.info('Deleting profile for user', { uid: user.uid });
 
     await getFirestore()
       .collection(FireCollection.profiles)
       .doc(user.uid)
       .delete();
 
-    functions.logger.info('Deleted user profile', { uid: user.uid });
+    logger.info('Deleted user profile', { uid: user.uid });
   }
 );

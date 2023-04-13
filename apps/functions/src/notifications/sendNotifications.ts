@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import { logger } from '../utils/logger';
 import { FieldValue } from 'firebase-admin/firestore';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
 import { FireCollection, NotificationDocument } from '@shared/types';
@@ -25,7 +25,7 @@ export const sendNotification = createOnUpdateFunction(
       !notificationBefore.isScheduled && notificationAfter.isScheduled;
 
     if (!mustSend) {
-      functions.logger.info('Skipping sending notification', {
+      logger.info('Skipping sending notification', {
         notificationId: notificationAfter.id
       });
       return;
@@ -42,7 +42,7 @@ export const sendNotification = createOnUpdateFunction(
         });
       } else {
         const errMessage = 'Unhandled notification channel type';
-        functions.logger.warn(errMessage, {
+        logger.warn(errMessage, {
           sendNotificationDocId: notificationAfter.id,
           channelType: extractChannelType(notificationAfter.notifyChannel)
         });
