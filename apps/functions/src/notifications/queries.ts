@@ -1,9 +1,13 @@
 import { firestoreSnapshotListToData } from '@shared/firestore-utils';
-import { FireCollection, NotificationDocument } from '@shared/types';
+import {
+  FireCollection,
+  FlattenInterfaceKeys,
+  NotificationDocument
+} from '@shared/types';
 import { getFirestore } from 'firebase-admin/firestore';
 
 type WhereClause = [
-  keyof NotificationDocument,
+  FlattenInterfaceKeys<NotificationDocument>,
   FirebaseFirestore.WhereFilterOp,
   any
 ];
@@ -17,7 +21,7 @@ export const getNotifications = async (...whereClauses: WhereClause[]) => {
 
   if (whereClauses.length > 0) {
     whereClauses.forEach((clause) => {
-      query = query.where(clause[0], clause[1], clause[2]);
+      query = query.where(clause[0]!, clause[1], clause[2]);
     });
   }
 

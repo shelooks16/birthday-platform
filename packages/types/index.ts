@@ -1,3 +1,4 @@
+export * from './typescript.types';
 export * from './birthday.types';
 export * from './email.types';
 export * from './notification.types';
