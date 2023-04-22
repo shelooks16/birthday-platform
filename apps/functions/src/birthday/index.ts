@@ -1,1 +1,1 @@
-export { generateCongratulationText } from './congratulate';
+export { generateBirthdayWish } from './generateWish';

@@ -24,11 +24,11 @@ export interface BirthdayDocument {
   createdAt: string;
 }
 
-export interface GenerateCongratulationTextPayload {
+export interface GenerateBirthdayWishPayload {
   birthdayId: string;
   language?: string;
 }
 
-export interface GenerateCongratulationTextResult {
+export interface GenerateBirthdayWishResult {
   text?: string;
 }

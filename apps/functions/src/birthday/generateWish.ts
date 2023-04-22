@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import {
-  GenerateCongratulationTextPayload,
-  GenerateCongratulationTextResult
+  GenerateBirthdayWishPayload,
+  GenerateBirthdayWishResult
 } from '@shared/types';
 import { requireAuth } from '../utils/auth';
 import { createCallableFunction } from '../utils/createFunction';
@@ -13,8 +13,8 @@ const langMap = {
   ru: 'russian'
 };
 
-export const generateCongratulationText = createCallableFunction(
-  async (data: GenerateCongratulationTextPayload, ctx) => {
+export const generateBirthdayWish = createCallableFunction(
+  async (data: GenerateBirthdayWishPayload, ctx) => {
     requireAuth(ctx);
 
     const birthday = await getBirthdayById(data.birthdayId);
@@ -39,7 +39,7 @@ export const generateCongratulationText = createCallableFunction(
       temperature: 1
     });
 
-    const result: GenerateCongratulationTextResult = {
+    const result: GenerateBirthdayWishResult = {
       text: completion.data.choices[0].text
     };
 
