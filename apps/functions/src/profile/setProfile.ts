@@ -1,28 +1,24 @@
 import { logger } from '../utils/logger';
-import { FireCollection, ProfileDocument } from '@shared/types';
+import { ProfileDocument } from '@shared/types';
 import { createAuthFunction } from '../utils/createFunction';
-import { getFirestore } from 'firebase-admin/firestore';
 import { getTimestamp } from '@shared/firestore-utils';
-import { makeEmailChannel } from '@shared/notification-channels';
+import { emailChannel } from '@shared/notification-channels';
+import { createProfile, deleteProfileById } from './queries';
 
 export const createProfileForUser = createAuthFunction(
   'onCreate',
   async (user) => {
     logger.info('Creating profile for user', { uid: user.uid });
 
-    const firestore = getFirestore();
-
     const profile: Omit<ProfileDocument, 'id'> = {
       createdAt: getTimestamp(),
       displayName: user.displayName || user.email || user.uid,
       verifiedNotifyChannels:
-        user.email && user.emailVerified ? [makeEmailChannel(user.email)] : []
+        user.email && user.emailVerified ? [emailChannel.make(user.email)] : [],
+      ...(user.photoURL ? { avatar: user.photoURL } : {})
     };
 
-    await firestore
-      .collection(FireCollection.profiles)
-      .doc(user.uid)
-      .set(profile);
+    await createProfile(user.uid, profile);
 
     logger.info('Created user profile', { uid: user.uid });
   }
@@ -33,10 +29,7 @@ export const deleteProfileForUser = createAuthFunction(
   async (user) => {
     logger.info('Deleting profile for user', { uid: user.uid });
 
-    await getFirestore()
-      .collection(FireCollection.profiles)
-      .doc(user.uid)
-      .delete();
+    await deleteProfileById(user.uid);
 
     logger.info('Deleted user profile', { uid: user.uid });
   }

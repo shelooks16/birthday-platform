@@ -11,6 +11,9 @@ interface Secrets {
   openai?: {
     secretkey?: string;
   };
+  telegram: {
+    bot_token: string;
+  };
 }
 
 export const secrets = functions.config() as Secrets;

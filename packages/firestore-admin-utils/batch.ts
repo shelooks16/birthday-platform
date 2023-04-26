@@ -1,14 +1,6 @@
-import { WriteBatch, getFirestore } from 'firebase-admin/firestore';
+import { WriteBatch } from 'firebase-admin/firestore';
 
-/**
- * @desc Chunks an array into smaller parts
- *
- * @example
- * const array = [1, 2, 3, 4, 5, 6];
- * const chunked = chunkArr(array, 2);
- * // [ [1, 2], [3, 4], [5, 6] ]
- */
-export function chunkArr<T>(array: T[], size = 1) {
+function chunkArr<T>(array: T[], size = 1) {
   if (size <= 0) {
     return [array];
   }
@@ -43,6 +35,7 @@ export function chunkArr<T>(array: T[], size = 1) {
  * semi-atomicity.
  */
 export async function batchMany<T>(
+  firestore: FirebaseFirestore.Firestore,
   data: T[],
   updateCallback: (batch: WriteBatch, element: T) => any,
   /** How many updates are going to be atomic in a single batch. Since
@@ -66,7 +59,7 @@ export async function batchMany<T>(
   const size = Math.min(batchSize, 500);
 
   const batches = chunkArr(data, size).map(async (dataChunk) => {
-    const batch = getFirestore().batch();
+    const batch = firestore.batch();
 
     await Promise.all(
       dataChunk.map(async (element) => {

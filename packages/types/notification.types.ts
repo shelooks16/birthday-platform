@@ -1,3 +1,5 @@
+import { DeepKeyOf } from '@shared/typescript-utils';
+
 export enum FrequencyUnit {
   months = 'M',
   minutes = 'm',
@@ -24,3 +26,5 @@ export interface NotificationDocument {
   isSent: boolean;
   sentAt?: string;
 }
+
+export type NotificationDocumentField = DeepKeyOf<NotificationDocument>;

@@ -6,13 +6,14 @@ import { isEmulator } from './utils/emulator';
 if (isEmulator) {
   process.env['GOOGLE_APPLICATION_CREDENTIALS'] = path.join(
     __dirname,
-    '../../../service-account.dev.json'
+    'service-account.json'
   );
 }
 
 initializeApp();
 
-export * from './email';
-export * from './notifications';
 export * from './profile';
 export * from './birthday';
+export * from './notifications';
+export * from './emailVerification';
+export * from './telegram';

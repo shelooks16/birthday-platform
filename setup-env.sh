@@ -1,7 +1,7 @@
 #! /bin/sh
 
 functions_env="apps/functions/env/.runtimeconfig.json"
-service_account="service-account.dev.json"
+service_account="apps/functions/env/service-account.json"
 
 echo "=== Setting up environment files for the project"
 

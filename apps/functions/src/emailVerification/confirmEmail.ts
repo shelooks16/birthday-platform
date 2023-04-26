@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import {
   ConfirmEmailOtpPayload,
   ConfirmEmailOtpResult,
@@ -9,15 +8,23 @@ import {
   SendEmailVerificationPayload,
   SendEmailVerificationResult
 } from '@shared/types';
+import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
+import { arrayUnion } from '@shared/firestore-admin-utils';
+import { emailChannel } from '@shared/notification-channels';
 import {
   createCallableFunction,
   createOnCreateFunction
 } from '../utils/createFunction';
 import { requireAuth } from '../utils/auth';
-import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
-import { sendEmail } from './sendEmail';
-import { makeEmailChannel } from '@shared/notification-channels';
-import { mailTemplate } from './templates';
+import { sendEmail } from '../email/sendEmail';
+import { mailTemplate } from '../email/templates';
+import { getProfileById, getProfileDocRef } from '../profile/queries';
+import {
+  createEmailVerification,
+  getEmailVerificationDoc,
+  getLatestEmailVerification
+} from './queries';
+import { firestore } from '../firestore';
 
 function randomizeInRange(min: number, max: number) {
   const random = Math.random();
@@ -34,13 +41,7 @@ function generateOTP(length = 6, allowedChars = '0123456789') {
 }
 
 async function throwIfAlreadyVerified(userId: string, email: string) {
-  const firestore = getFirestore();
-
-  const userProfile = await firestore
-    .collection(FireCollection.profiles)
-    .doc(userId)
-    .get()
-    .then((r) => firestoreSnapshotToData<ProfileDocument>(r));
+  const userProfile = await getProfileById(userId);
 
   if (!userProfile) {
     throw new functions.https.HttpsError(
@@ -49,7 +50,7 @@ async function throwIfAlreadyVerified(userId: string, email: string) {
     );
   }
 
-  if (userProfile.verifiedNotifyChannels.includes(makeEmailChannel(email))) {
+  if (userProfile.verifiedNotifyChannels.includes(emailChannel.make(email))) {
     throw new functions.https.HttpsError(
       'failed-precondition',
       `${email} already verified`
@@ -75,11 +76,7 @@ export const sendEmailVerification = createCallableFunction(
       isVerified: false
     };
 
-    const firestore = getFirestore();
-
-    await firestore
-      .collection(FireCollection.emailVerification)
-      .add(emailVerificationData);
+    await createEmailVerification(emailVerificationData);
 
     const result: SendEmailVerificationResult = {
       email: emailVerificationData.email,
@@ -91,15 +88,13 @@ export const sendEmailVerification = createCallableFunction(
 );
 
 export const processEmailForVerification = createOnCreateFunction(
-  `${FireCollection.emailVerification}/{id}`,
+  FireCollection.emailVerification.docMatch,
   async (snap) => {
     const verificationDoc =
       firestoreSnapshotToData<EmailVerificationDocument>(snap)!;
 
-    const firestore = getFirestore();
-
     try {
-      await firestore.runTransaction(async (tr) => {
+      await firestore().runTransaction(async (tr) => {
         const updates: Partial<EmailVerificationDocument> = {
           isSent: true,
           sentAt: getTimestamp()
@@ -125,20 +120,10 @@ export const confirmEmailOtp = createCallableFunction(
   async (data: ConfirmEmailOtpPayload, ctx) => {
     requireAuth(ctx);
 
-    const firestore = getFirestore();
-
-    const verification = await firestore
-      .collection(FireCollection.emailVerification)
-      .where('userId', '==', ctx.auth!.uid)
-      .where('email', '==', data.email)
-      .orderBy('createdAt')
-      .limitToLast(1)
-      .get()
-      .then((r) =>
-        r.size > 0
-          ? firestoreSnapshotToData<EmailVerificationDocument>(r.docs[0])
-          : null
-      );
+    const verification = await getLatestEmailVerification(
+      ctx.auth!.uid,
+      data.email
+    );
 
     if (!verification) {
       throw new functions.https.HttpsError(
@@ -156,9 +141,9 @@ export const confirmEmailOtp = createCallableFunction(
     }
 
     const profileUpdates: Partial<ProfileDocument> = {
-      verifiedNotifyChannels: FieldValue.arrayUnion(
-        makeEmailChannel(verification.email)
-      ) as any
+      verifiedNotifyChannels: arrayUnion<string[]>(
+        emailChannel.make(verification.email)
+      )
     };
 
     const verificationUpdates: Partial<EmailVerificationDocument> = {
@@ -166,19 +151,10 @@ export const confirmEmailOtp = createCallableFunction(
       verifiedAt: getTimestamp()
     };
 
-    const batch = firestore.batch();
+    const batch = firestore().batch();
 
-    batch.update(
-      firestore.collection(FireCollection.profiles).doc(verification.userId),
-      profileUpdates
-    );
-
-    batch.update(
-      firestore
-        .collection(FireCollection.emailVerification)
-        .doc(verification.id),
-      verificationUpdates
-    );
+    batch.update(getProfileDocRef(verification.userId), profileUpdates);
+    batch.update(getEmailVerificationDoc(verification.id), verificationUpdates);
 
     await batch.commit();
 

@@ -1,18 +1,15 @@
 import { logger } from '../utils/logger';
-import { FieldValue } from 'firebase-admin/firestore';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
+import { fieldDelete } from '../../../../packages/firestore-admin-utils';
 import { FireCollection, NotificationDocument } from '@shared/types';
-import {
-  extractChannelType,
-  isEmailChannel,
-  getEmailFromEmailChannel
-} from '@shared/notification-channels';
+import { ChannelType, parseChannel } from '@shared/notification-channels';
 import { createOnUpdateFunction } from '../utils/createFunction';
 import { sendEmail } from '../email/sendEmail';
 import { mailTemplate } from '../email/templates';
+import { createTelegramBot } from '../telegram/createTelegramBot';
 
 export const sendNotification = createOnUpdateFunction(
-  `${FireCollection.notifications}/{id}`,
+  FireCollection.notifications.docMatch,
   async (change) => {
     const notificationBefore = firestoreSnapshotToData<NotificationDocument>(
       change.before
@@ -33,26 +30,42 @@ export const sendNotification = createOnUpdateFunction(
 
     let updates: Partial<NotificationDocument>;
 
+    const parsedChannel = parseChannel(notificationAfter.notifyChannel);
+
     try {
-      if (isEmailChannel(notificationAfter.notifyChannel)) {
-        await sendEmail({
-          to: getEmailFromEmailChannel(notificationAfter.notifyChannel),
-          subject: mailTemplate.birthdaySoon.subject(),
-          html: mailTemplate.birthdaySoon.html()
-        });
-      } else {
-        const errMessage = 'Unhandled notification channel type';
-        logger.warn(errMessage, {
-          sendNotificationDocId: notificationAfter.id,
-          channelType: extractChannelType(notificationAfter.notifyChannel)
-        });
-        throw new Error(errMessage);
+      switch (parsedChannel.type) {
+        case ChannelType.email: {
+          await sendEmail({
+            to: parsedChannel.id,
+            subject: mailTemplate.birthdaySoon.subject(),
+            html: mailTemplate.birthdaySoon.html()
+          });
+          break;
+        }
+        case ChannelType.telegram: {
+          const bot = await createTelegramBot();
+
+          await bot.telegram.sendMessage(
+            parsedChannel.id,
+            `Днюха уже очень скоро ${notificationAfter.sourceBirthdayId}`
+          );
+
+          break;
+        }
+        default: {
+          const errMessage = 'Unhandled notification channel type';
+          logger.warn(errMessage, {
+            sendNotificationDocId: notificationAfter.id,
+            channelType: parsedChannel.type
+          });
+          throw new Error(errMessage);
+        }
       }
 
       updates = {
         isSent: true,
         sentAt: getTimestamp(),
-        error: FieldValue.delete() as any
+        error: fieldDelete()
       };
     } catch (err) {
       updates = {

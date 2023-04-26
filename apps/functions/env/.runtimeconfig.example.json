@@ -8,5 +8,8 @@
   },
   "openai": {
     "secretkey": ""
+  },
+  "telegram": {
+    "bot_token": ""
   }
 }

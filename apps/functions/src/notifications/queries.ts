@@ -1,41 +1,35 @@
-import { firestoreSnapshotListToData } from '@shared/firestore-utils';
+import { joinWhereClauses } from '@shared/firestore-admin-utils';
+import {
+  firestoreSnapshotListToData,
+  WhereClause
+} from '@shared/firestore-utils';
 import {
   FireCollection,
-  FlattenInterfaceKeys,
-  NotificationDocument
+  NotificationDocument,
+  NotificationDocumentField
 } from '@shared/types';
-import { getFirestore } from 'firebase-admin/firestore';
+import { firestore } from '../firestore';
 
-type WhereClause = [
-  FlattenInterfaceKeys<NotificationDocument>,
-  FirebaseFirestore.WhereFilterOp,
-  any
-];
+export const getNotificationDoc = (id?: string) => {
+  return id
+    ? firestore().doc(FireCollection.notifications.docPath(id))
+    : firestore().collection(FireCollection.notifications.path()).doc();
+};
 
-export const getNotifications = async (...whereClauses: WhereClause[]) => {
-  const firestore = getFirestore();
-
-  let query = firestore.collection(
-    FireCollection.notifications
-  ) as FirebaseFirestore.Query;
-
-  if (whereClauses.length > 0) {
-    whereClauses.forEach((clause) => {
-      query = query.where(clause[0]!, clause[1], clause[2]);
-    });
-  }
+export const getNotifications = async (
+  ...whereClauses: WhereClause<NotificationDocumentField>[]
+) => {
+  let query = firestore().collection(FireCollection.notifications.path());
+  query = joinWhereClauses(query, whereClauses);
 
   return query
     .get()
     .then((r) => firestoreSnapshotListToData<NotificationDocument>(r.docs));
 };
 
-export const getNotificationsForBirthday = async (
-  birthdayId: string,
-  ...whereClauses: WhereClause[]
+export const updateNotificationById = async (
+  id: string,
+  data: Partial<Omit<NotificationDocument, 'id'>>
 ) => {
-  return getNotifications(
-    ['sourceBirthdayId', '==', birthdayId],
-    ...whereClauses
-  );
+  return firestore().doc(FireCollection.notifications.docPath(id)).update(data);
 };

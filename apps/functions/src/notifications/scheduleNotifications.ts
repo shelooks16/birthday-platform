@@ -1,27 +1,19 @@
 import { logger } from '../utils/logger';
-import { getFirestore } from 'firebase-admin/firestore';
 import {
   createDebugHttpFn,
   createScheduledFunction
 } from '../utils/createFunction';
 import { getTimestamp } from '@shared/firestore-utils';
-import { FireCollection, NotificationDocument } from '@shared/types';
-import { getNotifications } from './queries';
+import { NotificationDocument } from '@shared/types';
+import { getNotifications, updateNotificationById } from './queries';
 
 const scheduleSingleNotification = async (
   notification: NotificationDocument
 ): Promise<boolean> => {
-  const firestore = getFirestore();
-
-  const updateForNotification: Partial<NotificationDocument> = {
-    isScheduled: true
-  };
-
   try {
-    await firestore
-      .collection(FireCollection.notifications)
-      .doc(notification.id)
-      .update(updateForNotification);
+    await updateNotificationById(notification.id, {
+      isScheduled: true
+    });
 
     return true;
   } catch (err) {

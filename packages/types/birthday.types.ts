@@ -1,3 +1,5 @@
+import { DeepKeyOf } from '@shared/typescript-utils';
+
 export interface BirthDate {
   year: number;
   month: number;
@@ -20,9 +22,10 @@ export interface BirthdayDocument {
   buddyDescription?: string;
   birth: BirthDate;
   notificationSettings: BirthdayNotificationSettings | null;
-  updatedAt: string;
   createdAt: string;
 }
+
+export type BirthdayDocumentField = DeepKeyOf<BirthdayDocument>;
 
 export interface GenerateBirthdayWishPayload {
   birthdayId: string;

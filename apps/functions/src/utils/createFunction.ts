@@ -179,3 +179,18 @@ export const createCallableFunction = (
     }
   });
 };
+
+export const createOnRequestFunction = (
+  handler: (
+    req: functions.https.Request,
+    res: functions.Response<any>
+  ) => void | Promise<void>
+) => {
+  return functions.region(REGION).https.onRequest(async (req, res) => {
+    try {
+      return handler(req, res);
+    } catch (err) {
+      throw new functions.https.HttpsError('internal', err.message);
+    }
+  });
+};

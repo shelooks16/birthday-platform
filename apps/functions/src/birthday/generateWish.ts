@@ -6,7 +6,7 @@ import {
 import { requireAuth } from '../utils/auth';
 import { createCallableFunction } from '../utils/createFunction';
 import { getBirthdayById } from './queries';
-import { createOpenAiClient } from './openAiClient';
+import { createCompletion } from '../openai/completion';
 
 const langMap = {
   en: 'english',
@@ -30,17 +30,10 @@ export const generateBirthdayWish = createCallableFunction(
       birthday!.buddyName
     } in ${langMap[data.language ?? 'en']}`;
 
-    const openai = await createOpenAiClient();
-
-    const completion = await openai.createCompletion({
-      model: 'text-davinci-003',
-      prompt,
-      max_tokens: 2048,
-      temperature: 1
-    });
+    const completionResult = await createCompletion(prompt);
 
     const result: GenerateBirthdayWishResult = {
-      text: completion.data.choices[0].text
+      text: completionResult[0].text
     };
 
     return result;
