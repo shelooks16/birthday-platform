@@ -6,7 +6,10 @@ type SnapshotLike = {
   };
 };
 
-type WithId<T> = T extends { id: string } ? T : { id: string } & T;
+export type WithId<T> = T extends { id: string } ? T : { id: string } & T;
+export type WithOptionalId<T> = T extends { id: string }
+  ? Omit<T, 'id'> & { id?: string }
+  : T;
 
 /**
  * Takes snapshot.data() and attaches id. If snapshot is

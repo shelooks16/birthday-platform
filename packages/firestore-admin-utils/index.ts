@@ -1,2 +1,3 @@
-export * from './batch';
-export * from './fields';
+export * from './src/batch';
+export * from './src/fields';
+export * from './src/repository';

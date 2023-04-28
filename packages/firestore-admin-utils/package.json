@@ -8,6 +8,7 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
+    "@shared/firestore-utils": "*",
     "firebase-admin": "11.5.0"
   }
 }
