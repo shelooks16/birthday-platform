@@ -1,14 +1,14 @@
 import { firestoreSnapshotToData } from '@shared/firestore-utils';
 import {
+  BirthdayDocument,
   ChannelType,
   FireCollection,
   NotificationChannelDocument
 } from '@shared/types';
 import { createOnDeleteFunction } from '../utils/createFunction';
 import { logger } from '../utils/logger';
-import { getBirthdays, updateBirthdayById } from '../birthday/queries';
+import { birthdayRepo } from '../birthday/birthday.repository';
 import { createTelegramBot } from '../telegram/createTelegramBot';
-import { firestore } from '../firestore';
 
 export const onChannelDeleteUpdateAffectedDocuments = createOnDeleteFunction(
   FireCollection.notificationChannel.docMatch,
@@ -20,43 +20,44 @@ export const onChannelDeleteUpdateAffectedDocuments = createOnDeleteFunction(
       channelId: deletedChannel.id
     });
 
-    const birthdaysToHandle = await getBirthdays(
-      ['profileId', '==', deletedChannel.profileId],
-      [
-        'notificationSettings.notifyChannelsIds',
-        'array-contains',
-        deletedChannel.id
+    const birthdaysToHandle = await birthdayRepo().findMany({
+      where: [
+        ['profileId', '==', deletedChannel.profileId],
+        [
+          'notificationSettings.notifyChannelsIds',
+          'array-contains',
+          deletedChannel.id
+        ]
       ]
-    );
+    });
 
-    const batch = firestore().batch();
-
-    birthdaysToHandle.forEach((b) => {
+    const updatedBirthdays: BirthdayDocument[] = birthdaysToHandle.map((b) => {
       const updatedChannelsIds =
         b.notificationSettings!.notifyChannelsIds.filter(
           (ch) => ch !== deletedChannel.id
         );
 
-      updateBirthdayById(
-        b.id,
-        {
-          notificationSettings:
-            updatedChannelsIds.length > 0
-              ? {
-                  ...b.notificationSettings!,
-                  notifyChannelsIds: updatedChannelsIds
-                }
-              : null
-        },
-        batch
-      );
+      return {
+        ...b,
+        notificationSettings:
+          updatedChannelsIds.length > 0
+            ? {
+                ...b.notificationSettings!,
+                notifyChannelsIds: updatedChannelsIds
+              }
+            : null
+      };
     });
+
+    const batch = birthdayRepo().batch();
+
+    birthdayRepo().atomicUpdateMany(batch, updatedBirthdays);
 
     await batch.commit();
 
     logger.info('Updated affected documents', {
       channelId: deletedChannel.id,
-      updatedBirthdaysCount: birthdaysToHandle.length
+      updatedBirthdaysCount: updatedBirthdays.length
     });
   }
 );

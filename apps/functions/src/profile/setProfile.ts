@@ -1,40 +1,33 @@
+import { ChannelType } from '@shared/types';
+import { getTimestamp } from '@shared/firestore-utils';
 import { logger } from '../utils/logger';
 import { createAuthFunction } from '../utils/createFunction';
-import { getTimestamp } from '@shared/firestore-utils';
-import { createProfile, deleteProfileById } from './queries';
-import { createNotificationChannel } from '../notificationChannel/queries';
-import { firestore } from '../firestore';
-import { ChannelType } from '@shared/types';
+import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
+import { profileRepo } from './profile.repository';
 
 export const createProfileForUser = createAuthFunction(
   'onCreate',
   async (user) => {
     logger.info('Creating profile for user', { userId: user.uid });
 
-    const batch = firestore().batch();
+    const batch = profileRepo().batch();
 
     if (user.email && user.emailVerified) {
-      createNotificationChannel(
-        {
-          profileId: user.uid,
-          type: ChannelType.email,
-          value: user.email,
-          displayName: user.email,
-          createdAt: getTimestamp()
-        },
-        batch
-      );
+      notificationChannelRepo().atomicSetOne(batch, {
+        profileId: user.uid,
+        type: ChannelType.email,
+        value: user.email,
+        displayName: user.email,
+        createdAt: getTimestamp()
+      });
     }
 
-    createProfile(
-      user.uid,
-      {
-        createdAt: getTimestamp(),
-        displayName: user.displayName || user.email || user.uid,
-        ...(user.photoURL ? { avatar: user.photoURL } : {})
-      },
-      batch
-    );
+    profileRepo().atomicSetOne(batch, {
+      id: user.uid,
+      createdAt: getTimestamp(),
+      displayName: user.displayName || user.email || user.uid,
+      ...(user.photoURL ? { avatar: user.photoURL } : {})
+    });
 
     await batch.commit();
 
@@ -47,7 +40,7 @@ export const deleteProfileForUser = createAuthFunction(
   async (user) => {
     logger.info('Deleting profile for user', { uid: user.uid });
 
-    await deleteProfileById(user.uid);
+    await profileRepo().deleteById(user.uid);
 
     logger.info('Deleted user profile', { uid: user.uid });
   }

@@ -10,8 +10,8 @@ import { createOnUpdateFunction } from '../utils/createFunction';
 import { sendEmail } from '../email/sendEmail';
 import { mailTemplate } from '../email/templates';
 import { createTelegramBot } from '../telegram/createTelegramBot';
-import { getNotificationChannelById } from '../notificationChannel/queries';
-import { updateNotificationById } from './queries';
+import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
+import { notificationRepo } from './notification.repository';
 
 export const sendNotification = createOnUpdateFunction(
   FireCollection.notifications.docMatch,
@@ -33,7 +33,7 @@ export const sendNotification = createOnUpdateFunction(
       return;
     }
 
-    const channel = await getNotificationChannelById(
+    const channel = await notificationChannelRepo().findById(
       notificationAfter.notificationChannelId
     );
 
@@ -74,13 +74,15 @@ export const sendNotification = createOnUpdateFunction(
         }
       }
 
-      await updateNotificationById(notificationAfter.id, {
+      await notificationRepo().updateOne({
+        id: notificationAfter.id,
         isSent: true,
         sentAt: getTimestamp(),
         error: fieldDelete()
       });
     } catch (err) {
-      await updateNotificationById(notificationAfter.id, {
+      await notificationRepo().updateOne({
+        id: notificationAfter.id,
         isSent: false,
         isScheduled: false,
         error: err.message

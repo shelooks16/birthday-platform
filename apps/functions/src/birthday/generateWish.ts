@@ -5,7 +5,7 @@ import {
 } from '@shared/types';
 import { requireAuth } from '../utils/auth';
 import { createCallableFunction } from '../utils/createFunction';
-import { getBirthdayById } from './queries';
+import { birthdayRepo } from './birthday.repository';
 import { createCompletion } from '../openai/completion';
 
 const langMap = {
@@ -17,7 +17,7 @@ export const generateBirthdayWish = createCallableFunction(
   async (data: GenerateBirthdayWishPayload, ctx) => {
     requireAuth(ctx);
 
-    const birthday = await getBirthdayById(data.birthdayId);
+    const birthday = await birthdayRepo().findById(data.birthdayId);
 
     if (!birthday) {
       throw new functions.https.HttpsError(

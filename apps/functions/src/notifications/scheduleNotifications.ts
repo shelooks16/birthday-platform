@@ -5,13 +5,14 @@ import {
 } from '../utils/createFunction';
 import { getTimestamp } from '@shared/firestore-utils';
 import { NotificationDocument } from '@shared/types';
-import { getNotifications, updateNotificationById } from './queries';
+import { notificationRepo } from './notification.repository';
 
 const scheduleSingleNotification = async (
   notification: NotificationDocument
 ): Promise<boolean> => {
   try {
-    await updateNotificationById(notification.id, {
+    await notificationRepo().updateOne({
+      id: notification.id,
       isScheduled: true
     });
 
@@ -26,11 +27,13 @@ const scheduleSingleNotification = async (
 async function checkNotifications() {
   logger.info('Checking notifications to be sent');
 
-  const notifications = await getNotifications(
-    ['isScheduled', '==', false],
-    ['notifyAt', '>=', new Date().getUTCFullYear().toString()],
-    ['notifyAt', '<=', getTimestamp()]
-  );
+  const notifications = await notificationRepo().findMany({
+    where: [
+      ['isScheduled', '==', false],
+      ['notifyAt', '>=', new Date().getUTCFullYear().toString()],
+      ['notifyAt', '<=', getTimestamp()]
+    ]
+  });
 
   let totalScheduled = 0;
 

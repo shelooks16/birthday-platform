@@ -17,16 +17,8 @@ import {
 import { requireAuth } from '../utils/auth';
 import { sendEmail } from '../email/sendEmail';
 import { mailTemplate } from '../email/templates';
-import {
-  createEmailVerification,
-  getLatestEmailVerification,
-  updateEmailVerificationById
-} from './queries';
-import { firestore } from '../firestore';
-import {
-  createNotificationChannel,
-  findNotificationChannelForProfile
-} from '../notificationChannel/queries';
+import { emailVerificationRepo } from './emailVerification.repository';
+import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
 
 function randomizeInRange(min: number, max: number) {
   const random = Math.random();
@@ -43,11 +35,12 @@ function generateOTP(length = 6, allowedChars = '0123456789') {
 }
 
 async function throwIfAlreadyVerified(profileId: string, email: string) {
-  const existingChannel = await findNotificationChannelForProfile(
-    profileId,
-    ChannelType.email,
-    email
-  );
+  const existingChannel =
+    await notificationChannelRepo().findChannelByProfileId(
+      profileId,
+      ChannelType.email,
+      email
+    );
 
   if (existingChannel) {
     throw new functions.https.HttpsError(
@@ -75,7 +68,7 @@ export const sendEmailVerification = createCallableFunction(
       isVerified: false
     };
 
-    await createEmailVerification(emailVerificationData);
+    await emailVerificationRepo().setOne(emailVerificationData);
 
     const result: SendEmailVerificationResult = {
       email: emailVerificationData.email,
@@ -93,15 +86,12 @@ export const processEmailForVerification = createOnCreateFunction(
       firestoreSnapshotToData<EmailVerificationDocument>(snap)!;
 
     try {
-      await firestore().runTransaction(async (tr) => {
-        updateEmailVerificationById(
-          verificationDoc.id,
-          {
-            isSent: true,
-            sentAt: getTimestamp()
-          },
-          tr
-        );
+      await notificationChannelRepo().runTransaction(async (tr) => {
+        emailVerificationRepo().atomicUpdateOne(tr, {
+          id: verificationDoc.id,
+          isSent: true,
+          sentAt: getTimestamp()
+        });
 
         await sendEmail({
           to: verificationDoc.email,
@@ -112,7 +102,8 @@ export const processEmailForVerification = createOnCreateFunction(
         });
       });
     } catch (err) {
-      await updateEmailVerificationById(verificationDoc.id, {
+      await emailVerificationRepo().updateOne({
+        id: verificationDoc.id,
         error: err.message
       });
     }
@@ -123,10 +114,18 @@ export const confirmEmailOtp = createCallableFunction(
   async (data: ConfirmEmailOtpPayload, ctx) => {
     requireAuth(ctx);
 
-    const verification = await getLatestEmailVerification(
-      ctx.auth!.uid,
-      data.email
-    );
+    const verification = await emailVerificationRepo()
+      .findMany({
+        where: [
+          ['profileId', '==', ctx.auth!.uid],
+          ['email', '==', data.email]
+        ],
+        limitToLast: 1,
+        orderBy: {
+          createdAt: 'asc'
+        }
+      })
+      .then((r) => (r.length > 0 ? r[0] : null));
 
     if (!verification) {
       throw new functions.https.HttpsError(
@@ -143,27 +142,23 @@ export const confirmEmailOtp = createCallableFunction(
       throw new functions.https.HttpsError('aborted', 'Expired');
     }
 
-    const batch = firestore().batch();
+    const batch = notificationChannelRepo().batch();
 
-    const createdNotificationChannel = createNotificationChannel(
-      {
-        profileId: verification.profileId,
-        type: ChannelType.email,
-        value: verification.email,
-        displayName: verification.email,
-        createdAt: getTimestamp()
-      },
-      batch
-    );
+    const createdNotificationChannel: NotificationChannelDocument = {
+      id: notificationChannelRepo().getRandomDocId(),
+      profileId: verification.profileId,
+      type: ChannelType.email,
+      value: verification.email,
+      displayName: verification.email,
+      createdAt: getTimestamp()
+    };
 
-    updateEmailVerificationById(
-      verification.id,
-      {
-        isVerified: true,
-        verifiedAt: getTimestamp()
-      },
-      batch
-    );
+    notificationChannelRepo().atomicSetOne(batch, createdNotificationChannel);
+    emailVerificationRepo().atomicUpdateOne(batch, {
+      id: verification.id,
+      isVerified: true,
+      verifiedAt: getTimestamp()
+    });
 
     await batch.commit();
 

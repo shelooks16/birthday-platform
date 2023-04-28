@@ -1,14 +1,9 @@
 import { BirthdayDocumentWithDate, splitBirthdays } from '@shared/birthday';
 import { getTimestamp } from '@shared/firestore-utils';
 import { ChannelType, TeleBotStartPayload } from '@shared/types';
-import { getBirthdays } from '../birthday/queries';
-import {
-  createNotificationChannel,
-  findNotificationChannelForProfile,
-  getNotificationChannels,
-  updateNotificationChannelById
-} from '../notificationChannel/queries';
-import { getProfileById } from '../profile/queries';
+import { birthdayRepo } from '../birthday/birthday.repository';
+import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
+import { profileRepo } from '../profile/profile.repository';
 import { BirthdayTelegramBot } from './bot.types';
 
 // https://github.com/telegraf/telegraf/issues/504#issuecomment-1270571923
@@ -46,15 +41,16 @@ export const connectUserProfile: Parameters<
   let text = '';
 
   try {
-    const profile = await getProfileById(payload.profileId);
+    const profile = await profileRepo().findById(payload.profileId);
 
     if (!profile) return;
 
-    const existingChannel = await findNotificationChannelForProfile(
-      profile.id,
-      ChannelType.telegram,
-      chatId
-    );
+    const existingChannel =
+      await notificationChannelRepo().findChannelByProfileId(
+        profile.id,
+        ChannelType.telegram,
+        chatId
+      );
 
     const channelDisplayName =
       ctx.from.username ??
@@ -63,13 +59,14 @@ export const connectUserProfile: Parameters<
       ctx.from.id;
 
     if (existingChannel) {
-      await updateNotificationChannelById(existingChannel.id, {
+      await notificationChannelRepo().updateOne({
+        id: existingChannel.id,
         displayName: channelDisplayName
       });
 
       text = `${profile.displayName}, твой аккаунт уже подключен к этому боту. Данные были обновлены.`;
     } else {
-      await createNotificationChannel({
+      await notificationChannelRepo().setOne({
         profileId: profile.id,
         type: ChannelType.telegram,
         value: chatId,
@@ -84,6 +81,7 @@ export const connectUserProfile: Parameters<
     }
   } catch (err) {
     // todo handle
+    console.log('catched err', err.message);
   }
 
   await ctx.sendMessage(text);
@@ -105,17 +103,17 @@ const buildMessageForSplit = (
 export const sendBirthdayList: Parameters<
   BirthdayTelegramBot['command']
 >[1] = async (ctx) => {
-  const channels = await getNotificationChannels([
-    ['type', '==', ChannelType.telegram],
-    ['value', '==', ctx.chat.id]
-  ]);
+  const channels = await notificationChannelRepo().findMany({
+    where: [
+      ['type', '==', ChannelType.telegram],
+      ['value', '==', ctx.chat.id]
+    ]
+  });
 
   for (const channel of channels) {
-    const birthdays = await getBirthdays([
-      'profileId',
-      '==',
-      channel.profileId
-    ]);
+    const birthdays = await birthdayRepo().findMany({
+      where: [['profileId', '==', channel.profileId]]
+    });
 
     const { todayList, pastList, upcomingList } = splitBirthdays(birthdays);
 
