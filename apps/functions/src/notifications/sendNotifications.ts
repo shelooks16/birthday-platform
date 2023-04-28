@@ -1,12 +1,17 @@
 import { logger } from '../utils/logger';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
 import { fieldDelete } from '../../../../packages/firestore-admin-utils';
-import { FireCollection, NotificationDocument } from '@shared/types';
-import { ChannelType, parseChannel } from '@shared/notification-channels';
+import {
+  ChannelType,
+  FireCollection,
+  NotificationDocument
+} from '@shared/types';
 import { createOnUpdateFunction } from '../utils/createFunction';
 import { sendEmail } from '../email/sendEmail';
 import { mailTemplate } from '../email/templates';
 import { createTelegramBot } from '../telegram/createTelegramBot';
+import { getNotificationChannelById } from '../notificationChannel/queries';
+import { updateNotificationById } from './queries';
 
 export const sendNotification = createOnUpdateFunction(
   FireCollection.notifications.docMatch,
@@ -28,15 +33,22 @@ export const sendNotification = createOnUpdateFunction(
       return;
     }
 
-    let updates: Partial<NotificationDocument>;
+    const channel = await getNotificationChannelById(
+      notificationAfter.notificationChannelId
+    );
 
-    const parsedChannel = parseChannel(notificationAfter.notifyChannel);
+    if (!channel) {
+      logger.info('Exiting. Notification channel does not exist', {
+        notificationChannelId: notificationAfter.notificationChannelId
+      });
+      return;
+    }
 
     try {
-      switch (parsedChannel.type) {
+      switch (channel.type) {
         case ChannelType.email: {
           await sendEmail({
-            to: parsedChannel.id,
+            to: channel.value as string,
             subject: mailTemplate.birthdaySoon.subject(),
             html: mailTemplate.birthdaySoon.html()
           });
@@ -46,7 +58,7 @@ export const sendNotification = createOnUpdateFunction(
           const bot = await createTelegramBot();
 
           await bot.telegram.sendMessage(
-            parsedChannel.id,
+            channel.value,
             `Днюха уже очень скоро ${notificationAfter.sourceBirthdayId}`
           );
 
@@ -56,25 +68,23 @@ export const sendNotification = createOnUpdateFunction(
           const errMessage = 'Unhandled notification channel type';
           logger.warn(errMessage, {
             sendNotificationDocId: notificationAfter.id,
-            channelType: parsedChannel.type
+            channelType: channel.type
           });
           throw new Error(errMessage);
         }
       }
 
-      updates = {
+      await updateNotificationById(notificationAfter.id, {
         isSent: true,
         sentAt: getTimestamp(),
         error: fieldDelete()
-      };
+      });
     } catch (err) {
-      updates = {
+      await updateNotificationById(notificationAfter.id, {
         isSent: false,
         isScheduled: false,
         error: err.message
-      };
+      });
     }
-
-    await change.after.ref.update(updates);
   }
 );

@@ -7,7 +7,8 @@ export interface BirthDate {
 }
 
 export interface BirthdayNotificationSettings {
-  notifyChannels: string[];
+  /** Points to @NotificationChannelDocument */
+  notifyChannelsIds: string[];
   notifyAtBefore: string[];
   timeZone: string;
 }
@@ -17,7 +18,7 @@ export interface BirthdayDocument {
   /**
    * Points to @ProfileDocument
    */
-  userId: string;
+  profileId: string;
   buddyName: string;
   buddyDescription?: string;
   birth: BirthDate;

@@ -14,6 +14,7 @@ initializeApp();
 
 export * from './profile';
 export * from './birthday';
-export * from './notifications';
 export * from './emailVerification';
+export * from './notifications';
+export * from './notificationChannel';
 export * from './telegram';

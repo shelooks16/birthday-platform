@@ -16,8 +16,7 @@ export const getBirthdayDoc = (id: string) => {
 };
 
 export const getBirthdayById = async (id: string) => {
-  return firestore()
-    .doc(FireCollection.birthdays.docPath(id))
+  return getBirthdayDoc(id)
     .get()
     .then((r) => firestoreSnapshotToData<BirthdayDocument>(r));
 };
@@ -31,4 +30,16 @@ export const getBirthdays = async (
   return query
     .get()
     .then((r) => firestoreSnapshotListToData<BirthdayDocument>(r.docs));
+};
+
+export const updateBirthdayById = (
+  id: string,
+  data: Partial<Omit<BirthdayDocument, 'id'>>,
+  batch?: FirebaseFirestore.WriteBatch
+) => {
+  if (batch) {
+    return batch.update(getBirthdayDoc(id), data);
+  }
+
+  return getBirthdayDoc(id).update(data);
 };

@@ -1,16 +1,15 @@
 import * as functions from 'firebase-functions';
 import {
+  ChannelType,
   ConfirmEmailOtpPayload,
   ConfirmEmailOtpResult,
   EmailVerificationDocument,
   FireCollection,
-  ProfileDocument,
+  NotificationChannelDocument,
   SendEmailVerificationPayload,
   SendEmailVerificationResult
 } from '@shared/types';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
-import { arrayUnion } from '@shared/firestore-admin-utils';
-import { emailChannel } from '@shared/notification-channels';
 import {
   createCallableFunction,
   createOnCreateFunction
@@ -18,13 +17,16 @@ import {
 import { requireAuth } from '../utils/auth';
 import { sendEmail } from '../email/sendEmail';
 import { mailTemplate } from '../email/templates';
-import { getProfileById, getProfileDocRef } from '../profile/queries';
 import {
   createEmailVerification,
-  getEmailVerificationDoc,
-  getLatestEmailVerification
+  getLatestEmailVerification,
+  updateEmailVerificationById
 } from './queries';
 import { firestore } from '../firestore';
+import {
+  createNotificationChannel,
+  findNotificationChannelForProfile
+} from '../notificationChannel/queries';
 
 function randomizeInRange(min: number, max: number) {
   const random = Math.random();
@@ -40,20 +42,17 @@ function generateOTP(length = 6, allowedChars = '0123456789') {
   return otp;
 }
 
-async function throwIfAlreadyVerified(userId: string, email: string) {
-  const userProfile = await getProfileById(userId);
+async function throwIfAlreadyVerified(profileId: string, email: string) {
+  const existingChannel = await findNotificationChannelForProfile(
+    profileId,
+    ChannelType.email,
+    email
+  );
 
-  if (!userProfile) {
+  if (existingChannel) {
     throw new functions.https.HttpsError(
       'failed-precondition',
-      'User profile not found'
-    );
-  }
-
-  if (userProfile.verifiedNotifyChannels.includes(emailChannel.make(email))) {
-    throw new functions.https.HttpsError(
-      'failed-precondition',
-      `${email} already verified`
+      `${existingChannel.value} already verified`
     );
   }
 }
@@ -69,7 +68,7 @@ export const sendEmailVerification = createCallableFunction(
     const emailVerificationData: Omit<EmailVerificationDocument, 'id'> = {
       createdAt: getTimestamp(),
       email: data.email,
-      userId: ctx.auth!.uid,
+      profileId: ctx.auth!.uid,
       otp: generateOTP(),
       expiresAt: getTimestamp(expiresAt),
       isSent: false,
@@ -95,10 +94,14 @@ export const processEmailForVerification = createOnCreateFunction(
 
     try {
       await firestore().runTransaction(async (tr) => {
-        const updates: Partial<EmailVerificationDocument> = {
-          isSent: true,
-          sentAt: getTimestamp()
-        };
+        updateEmailVerificationById(
+          verificationDoc.id,
+          {
+            isSent: true,
+            sentAt: getTimestamp()
+          },
+          tr
+        );
 
         await sendEmail({
           to: verificationDoc.email,
@@ -107,11 +110,11 @@ export const processEmailForVerification = createOnCreateFunction(
             otp: verificationDoc.otp
           })
         });
-
-        tr.update(snap.ref, updates);
       });
     } catch (err) {
-      await snap.ref.update({ error: err.message });
+      await updateEmailVerificationById(verificationDoc.id, {
+        error: err.message
+      });
     }
   }
 );
@@ -140,27 +143,32 @@ export const confirmEmailOtp = createCallableFunction(
       throw new functions.https.HttpsError('aborted', 'Expired');
     }
 
-    const profileUpdates: Partial<ProfileDocument> = {
-      verifiedNotifyChannels: arrayUnion<string[]>(
-        emailChannel.make(verification.email)
-      )
-    };
-
-    const verificationUpdates: Partial<EmailVerificationDocument> = {
-      isVerified: true,
-      verifiedAt: getTimestamp()
-    };
-
     const batch = firestore().batch();
 
-    batch.update(getProfileDocRef(verification.userId), profileUpdates);
-    batch.update(getEmailVerificationDoc(verification.id), verificationUpdates);
+    const createdNotificationChannel = createNotificationChannel(
+      {
+        profileId: verification.profileId,
+        type: ChannelType.email,
+        value: verification.email,
+        displayName: verification.email,
+        createdAt: getTimestamp()
+      },
+      batch
+    );
+
+    updateEmailVerificationById(
+      verification.id,
+      {
+        isVerified: true,
+        verifiedAt: getTimestamp()
+      },
+      batch
+    );
 
     await batch.commit();
 
     const result: ConfirmEmailOtpResult = {
-      isVerified: true,
-      email: verification.email
+      channel: createdNotificationChannel as NotificationChannelDocument
     };
 
     return result;

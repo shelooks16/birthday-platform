@@ -60,9 +60,10 @@ export const createOnWriteFunction = (
 
       const changeType = getChangeType(change);
 
-      logger.info(`Document write ${documentPath}`, {
+      logger.info('Document write', {
         changeType,
-        docId: change.after?.id ?? change.before.id
+        docId: change.after?.id ?? change.before.id,
+        documentPath
       });
 
       switch (changeType) {
@@ -90,8 +91,9 @@ export const createOnCreateFunction = (
     .region(REGION)
     .firestore.document(documentPath)
     .onCreate(async (snapshot, ctx) => {
-      logger.info(`Document created ${documentPath}`, {
-        docId: snapshot.id
+      logger.info('Document created', {
+        docId: snapshot.id,
+        documentPath
       });
 
       await handler(snapshot, ctx);
@@ -109,11 +111,32 @@ export const createOnUpdateFunction = (
     .region(REGION)
     .firestore.document(documentPath)
     .onUpdate(async (change, ctx) => {
-      logger.info(`Document updated ${documentPath}`, {
-        docId: change.after.id
+      logger.info('Document updated', {
+        docId: change.after.id,
+        documentPath
       });
 
       await handler(change, ctx);
+    });
+};
+
+export const createOnDeleteFunction = (
+  documentPath: string,
+  handler: (
+    snapshot: functions.firestore.QueryDocumentSnapshot,
+    context: functions.EventContext
+  ) => any
+) => {
+  return functions
+    .region(REGION)
+    .firestore.document(documentPath)
+    .onDelete(async (snapshot, ctx) => {
+      logger.info('Document deleted', {
+        docId: snapshot.id,
+        documentPath
+      });
+
+      await handler(snapshot, ctx);
     });
 };
 

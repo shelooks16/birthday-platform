@@ -1,12 +1,13 @@
 import { DeepKeyOf } from '@shared/typescript-utils';
+import { NotificationChannelDocument } from './notificationChannel.types';
 
 export interface EmailVerificationDocument {
   id: string;
   createdAt: string;
   /**
-   * Points to @NotificationDocument
+   * Points to @ProfileDocument
    */
-  userId: string;
+  profileId: string;
   email: string;
   otp: string;
   expiresAt: string;
@@ -36,6 +37,5 @@ export interface ConfirmEmailOtpPayload {
 }
 
 export interface ConfirmEmailOtpResult {
-  isVerified: boolean;
-  email: string;
+  channel: NotificationChannelDocument;
 }

@@ -6,29 +6,31 @@ export const getProfileDocRef = (id: string) => {
   return firestore().doc(FireCollection.profiles.docPath(id));
 };
 
-export const getProfileById = async (profileId: string) => {
-  return firestore()
-    .doc(FireCollection.profiles.docPath(profileId))
+export const getProfileById = async (id: string) => {
+  return getProfileDocRef(id)
     .get()
     .then((r) => firestoreSnapshotToData<ProfileDocument>(r));
 };
 
 export const updateProfileById = async (
-  profileId: string,
+  id: string,
   data: Partial<Omit<ProfileDocument, 'id'>>
 ) => {
-  return firestore()
-    .doc(FireCollection.profiles.docPath(profileId))
-    .update(data);
+  return getProfileDocRef(id).update(data);
 };
 
-export const createProfile = async (
-  userId: string,
-  data: Omit<ProfileDocument, 'id'>
+export const createProfile = (
+  id: string,
+  data: Omit<ProfileDocument, 'id'>,
+  batch?: FirebaseFirestore.WriteBatch
 ) => {
-  return firestore().doc(FireCollection.profiles.docPath(userId)).set(data);
+  if (batch) {
+    return batch.set(getProfileDocRef(id), data);
+  }
+
+  return getProfileDocRef(id).set(data);
 };
 
-export const deleteProfileById = async (userId: string) => {
-  return firestore().doc(FireCollection.profiles.docPath(userId)).delete();
+export const deleteProfileById = async (id: string) => {
+  return getProfileDocRef(id).delete();
 };

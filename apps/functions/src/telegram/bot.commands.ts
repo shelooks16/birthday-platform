@@ -1,6 +1,14 @@
-import { telegramChannel } from '@shared/notification-channels';
-import { TeleBotStartPayload } from '@shared/types';
-import { getProfileById, updateProfileById } from '../profile/queries';
+import { BirthdayDocumentWithDate, splitBirthdays } from '@shared/birthday';
+import { getTimestamp } from '@shared/firestore-utils';
+import { ChannelType, TeleBotStartPayload } from '@shared/types';
+import { getBirthdays } from '../birthday/queries';
+import {
+  createNotificationChannel,
+  findNotificationChannelForProfile,
+  getNotificationChannels,
+  updateNotificationChannelById
+} from '../notificationChannel/queries';
+import { getProfileById } from '../profile/queries';
 import { BirthdayTelegramBot } from './bot.types';
 
 // https://github.com/telegraf/telegraf/issues/504#issuecomment-1270571923
@@ -12,12 +20,12 @@ const parseStartPayload = (payload: any) => {
 
     const parsed = JSON.parse(payloadStr) as Partial<TeleBotStartPayload>;
 
-    if (!parsed.userId) {
+    if (!parsed.profileId) {
       return null;
     }
 
     const result: TeleBotStartPayload = {
-      userId: parsed.userId
+      profileId: parsed.profileId
     };
 
     return result;
@@ -34,39 +42,97 @@ export const connectUserProfile: Parameters<
   if (!payload) return;
 
   const chatId = ctx.chat.id;
-  const { username } = ctx.from;
+
+  let text = '';
 
   try {
-    const profile = await getProfileById(payload.userId);
+    const profile = await getProfileById(payload.profileId);
 
     if (!profile) return;
 
-    const alreadyConnectedIdx = profile.verifiedNotifyChannels.findIndex(
-      (ch) => telegramChannel.isValid(ch) && ch.includes(chatId.toString())
+    const existingChannel = await findNotificationChannelForProfile(
+      profile.id,
+      ChannelType.telegram,
+      chatId
     );
 
-    const updatedVerifiedChannels = Array.from(profile.verifiedNotifyChannels);
-    const teleChannel = telegramChannel.make(chatId, username);
+    const channelDisplayName =
+      ctx.from.username ??
+      ctx.from.first_name ??
+      ctx.from.last_name ??
+      ctx.from.id;
 
-    let text = '';
+    if (existingChannel) {
+      await updateNotificationChannelById(existingChannel.id, {
+        displayName: channelDisplayName
+      });
 
-    if (alreadyConnectedIdx >= 0) {
-      updatedVerifiedChannels[alreadyConnectedIdx] = teleChannel;
       text = `${profile.displayName}, твой аккаунт уже подключен к этому боту. Данные были обновлены.`;
     } else {
-      updatedVerifiedChannels.push(teleChannel);
+      await createNotificationChannel({
+        profileId: profile.id,
+        type: ChannelType.telegram,
+        value: chatId,
+        displayName: channelDisplayName,
+        createdAt: getTimestamp()
+      });
+
       text =
         `Привет, ${profile.displayName}!\n` +
         'Твой аккаунт теперь подключен к этому боту.\n' +
         'Бот будет отправлять тебе нотификации о днюхах. Помимо нотификаций, бот так же выполняет другие функции.';
     }
-
-    await updateProfileById(payload.userId, {
-      verifiedNotifyChannels: updatedVerifiedChannels
-    });
-
-    await ctx.sendMessage(text);
   } catch (err) {
-    //
+    // todo handle
+  }
+
+  await ctx.sendMessage(text);
+};
+
+const buildMessageForSplit = (
+  title: string,
+  list: BirthdayDocumentWithDate[]
+) => {
+  let message = `-- ${title} --` + '\n';
+
+  list.forEach((b) => {
+    message += `${b.buddyName}` + '\n';
+  });
+
+  return message + '\n';
+};
+
+export const sendBirthdayList: Parameters<
+  BirthdayTelegramBot['command']
+>[1] = async (ctx) => {
+  const channels = await getNotificationChannels([
+    ['type', '==', ChannelType.telegram],
+    ['value', '==', ctx.chat.id]
+  ]);
+
+  for (const channel of channels) {
+    const birthdays = await getBirthdays([
+      'profileId',
+      '==',
+      channel.profileId
+    ]);
+
+    const { todayList, pastList, upcomingList } = splitBirthdays(birthdays);
+
+    let message = '';
+
+    if (todayList.length) {
+      message += buildMessageForSplit('Today', todayList);
+    }
+
+    if (upcomingList.length) {
+      message += buildMessageForSplit('Upcoming', upcomingList);
+    }
+
+    if (pastList.length) {
+      message += buildMessageForSplit('Past', pastList);
+    }
+
+    await ctx.sendMessage(message);
   }
 };

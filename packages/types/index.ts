@@ -2,6 +2,7 @@ export * from './birthday.types';
 export * from './email.types';
 export * from './emailVerification.types';
 export * from './notification.types';
+export * from './notificationChannel.types';
 export * from './profile.types';
 export * from './telegramBot.types';
 
@@ -25,5 +26,10 @@ export const FireCollection = {
     docMatch: 'emailVerification/{id}',
     path: () => 'emailVerification',
     docPath: (id: string) => `emailVerification/${id}`
+  },
+  notificationChannel: {
+    docMatch: 'notificationChannel/{id}',
+    path: () => 'notificationChannel',
+    docPath: (id: string) => `notificationChannel/${id}`
   }
 };

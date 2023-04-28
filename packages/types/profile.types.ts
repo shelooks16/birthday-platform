@@ -4,7 +4,6 @@ export interface ProfileDocument {
   id: string;
   createdAt: string;
   displayName: string;
-  verifiedNotifyChannels: string[];
   timeZone?: string;
   avatar?: string;
 }

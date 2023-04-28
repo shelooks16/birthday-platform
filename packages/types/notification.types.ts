@@ -15,8 +15,14 @@ export interface NotificationDocument {
    * Points to @BirthdayDocument
    */
   sourceBirthdayId: string;
+  /**
+   * Points to @NotificationChannelDocument
+   */
+  notificationChannelId: string;
+  /**
+   * When notification must be sent. ISO format
+   */
   notifyAt: string;
-  notifyChannel: string;
   /**
    * Trigger to send the notification. When changes from `false` to `true`, notification is scheduled for sending
    */

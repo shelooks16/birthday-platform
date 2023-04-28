@@ -1,3 +1,3 @@
 export interface TeleBotStartPayload {
-  userId: string;
+  profileId: string;
 }

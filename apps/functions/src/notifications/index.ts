@@ -1,5 +1,5 @@
 export {
-  setNotifications,
+  onBirthdayWriteSetNotifications,
   setNotificationsForNewYear,
   debugSetNotificationsForNewYear
 } from './setNotifications';

@@ -14,10 +14,10 @@
     "node": "16"
   },
   "dependencies": {
+    "@shared/birthday": "*",
     "@shared/dates": "*",
     "@shared/firestore-admin-utils": "*",
     "@shared/firestore-utils": "*",
-    "@shared/notification-channels": "*",
     "@shared/types": "*",
     "@shared/typescript-utils": "*",
     "firebase-admin": "11.5.0",

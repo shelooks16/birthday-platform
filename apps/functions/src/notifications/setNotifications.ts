@@ -4,8 +4,7 @@ import {
   BirthdayDocument,
   BirthdayNotificationSettings,
   FireCollection,
-  FrequencyUnit,
-  NotificationDocument
+  FrequencyUnit
 } from '@shared/types';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
 import { batchMany } from '@shared/firestore-admin-utils';
@@ -18,7 +17,11 @@ import {
   OnDeleteHandler,
   OnUpdateHandler
 } from '../utils/createFunction';
-import { getNotificationDoc, getNotifications } from './queries';
+import {
+  createNotification,
+  deleteNotificationById,
+  getNotifications
+} from './queries';
 import { getBirthdays } from '../birthday/queries';
 import { firestore } from '../firestore';
 
@@ -82,20 +85,6 @@ export const calculateNotificationTimestamp = (
   return getTimestamp(timestamp);
 };
 
-const deleteNotificationDocsWithinBatch = (
-  batch: FirebaseFirestore.WriteBatch,
-  notificationDocs: NotificationDocument[]
-) => {
-  let count = 0;
-
-  notificationDocs.forEach((doc) => {
-    batch.delete(getNotificationDoc(doc.id));
-    count++;
-  });
-
-  return count;
-};
-
 const createNotificationDocsWithinBatch = async (
   batch: FirebaseFirestore.WriteBatch,
   birthdayId: string,
@@ -108,41 +97,45 @@ const createNotificationDocsWithinBatch = async (
 
   // wth, no wayyyeee
   await Promise.all(
-    notificationSettings.notifyChannels.map(async (channel) => {
-      await Promise.all(
-        notificationSettings.notifyAtBefore.map(async (formula) => {
-          const notifyAt = calculateNotificationTimestamp(
-            birthDate,
-            formula,
-            year,
-            notificationSettings.timeZone
-          );
+    notificationSettings.notifyChannelsIds.map(
+      async (notificationChannelId) => {
+        await Promise.all(
+          notificationSettings.notifyAtBefore.map(async (formula) => {
+            const notifyAt = calculateNotificationTimestamp(
+              birthDate,
+              formula,
+              year,
+              notificationSettings.timeZone
+            );
 
-          if (notifyAt < getTimestamp()) return;
+            if (notifyAt < getTimestamp()) return;
 
-          const data: Omit<NotificationDocument, 'id'> = {
-            sourceBirthdayId: birthdayId,
-            notifyAt,
-            notifyChannel: channel,
-            isScheduled: false,
-            isSent: false
-          };
+            if (checkForDuplicates) {
+              const alreadyExists = await getNotifications(
+                ['notifyAt', '==', notifyAt],
+                ['notificationChannelId', '==', notificationChannelId],
+                ['sourceBirthdayId', '==', birthdayId]
+              ).then((r) => r.length > 0);
 
-          if (checkForDuplicates) {
-            const alreadyExists = await getNotifications(
-              ['notifyAt', '==', data.notifyAt],
-              ['notifyChannel', '==', data.notifyChannel],
-              ['sourceBirthdayId', '==', data.sourceBirthdayId]
-            ).then((r) => r.length > 0);
+              if (alreadyExists) return;
+            }
 
-            if (alreadyExists) return;
-          }
+            createNotification(
+              {
+                sourceBirthdayId: birthdayId,
+                notifyAt,
+                notificationChannelId,
+                isScheduled: false,
+                isSent: false
+              },
+              batch
+            );
 
-          batch.create(getNotificationDoc(), data);
-          count++;
-        })
-      );
-    })
+            count++;
+          })
+        );
+      }
+    )
   );
 
   return count;
@@ -196,8 +189,8 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
   );
 
   const isNotificationChannelsTheSame = isTheSameArr(
-    birthdayBefore.notificationSettings?.notifyChannels,
-    birthdayAfter.notificationSettings?.notifyChannels
+    birthdayBefore.notificationSettings?.notifyChannelsIds,
+    birthdayAfter.notificationSettings?.notifyChannelsIds
   );
 
   const isTimeZoneTheSame =
@@ -232,7 +225,9 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
 
   const batch = firestore().batch();
 
-  deleteNotificationDocsWithinBatch(batch, currentNotifications);
+  currentNotifications.forEach((notification) => {
+    deleteNotificationById(notification.id, batch);
+  });
 
   if (birthdayAfter.notificationSettings) {
     updateCount = await createNotificationDocsWithinBatch(
@@ -267,17 +262,19 @@ const onDelete: OnDeleteHandler = async (docSnap) => {
 
   const batch = firestore().batch();
 
-  const deleteCount = deleteNotificationDocsWithinBatch(batch, notifications);
+  notifications.forEach((notification) => {
+    deleteNotificationById(notification.id, batch);
+  });
 
-  await batch.commit();
+  const batchResult = await batch.commit();
 
   logger.info('Pending notifications deleted for birthday', {
     id,
-    deleteCount
+    deleteCount: batchResult.length
   });
 };
 
-export const setNotifications = createOnWriteFunction(
+export const onBirthdayWriteSetNotifications = createOnWriteFunction(
   FireCollection.birthdays.docMatch,
   {
     onCreate,

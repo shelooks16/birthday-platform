@@ -31,5 +31,27 @@ export const updateNotificationById = async (
   id: string,
   data: Partial<Omit<NotificationDocument, 'id'>>
 ) => {
-  return firestore().doc(FireCollection.notifications.docPath(id)).update(data);
+  return getNotificationDoc(id).update(data);
+};
+
+export const deleteNotificationById = async (
+  id: string,
+  batch?: FirebaseFirestore.WriteBatch
+) => {
+  if (batch) {
+    return batch.delete(getNotificationDoc(id));
+  }
+
+  return getNotificationDoc(id).delete();
+};
+
+export const createNotification = (
+  data: Omit<NotificationDocument, 'id'>,
+  batch?: FirebaseFirestore.WriteBatch
+) => {
+  if (batch) {
+    return batch.set(getNotificationDoc(), data);
+  }
+
+  return getNotificationDoc().set(data);
 };

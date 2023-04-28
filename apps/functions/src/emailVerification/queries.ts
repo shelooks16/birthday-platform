@@ -1,3 +1,4 @@
+import { firestoreSnapshotToData } from '@shared/firestore-utils';
 import {
   EmailVerificationDocument,
   EmailVerificationDocumentField,
@@ -6,28 +7,49 @@ import {
 import { typed } from '@shared/typescript-utils';
 import { firestore } from '../firestore';
 
-export const getEmailVerificationDoc = (id: string) => {
-  return firestore().doc(FireCollection.emailVerification.docPath(id));
+export const getEmailVerificationDoc = (id?: string) => {
+  return id
+    ? firestore().doc(FireCollection.emailVerification.docPath(id))
+    : firestore().collection(FireCollection.emailVerification.path()).doc();
 };
 
 export const createEmailVerification = async (
   data: Omit<EmailVerificationDocument, 'id'>
 ) => {
-  return firestore()
-    .collection(FireCollection.emailVerification.path())
-    .add(data);
+  return getEmailVerificationDoc().set(data);
 };
 
 export const getLatestEmailVerification = async (
-  userId: string,
+  profileId: string,
   email: string
-): Promise<EmailVerificationDocument | null> => {
+) => {
   return firestore()
     .collection(FireCollection.emailVerification.path())
-    .where(typed<EmailVerificationDocumentField>('userId'), '==', userId)
+    .where(typed<EmailVerificationDocumentField>('profileId'), '==', profileId)
     .where(typed<EmailVerificationDocumentField>('email'), '==', email)
     .orderBy(typed<EmailVerificationDocumentField>('createdAt'))
     .limitToLast(1)
     .get()
-    .then((r) => r[0] ?? null);
+    .then((r) =>
+      r.size === 0
+        ? null
+        : firestoreSnapshotToData<EmailVerificationDocument>(r.docs[0])
+    );
+};
+
+export const updateEmailVerificationById = (
+  id: string,
+  data: Partial<Omit<EmailVerificationDocument, 'id'>>,
+  batchOrTransaction?:
+    | FirebaseFirestore.WriteBatch
+    | FirebaseFirestore.Transaction
+) => {
+  if (batchOrTransaction) {
+    return (batchOrTransaction as FirebaseFirestore.WriteBatch).update(
+      getEmailVerificationDoc(id),
+      data
+    );
+  }
+
+  return getEmailVerificationDoc(id).update(data);
 };
