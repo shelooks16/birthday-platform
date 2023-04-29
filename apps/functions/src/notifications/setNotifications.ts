@@ -8,7 +8,6 @@ import {
   NotificationDocument
 } from '@shared/types';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
-import { batchMany } from '@shared/firestore-admin-utils';
 import { getTimezoneOffset } from '@shared/dates';
 import {
   createDebugHttpFn,
@@ -294,10 +293,8 @@ const createNotificationsForNewYear = async () => {
 
   let totalNotificationsCreated = 0;
 
-  await batchMany(
-    notificationRepo().firestoreInstance,
-    birthdays,
-    async (batch, birthday) => {
+  await Promise.all(
+    birthdays.map(async (birthday) => {
       if (birthday.notificationSettings) {
         const notificationDocs = await buildNotificationDocs(
           birthday.id,
@@ -307,12 +304,15 @@ const createNotificationsForNewYear = async () => {
           true
         );
 
+        const batch = notificationRepo().batch();
+
         notificationRepo().atomicSetMany(batch, notificationDocs);
+
+        await batch.commit();
 
         totalNotificationsCreated += notificationDocs.length;
       }
-    },
-    100
+    })
   );
 
   logger.info('Birthdays processed', {
