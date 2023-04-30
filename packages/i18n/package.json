@@ -1,0 +1,13 @@
+{
+  "name": "@shared/i18n",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "dependencies": {
+    "@shared/dates": "*"
+  }
+}
