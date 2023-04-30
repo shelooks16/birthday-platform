@@ -1,7 +1,7 @@
 import { logger } from '../utils/logger';
 import { SendEmailData } from '@shared/types';
 import { isEmulator } from '../utils/emulator';
-import { createEmailCleint } from './emailClient';
+import { createEmailClient } from './emailClient';
 
 export const sendEmail = async (options: SendEmailData) => {
   if (isEmulator) {
@@ -11,7 +11,7 @@ export const sendEmail = async (options: SendEmailData) => {
     return;
   }
 
-  const emailClient = await createEmailCleint();
+  const emailClient = await createEmailClient();
 
   await emailClient.sendMail(options);
 };
