@@ -14,12 +14,12 @@ const parseStartPayload = (payload: any) => {
 
     const parsed = JSON.parse(payloadStr) as Partial<TeleBotStartPayload>;
 
-    if (!parsed.profileId) {
+    if (!parsed.pairingCode) {
       return null;
     }
 
     const result: TeleBotStartPayload = {
-      profileId: parsed.profileId
+      pairingCode: parsed.pairingCode
     };
 
     return result;
@@ -40,7 +40,9 @@ export const connectUserProfile = async (
   let message = '';
 
   try {
-    const profile = await profileRepo().findById(payload.profileId);
+    const profile = await profileRepo().findByBotPairingCode(
+      payload.pairingCode
+    );
 
     if (!profile) return;
 
