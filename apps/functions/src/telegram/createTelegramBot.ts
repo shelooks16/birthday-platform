@@ -1,5 +1,5 @@
 import { secrets } from '../config';
-import { connectUserProfile, sendBirthdayList } from './bot.commands';
+import { connectUserProfile, getBirthdayList } from './bot.commands';
 import { BirthdayTelegramBot } from './bot.types';
 
 let cachedBot: BirthdayTelegramBot;
@@ -7,12 +7,36 @@ let cachedBot: BirthdayTelegramBot;
 export async function createTelegramBot() {
   if (cachedBot) return cachedBot;
 
-  const { Telegraf } = await import('telegraf');
+  const { Telegraf, Markup } = await import('telegraf');
 
   const bot = new Telegraf(secrets.telegram.bot_token);
 
-  bot.start(connectUserProfile);
-  bot.command('birthdays', sendBirthdayList);
+  bot.start(async (ctx) => {
+    const message = await connectUserProfile(
+      ctx.chat.id,
+      ctx.from.username ??
+        ctx.from.first_name ??
+        ctx.from.last_name ??
+        ctx.from.id,
+      ctx.startPayload
+    );
+
+    if (message) {
+      await ctx.sendMessage(message);
+    }
+  });
+  bot.command('birthdays', async (ctx) => {
+    const messages = await getBirthdayList(ctx.chat.id);
+
+    for (const msg of messages) {
+      await ctx.sendMessage(msg);
+    }
+  });
+  bot.on(['message'], (ctx) => {
+    if ('reply_to_message' in ctx.message) {
+      console.log(ctx.message.reply_to_message);
+    }
+  });
 
   // bot.command('remove', (ctx) => {
   //   return ctx.replyWithHTML(

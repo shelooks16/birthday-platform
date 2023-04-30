@@ -4,7 +4,6 @@ import { ChannelType, TeleBotStartPayload } from '@shared/types';
 import { birthdayRepo } from '../birthday/birthday.repository';
 import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
 import { profileRepo } from '../profile/profile.repository';
-import { BirthdayTelegramBot } from './bot.types';
 
 // https://github.com/telegraf/telegraf/issues/504#issuecomment-1270571923
 const parseStartPayload = (payload: any) => {
@@ -29,16 +28,16 @@ const parseStartPayload = (payload: any) => {
   }
 };
 
-export const connectUserProfile: Parameters<
-  BirthdayTelegramBot['start']
->[0] = async (ctx) => {
-  const payload = parseStartPayload(ctx.startPayload);
+export const connectUserProfile = async (
+  chatId: number,
+  channelDisplayName: string,
+  startPayload?: string
+) => {
+  const payload = parseStartPayload(startPayload);
 
   if (!payload) return;
 
-  const chatId = ctx.chat.id;
-
-  let text = '';
+  let message = '';
 
   try {
     const profile = await profileRepo().findById(payload.profileId);
@@ -52,19 +51,13 @@ export const connectUserProfile: Parameters<
         chatId
       );
 
-    const channelDisplayName =
-      ctx.from.username ??
-      ctx.from.first_name ??
-      ctx.from.last_name ??
-      ctx.from.id;
-
     if (existingChannel) {
       await notificationChannelRepo().updateOne({
         id: existingChannel.id,
         displayName: channelDisplayName
       });
 
-      text = `${profile.displayName}, твой аккаунт уже подключен к этому боту. Данные были обновлены.`;
+      message = `${profile.displayName}, твой аккаунт уже подключен к этому боту. Данные были обновлены.`;
     } else {
       await notificationChannelRepo().setOne({
         profileId: profile.id,
@@ -74,17 +67,17 @@ export const connectUserProfile: Parameters<
         createdAt: getTimestamp()
       });
 
-      text =
+      message =
         `Привет, ${profile.displayName}!\n` +
         'Твой аккаунт теперь подключен к этому боту.\n' +
         'Бот будет отправлять тебе нотификации о днюхах. Помимо нотификаций, бот так же выполняет другие функции.';
     }
   } catch (err) {
     // todo handle
-    console.log('catched err', err.message);
+    message = err.message;
   }
 
-  await ctx.sendMessage(text);
+  return message;
 };
 
 const buildMessageForSplit = (
@@ -100,15 +93,15 @@ const buildMessageForSplit = (
   return message + '\n';
 };
 
-export const sendBirthdayList: Parameters<
-  BirthdayTelegramBot['command']
->[1] = async (ctx) => {
+export const getBirthdayList = async (chatId: number) => {
   const channels = await notificationChannelRepo().findMany({
     where: [
       ['type', '==', ChannelType.telegram],
-      ['value', '==', ctx.chat.id]
+      ['value', '==', chatId]
     ]
   });
+
+  const messages: string[] = [];
 
   for (const channel of channels) {
     const birthdays = await birthdayRepo().findMany({
@@ -131,6 +124,8 @@ export const sendBirthdayList: Parameters<
       message += buildMessageForSplit('Past', pastList);
     }
 
-    await ctx.sendMessage(message);
+    messages.push(message);
   }
+
+  return messages;
 };
