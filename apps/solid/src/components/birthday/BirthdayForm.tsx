@@ -38,8 +38,7 @@ import {
   NewBirthdayData
 } from '../../lib/birthday/birthday.service';
 import { BirthdayDocument } from '@shared/types';
-import { groupBy } from '../../lib/array.utils';
-import { capitalizeFirstLetter } from '../../lib/string.utils';
+import { capitalizeFirstLetter, groupBy } from '@shared/general-utils';
 import OptionalTooltip from '../OptionalTooltip';
 import { useNotificationChannelsCtx } from '../../lib/notificationChannel/notificationChannels.context';
 import EditNotificationChannelsBtn from '../notificationChannel/EditNotificationChannelsBtn';
