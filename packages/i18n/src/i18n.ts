@@ -9,6 +9,8 @@ type Cache = {
 export type InitI18nOptions = {
   /** Cache i18n instance, cached per locale */
   cache?: Cache;
+  /** Key to use in cache */
+  cacheKey?: (locale: string) => string;
 };
 
 export const initI18n = <
@@ -27,10 +29,12 @@ export const initI18n = <
   ) => T;
   format: LocaleFormatter;
 } => {
-  const { cache } = options;
+  const { cache, cacheKey: _cacheKey } = options;
+
+  const cacheKey = _cacheKey ? _cacheKey(locale) : 'i18n' + locale;
 
   if (cache) {
-    const existing = cache.get('i18n' + locale);
+    const existing = cache.get(cacheKey);
 
     if (existing) return existing;
   }
@@ -42,7 +46,7 @@ export const initI18n = <
   };
 
   if (cache) {
-    cache.set('i18n' + locale, val);
+    cache.set(cacheKey, val);
   }
 
   return val;

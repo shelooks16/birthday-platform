@@ -48,6 +48,11 @@ export const useI18n = () => useContext(I18nContext);
 export const resolveCurrentLocale = () =>
   localStorage.getItem('locale') || appConfig.defaultLocale;
 
+export const resolveCurrentI18nInstance = () =>
+  MemoryCache.get<
+    ReturnType<typeof initI18n<ITranslationWeb, TranslationKeyWeb>>
+  >('i18n' + resolveCurrentLocale());
+
 const useSettings = () => {
   const [settings, setSettings] = createLocalStorage();
 
@@ -107,7 +112,7 @@ export const I18nProvider: ParentComponent = (props) => {
       {
         zodiacSignList: langDict.zodiacSign
       },
-      { cache: MemoryCache }
+      { cache: MemoryCache, cacheKey: (locale) => 'i18n' + locale }
     );
   });
 
