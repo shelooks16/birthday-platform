@@ -16,7 +16,7 @@ import {
   IconButton,
   Button
 } from '@hope-ui/solid';
-import { IconArrowLeft, IconEmail } from '../Icons';
+import { IconEmail, IconTimes } from '../Icons';
 import { fadeInCss } from '../../lib/stitches.utils';
 import AddEmailChannelBtn from './email/AddEmailChannelBtn';
 import ConnectTelegramBotBtn from './telegram/ConnectTelegramBotBtn';
@@ -82,7 +82,7 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
         title="Remove"
         colorScheme="neutral"
         variant="ghost"
-        icon={<IconArrowLeft fontSize="$lg" />}
+        icon={<IconTimes fontSize="14px" color="$neutral10" />}
         onClick={handleRemoveChannel}
         loading={isLoading()}
       />
