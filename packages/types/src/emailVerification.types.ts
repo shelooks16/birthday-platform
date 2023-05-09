@@ -1,4 +1,4 @@
-import { DeepKeyOf } from '@shared/typescript-utils';
+import { DeepKeyOf } from './typescript.types';
 import { NotificationChannelDocument } from './notificationChannel.types';
 
 export interface EmailVerificationDocument {

@@ -8,6 +8,6 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
-    "@shared/typescript-utils": "*"
+    "@shared/types": "*"
   }
 }

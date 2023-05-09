@@ -1,4 +1,4 @@
-import { DeepKeyOf } from '@shared/typescript-utils';
+import { DeepKeyOf } from '@shared/types';
 import en from './en';
 import ru from './ru';
 import uk from './uk';

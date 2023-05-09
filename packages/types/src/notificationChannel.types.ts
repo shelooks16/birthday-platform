@@ -1,4 +1,4 @@
-import { DeepKeyOf } from '@shared/typescript-utils';
+import { DeepKeyOf } from './typescript.types';
 
 export enum ChannelType {
   email = 'email',

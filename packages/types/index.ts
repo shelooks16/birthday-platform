@@ -1,3 +1,4 @@
+export * from './src/typescript.types';
 export * from './src/birthday.types';
 export * from './src/email.types';
 export * from './src/emailVerification.types';
