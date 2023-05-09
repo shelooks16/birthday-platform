@@ -1,18 +1,18 @@
 import { FireCollectionRepository } from '@shared/firestore-admin-utils';
+import { MemoryCache } from '@shared/memory-cache';
 import {
   EmailVerificationDocument,
   EmailVerificationDocumentField,
   FireCollection
 } from '@shared/types';
 import { firestore } from '../firestore';
-import { withMemoryCache } from '../utils/memoryCache';
 
 export const emailVerificationRepo = () =>
-  withMemoryCache(
+  MemoryCache.getOrSet(
+    FireCollection.emailVerification.docMatch,
     () =>
       new FireCollectionRepository<
         EmailVerificationDocument,
         EmailVerificationDocumentField
-      >(firestore(), FireCollection.emailVerification.path()),
-    FireCollection.emailVerification.docMatch
+      >(firestore(), FireCollection.emailVerification.path())
   );

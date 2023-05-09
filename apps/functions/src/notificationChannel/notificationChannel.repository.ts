@@ -1,4 +1,5 @@
 import { FireCollectionRepository } from '@shared/firestore-admin-utils';
+import { MemoryCache } from '@shared/memory-cache';
 import {
   NotificationChannelDocument,
   NotificationChannelDocumentField,
@@ -6,7 +7,6 @@ import {
   ChannelType
 } from '@shared/types';
 import { firestore } from '../firestore';
-import { withMemoryCache } from '../utils/memoryCache';
 
 class NotificationChannelRepo extends FireCollectionRepository<
   NotificationChannelDocument,
@@ -33,7 +33,7 @@ class NotificationChannelRepo extends FireCollectionRepository<
 }
 
 export const notificationChannelRepo = () =>
-  withMemoryCache(
-    () => new NotificationChannelRepo(firestore()),
-    FireCollection.notificationChannel.docMatch
+  MemoryCache.getOrSet(
+    FireCollection.notificationChannel.docMatch,
+    () => new NotificationChannelRepo(firestore())
   );

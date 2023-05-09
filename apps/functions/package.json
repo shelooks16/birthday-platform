@@ -20,6 +20,7 @@
     "@shared/firestore-utils": "*",
     "@shared/types": "*",
     "@shared/typescript-utils": "*",
+    "@shared/memory-cache": "*",
     "firebase-admin": "11.5.0",
     "firebase-functions": "4.2.1",
     "nodemailer": "^6.9.1",

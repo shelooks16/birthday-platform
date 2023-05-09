@@ -1,11 +1,11 @@
 import { FireCollectionRepository } from '@shared/firestore-admin-utils';
+import { MemoryCache } from '@shared/memory-cache';
 import {
   ProfileDocument,
   ProfileDocumentField,
   FireCollection
 } from '@shared/types';
 import { firestore } from '../firestore';
-import { withMemoryCache } from '../utils/memoryCache';
 
 class ProfileRepo extends FireCollectionRepository<
   ProfileDocument,
@@ -24,7 +24,7 @@ class ProfileRepo extends FireCollectionRepository<
 }
 
 export const profileRepo = () =>
-  withMemoryCache(
-    () => new ProfileRepo(firestore()),
-    FireCollection.profiles.docMatch
+  MemoryCache.getOrSet(
+    FireCollection.profiles.docMatch,
+    () => new ProfileRepo(firestore())
   );
