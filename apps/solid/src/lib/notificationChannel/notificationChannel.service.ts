@@ -1,10 +1,10 @@
+import { FireCollection } from '@shared/firestore-collections';
 import {
   firestoreSnapshotListToData,
   firestoreSnapshotToData
 } from '@shared/firestore-utils';
 import {
   ChannelType,
-  FireCollection,
   NotificationChannelDocument,
   NotificationChannelDocumentField
 } from '@shared/types';

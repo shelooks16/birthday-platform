@@ -2,9 +2,9 @@ import { firestoreSnapshotToData } from '@shared/firestore-utils';
 import {
   BirthdayDocument,
   ChannelType,
-  FireCollection,
   NotificationChannelDocument
 } from '@shared/types';
+import { FireCollection } from '@shared/firestore-collections';
 import { createOnDeleteFunction } from '../utils/createFunction';
 import { logger } from '../utils/logger';
 import { birthdayRepo } from '../birthday/birthday.repository';

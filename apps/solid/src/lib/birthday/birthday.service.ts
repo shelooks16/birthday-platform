@@ -1,3 +1,4 @@
+import { FireCollection } from '@shared/firestore-collections';
 import {
   firestoreSnapshotListToData,
   firestoreSnapshotToData,
@@ -6,7 +7,6 @@ import {
 import {
   BirthdayDocument,
   BirthdayDocumentField,
-  FireCollection,
   GenerateBirthdayWishPayload,
   GenerateBirthdayWishResult
 } from '@shared/types';

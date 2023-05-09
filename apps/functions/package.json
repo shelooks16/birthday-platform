@@ -17,6 +17,7 @@
     "@shared/birthday": "*",
     "@shared/dates": "*",
     "@shared/firestore-admin-utils": "*",
+    "@shared/firestore-collections": "*",
     "@shared/firestore-utils": "*",
     "@shared/types": "*",
     "@shared/typescript-utils": "*",

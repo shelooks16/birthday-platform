@@ -1,11 +1,8 @@
-import { logger } from '../utils/logger';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
-import { fieldDelete } from '../../../../packages/firestore-admin-utils';
-import {
-  ChannelType,
-  FireCollection,
-  NotificationDocument
-} from '@shared/types';
+import { FireCollection } from '@shared/firestore-collections';
+import { fieldDelete } from '@shared/firestore-admin-utils';
+import { ChannelType, NotificationDocument } from '@shared/types';
+import { logger } from '../utils/logger';
 import { createOnUpdateFunction } from '../utils/createFunction';
 import { sendEmail } from '../email/sendEmail';
 import { mailTemplate } from '../email/templates';

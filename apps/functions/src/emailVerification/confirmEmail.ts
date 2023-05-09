@@ -4,11 +4,11 @@ import {
   ConfirmEmailOtpPayload,
   ConfirmEmailOtpResult,
   EmailVerificationDocument,
-  FireCollection,
   NotificationChannelDocument,
   SendEmailVerificationPayload,
   SendEmailVerificationResult
 } from '@shared/types';
+import { FireCollection } from '@shared/firestore-collections';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
 import {
   createCallableFunction,

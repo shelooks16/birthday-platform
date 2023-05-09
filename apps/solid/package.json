@@ -18,6 +18,7 @@
     "@shared/i18n": "*",
     "@shared/dates": "*",
     "@shared/firestore-utils": "*",
+    "@shared/firestore-collections": "*",
     "@shared/types": "*",
     "@shared/typescript-utils": "*",
     "@shared/locales": "*",

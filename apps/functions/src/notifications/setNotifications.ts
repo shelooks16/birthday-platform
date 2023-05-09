@@ -1,14 +1,14 @@
-import { logger } from '../utils/logger';
+import { FireCollection } from '@shared/firestore-collections';
 import {
   BirthDate,
   BirthdayDocument,
   BirthdayNotificationSettings,
-  FireCollection,
   FrequencyUnit,
   NotificationDocument
 } from '@shared/types';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
 import { getTimezoneOffset } from '@shared/dates';
+import { logger } from '../utils/logger';
 import {
   createDebugHttpFn,
   createOnWriteFunction,

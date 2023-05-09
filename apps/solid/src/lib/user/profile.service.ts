@@ -1,5 +1,6 @@
+import { FireCollection } from '@shared/firestore-collections';
 import { firestoreSnapshotToData } from '@shared/firestore-utils';
-import { FireCollection, ProfileDocument } from '@shared/types';
+import { ProfileDocument } from '@shared/types';
 import { asyncLoadFirestore, getAuthUser } from '../firebase';
 
 export const profileService = {

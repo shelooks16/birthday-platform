@@ -1,10 +1,7 @@
 import { FireCollectionRepository } from '@shared/firestore-admin-utils';
+import { FireCollection } from '@shared/firestore-collections';
 import { MemoryCache } from '@shared/memory-cache';
-import {
-  ProfileDocument,
-  ProfileDocumentField,
-  FireCollection
-} from '@shared/types';
+import { ProfileDocument, ProfileDocumentField } from '@shared/types';
 import { firestore } from '../firestore';
 
 class ProfileRepo extends FireCollectionRepository<
