@@ -1,5 +1,5 @@
 {
-  "name": "@shared/typescript-utils",
+  "name": "@shared/general-utils",
   "version": "0.0.0",
   "main": "./index.ts",
   "types": "./index.ts",

@@ -20,7 +20,7 @@
     "@shared/firestore-utils": "*",
     "@shared/firestore-collections": "*",
     "@shared/types": "*",
-    "@shared/typescript-utils": "*",
+    "@shared/general-utils": "*",
     "@shared/locales": "*",
     "@shared/memory-cache": "*",
     "@solid-primitives/storage": "^1.3.9",

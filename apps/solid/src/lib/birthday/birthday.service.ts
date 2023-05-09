@@ -10,7 +10,7 @@ import {
   GenerateBirthdayWishPayload,
   GenerateBirthdayWishResult
 } from '@shared/types';
-import { typed } from '@shared/typescript-utils';
+import { typed } from '@shared/general-utils';
 import { resolveCurrentLocale } from '../../i18n.context';
 import {
   asyncLoadFirestore,

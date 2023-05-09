@@ -8,7 +8,7 @@ import {
   NotificationChannelDocument,
   NotificationChannelDocumentField
 } from '@shared/types';
-import { typed } from '@shared/typescript-utils';
+import { typed } from '@shared/general-utils';
 import { orderBy } from 'firebase/firestore';
 import { asyncLoadFirestore } from '../firebase';
 
