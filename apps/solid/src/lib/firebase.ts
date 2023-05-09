@@ -1,15 +1,13 @@
 import { initializeApp } from 'firebase/app';
 import type { Auth } from 'firebase/auth';
-import type {
-  Firestore,
-  DocumentSnapshot,
-  DocumentData
-} from 'firebase/firestore';
+import type { Firestore } from 'firebase/firestore';
+import type { Functions } from 'firebase/functions';
 
 declare global {
   interface Window {
     __authEmulator__?: boolean;
     __firestoreEmulator__?: boolean;
+    __functionsEmulator__?: boolean;
   }
 }
 
@@ -26,6 +24,7 @@ const firebaseApp = initializeApp({
 
 let cachedAuth: Auth;
 let cachedFirestore: Firestore;
+let cachedFunctions: Functions;
 
 export async function asyncLoadAuth(): Promise<
   [Auth, typeof import('firebase/auth')]
@@ -48,6 +47,16 @@ export async function asyncLoadAuth(): Promise<
   return [cachedAuth, authSDK];
 }
 
+export async function getAuthUser(params?: { throwIfNull: boolean }) {
+  const [auth] = await asyncLoadAuth();
+
+  if (params?.throwIfNull && !auth.currentUser) {
+    throw new Error('User is not logged in');
+  }
+
+  return auth.currentUser;
+}
+
 export async function asyncLoadFirestore(): Promise<
   [Firestore, typeof import('firebase/firestore')]
 > {
@@ -65,4 +74,23 @@ export async function asyncLoadFirestore(): Promise<
   }
 
   return [cachedFirestore, firestoreSDK];
+}
+
+export async function asyncLoadFunctions(): Promise<
+  [Functions, typeof import('firebase/functions')]
+> {
+  const functionsSDK = await import('firebase/functions');
+
+  if (cachedFunctions) {
+    return [cachedFunctions, functionsSDK];
+  }
+
+  cachedFunctions = functionsSDK.getFunctions(firebaseApp, 'europe-west1');
+
+  if (isDev && !window.__functionsEmulator__) {
+    functionsSDK.connectFunctionsEmulator(cachedFunctions, 'localhost', 5001);
+    window.__functionsEmulator__ = true;
+  }
+
+  return [cachedFunctions, functionsSDK];
 }

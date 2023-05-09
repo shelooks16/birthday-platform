@@ -24,9 +24,20 @@ export const MemoryCache = {
 
     return val === undefined ? fallbackValue : val;
   },
-  set: <T>(key: string, value: T): T => {
-    cache.set(key, value);
+  getThenDelete<T>(key: string, fallbackValue?: any): T {
+    const val = this.get<T>(key, fallbackValue);
 
-    return value;
-  }
+    cache.delete(key);
+
+    return val;
+  },
+  set: <T>(key: string, value: T | ((currentValue: T | undefined) => T)): T => {
+    const v = value instanceof Function ? value(cache.get(key)) : value;
+
+    cache.set(key, v);
+
+    return v;
+  },
+  delete: (key: string) => cache.delete(key),
+  has: (key: string) => cache.has(key)
 };

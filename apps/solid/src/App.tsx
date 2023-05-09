@@ -1,28 +1,33 @@
 import { Component, Suspense } from 'solid-js';
-import { A, Router, useRoutes } from '@solidjs/router';
-import { HopeProvider } from '@hope-ui/solid';
+import { Router, useRoutes } from '@solidjs/router';
+import { MetaProvider } from '@solidjs/meta';
+import { ThemeProvider } from './theme';
 import { routes } from './routes';
-import { UserContextProvider } from './user/UserContext';
+import { UserContextProvider } from './lib/user/user.context';
+import { UserProfileContextProvider } from './lib/user/user-profile.context';
+import { I18nProvider } from './i18n.context';
+import PageTitle from './components/PageTitle';
 
 const App: Component = () => {
   const Routes = useRoutes(routes);
 
   return (
-    <Router>
-      <A class="nav" href="/">
-        Home
-      </A>
-      <A class="nav" href="/dash">
-        Dash
-      </A>
-      <Suspense>
-        <HopeProvider>
-          <UserContextProvider>
-            <Routes />
-          </UserContextProvider>
-        </HopeProvider>
-      </Suspense>
-    </Router>
+    <MetaProvider>
+      <I18nProvider>
+        <PageTitle />
+        <Router>
+          <Suspense>
+            <ThemeProvider>
+              <UserContextProvider>
+                <UserProfileContextProvider>
+                  <Routes />
+                </UserProfileContextProvider>
+              </UserContextProvider>
+            </ThemeProvider>
+          </Suspense>
+        </Router>
+      </I18nProvider>
+    </MetaProvider>
   );
 };
 

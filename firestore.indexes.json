@@ -9,12 +9,34 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "userId",
+          "fieldPath": "profileId",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "createdAt",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "notification",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isScheduled",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isSent",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sourceBirthdayId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "notifyAt",
+          "order": "ASCENDING"
         }
       ]
     },

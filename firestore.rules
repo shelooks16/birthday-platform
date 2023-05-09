@@ -5,8 +5,8 @@ service cloud.firestore {
       function isValidNotifyAtBefore(val) {
         return val is list && val.size() >= 1 && val.hasOnly(['30m', '1h', '6h', '1d', '3d', '7d', '1M'])
       }
-      function isValidNotifyChannel(val) {
-        return isNotEmptyString(val, 60) && val.matches('^email[:](.*){0,25}@(.*){0,15}');
+      function isValidNotifyChannel(channelId) {
+        return exists(/databases/$(database)/documents/notificationChannel/$(channelId));
       }
       function isValidNotifyChannels(val) {
         return val is list 
@@ -17,38 +17,67 @@ service cloud.firestore {
           && (val.size() == 5 ? isValidNotifyChannel(val[4]) : true)
           && (val.size() == 6 ? isValidNotifyChannel(val[5]) : true);
       }
+      function validateDoB(val) {
+        return verifyObjectFieldsPresence(val, ['year', 'month', 'day'], [])
+          && val.year < request.time.year() && val.year > 1950
+          && val.month >= 0 && val.month <= 11
+          && val.day > 0 && val.day <= 31;
+      }
       function validateNotificationSettings(val) {
-          return verifyObjectFieldsPresence(val, ['notifyChannels', 'notifyAtBefore', 'timeZone'], [])
-          && isValidNotifyChannels(val.notifyChannels)
+        return val == null ? true : (
+          verifyObjectFieldsPresence(val, ['notifyChannelsIds', 'notifyAtBefore', 'timeZone'], [])
+          && isValidNotifyChannels(val.notifyChannelsIds)
           && isValidNotifyAtBefore(val.notifyAtBefore)
-          && isOptionalNotEmptyString(val.timeZone, 'notifyTimeZone', 30);
+          && isValidString(val.timeZone, 5, 30)
+        );
+      }
+      function validateBuddyName(val) {
+        return isValidString(val, 1, 30);
+      }
+      function validateBuddyDescription(dataObj) {
+        return isOptionalValidString(dataObj, 'buddyDescription', 0, 100)
       }
 
-      // todo validate createdAt, updatedAt
-      allow read: if existingData().userId == request.auth.uid;
+      allow read: if existingData().profileId == request.auth.uid;
+      allow delete: if existingData().profileId == request.auth.uid;
       allow create: if
         verifyFieldsPresence([
-          'userId',
+          'profileId',
           'birth',
           'buddyName',
-          'createdAt',
-          'updatedAt',
-          'notificationSettings'
+          'notificationSettings',
+          'createdAt'
         ], ['buddyDescription']) 
-        && incomingData().userId == request.auth.uid
-        && verifyObjectFieldsPresence(incomingData().birth, ['year', 'month', 'day'], [])
-        && incomingData().birth.year < request.time.year() && incomingData().birth.year > 1950
-        && incomingData().birth.month >= 0 && incomingData().birth.month <= 11
-        && incomingData().birth.day >= 0 && incomingData().birth.day <= 31
-        && isNotEmptyString(incomingData().buddyName, 30)
-        && isOptionalNotEmptyString(incomingData(), 'buddyDescription', 100)
-        && (incomingData().notificationSettings == null
-            ? true 
-            : validateNotificationSettings(incomingData().notificationSettings));
+        && newData().profileId == request.auth.uid
+        && validateDoB(newData().birth)
+        && validateBuddyName(newData().buddyName)
+        && validateBuddyDescription(newData())
+        && validateNotificationSettings(newData().notificationSettings)
+        && isValidTimestamp(newData().createdAt);
+      allow update: if
+        updatingOnlyFields([
+          'birth',
+          'buddyName',
+          'buddyDescription',
+          'notificationSettings'
+        ]) 
+        && existingData().profileId == request.auth.uid
+        && validateDoB(newData().birth)
+        && validateBuddyName(newData().buddyName)
+        && validateBuddyDescription(newData())
+        && validateNotificationSettings(newData().notificationSettings);
     }
 
-    match /profile/{uid} {
-      allow read: if uid == request.auth.uid;
+    match /profile/{id} {
+      allow read: if id == request.auth.uid;
+      allow update: if id == request.auth.uid 
+        && updatingOnlyFields(['timeZone'])
+        && isOptionalValidString(newData(), 'timeZone', 5, 30);
+    }
+
+    match /notificationChannel/{id} {
+      allow read, delete: if existingData().profileId == request.auth.uid;
+      allow create, update: if false;
     }
 
     match /{document=**} {
@@ -56,7 +85,7 @@ service cloud.firestore {
       allow read: if false;
     }
 
-    function incomingData() {
+    function newData() {
       return request.resource.data;
     }
     function existingData() {
@@ -69,11 +98,19 @@ service cloud.firestore {
     function verifyFieldsPresence(requiredFields, optionalFields) {
       return verifyObjectFieldsPresence(request.resource.data, requiredFields, optionalFields);
     }
-    function isNotEmptyString(data, stringSize) {
-      return data is string && data != '' && data.size() <= stringSize;
+    function isValidString(data, minSize, maxSize) {
+      return data is string && data != '' && data.size() >= minSize && data.size() <= maxSize;
     }
-    function isOptionalNotEmptyString(data, field, stringSize) {
-      return data.keys().hasAny([field]) ? isNotEmptyString(data[field], stringSize) : true;
+    function isOptionalValidString(data, field, minSize, maxSize) {
+      return data.keys().hasAny([field]) ? isValidString(data[field], minSize, maxSize) : true;
+    }
+    function updatingOnlyFields(allowedFields) {
+      let affectedKeys = resource.data.diff(request.resource.data).affectedKeys(); 
+    	return affectedKeys.hasOnly(allowedFields);
+    }
+    function isValidTimestamp(value) {
+       // todo write regex to validate ISO format
+      return value is string;
     }
   }
 }
