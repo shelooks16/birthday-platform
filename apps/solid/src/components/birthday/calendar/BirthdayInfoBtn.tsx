@@ -26,6 +26,7 @@ import GenerateBirthdayWishBtn from '../GenerateBirthdayWishBtn';
 import EditBirthdayBtn from '../EditBirthdayBtn';
 import { IconBell } from '../../Icons';
 import { useI18n } from '../../../i18n.context';
+import EnabledNotificationsPreview from '../EnabledNotificationsPreview';
 
 type BirthdayInfoBtnProps = {
   birthday: BirthdayDocument;
@@ -158,16 +159,11 @@ const BirthdayInfoBtn: Component<BirthdayInfoBtnProps> = (props) => {
             <Box fontSize="$xs" mt="$2">
               <HStack gap="$2" alignItems="baseline">
                 <Box>
-                  <IconBell color="$accent9" />
+                  <IconBell color="$neutral10" />
                 </Box>
-                <Box>
-                  <Heading as="h6">
-                    Notifications enabled (
-                    {props.birthday.notificationSettings!.notifyAtBefore.length}
-                    )
-                  </Heading>
-                  <Text>За один день до</Text>
-                </Box>
+                <EnabledNotificationsPreview
+                  notificationSettings={props.birthday.notificationSettings!}
+                />
               </HStack>
             </Box>
           </Show>

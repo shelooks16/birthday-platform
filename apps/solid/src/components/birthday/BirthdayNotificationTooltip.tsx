@@ -1,7 +1,8 @@
-import { Box } from '@hope-ui/solid';
 import OptionalTooltip, { OptionalTooltipProps } from '../OptionalTooltip';
 import { BirthdayNotificationSettings } from '@shared/types';
 import { ParentComponent, splitProps } from 'solid-js';
+import EnabledNotificationsPreview from './EnabledNotificationsPreview';
+import { Box } from '@hope-ui/solid';
 
 export type BirthdayNotificationsTooltipProps = {
   notificationSettings?: BirthdayNotificationSettings | null;
@@ -22,14 +23,12 @@ export const BirthdayNotificationsTooltip: ParentComponent<
       closeOnClick={tooltipProps.closeOnClick ?? false}
       offset={3}
       label={
-        <div>
-          <div>
-            Нотификации включены (
-            {localProps.notificationSettings!.notifyAtBefore.length})
-          </div>
-          <Box mt="$2">За 1 день до</Box>
-          {/* {localProps.notificationSettings.notifyAtBefore} */}
-        </div>
+        <Box maxW="250px">
+          <EnabledNotificationsPreview
+            notificationSettings={localProps.notificationSettings!}
+            inTooltip
+          />
+        </Box>
       }
     >
       {localProps.children}
