@@ -19,7 +19,7 @@
   "devDependencies": {
     "eslint-config-base": "*",
     "prettier": "2.8.7",
-    "turbo": "1.8.6",
+    "turbo": "1.9.3",
     "wait-on": "^7.0.1"
   },
   "engines": {
