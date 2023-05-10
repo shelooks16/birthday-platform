@@ -21,6 +21,7 @@ import { fadeInCss } from '../../lib/stitches.utils';
 import AddEmailChannelBtn from './email/AddEmailChannelBtn';
 import ConnectTelegramBotBtn from './telegram/ConnectTelegramBotBtn';
 import { useNotificationChannelsCtx } from '../../lib/notificationChannel/notificationChannels.context';
+import { getNotificationChannelTypes } from '@shared/static-cms';
 import {
   ChannelType,
   ConfirmEmailOtpResult,
@@ -28,6 +29,7 @@ import {
 } from '@shared/types';
 import { notificationChannelService } from '../../lib/notificationChannel/notificationChannel.service';
 import AddEmailForm from './email/AddEmailForm';
+import { useI18n } from '../../i18n.context';
 
 const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
   props
@@ -108,13 +110,14 @@ type EditNotificationChannelsProps = {
 const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
   props
 ) => {
+  const [i18n] = useI18n();
   const [channelsCtx] = useNotificationChannelsCtx();
   const [currentScreen, setCurrentScreen] = createSignal<ChannelType | null>(
     null
   );
 
   const channelGroups = createMemo(() => {
-    const groups = Object.values(ChannelType).reduce(
+    const groups = getNotificationChannelTypes().reduce(
       (acc, type) => ({ ...acc, [type]: [] }),
       {} as Record<string, NotificationChannelDocument[]>
     );
@@ -159,7 +162,12 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
           {(channelType) => (
             <Box>
               <Heading display="flex" alignItems="center" mb="$1">
-                <IconEmail color="$neutral10" mr="$2" /> {channelType}
+                <IconEmail color="$neutral10" mr="$2" />{' '}
+                {i18n().t(
+                  `notificationChannel.labels.${channelType}` as any,
+                  {},
+                  channelType
+                )}
               </Heading>
 
               <Show

@@ -58,9 +58,9 @@ const BirthdayInfoBtn: Component<BirthdayInfoBtnProps> = (props) => {
       birthDate: i18n().format.dateToDayMonthYear(date),
       zodiacSign: i18n().format.dateToZodiacSign(date),
       daysLeft: i18n().format.dateToDaysDiff(date),
-      age: i18n().format.toAge(
-        localProps.birthday.birth.year,
-        localProps.currentYear
+      age: i18n().format.toPlainTime(
+        localProps.birthday.birth.year - localProps.currentYear,
+        'year'
       )
     };
   });

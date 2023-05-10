@@ -46,9 +46,9 @@ const BirthInfoItem: Component<BirthInfoItemProps> = (props) => {
           fontSize="$xs"
           textTransform="uppercase"
         >
-          {i18n().format.toAge(
-            props.birthday.birth.year,
-            props.targetDate.getFullYear()
+          {i18n().format.toPlainTime(
+            props.targetDate.getFullYear() - props.birthday.birth.year,
+            'year'
           )}
         </Box>
         {/* <Show when={props.birthday.notificationSettings?.notifyAtBefore}>

@@ -22,9 +22,10 @@ const BirthdayListItem: Component<BirthdayListItemProps> = (props) => {
         props.birthday.asDateActiveYear
       ),
       daysLeft: i18n().format.dateToDaysDiff(props.birthday.asDateActiveYear),
-      age: i18n().format.toAge(
-        props.birthday.birth.year,
-        props.birthday.asDateActiveYear.getFullYear()
+      age: i18n().format.toPlainTime(
+        props.birthday.asDateActiveYear.getFullYear() -
+          props.birthday.birth.year,
+        'year'
       )
     };
   });

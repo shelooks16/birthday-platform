@@ -8,6 +8,7 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
-    "@shared/dates": "*"
+    "@shared/dates": "*",
+    "@shared/general-utils": "*"
   }
 }

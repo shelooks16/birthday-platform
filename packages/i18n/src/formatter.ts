@@ -1,4 +1,5 @@
 import { getDateDayDiff } from '@shared/dates';
+import { capitalizeFirstLetter } from '@shared/general-utils';
 
 export type LocaleFormatterExtraOptions = {
   zodiacSignList: string[];
@@ -13,6 +14,7 @@ export class LocaleFormatter {
   private dateMonth: Intl.DateTimeFormat;
   private dateWeekDay: Intl.DateTimeFormat;
   private timeLong: Intl.RelativeTimeFormat;
+  private timeLongNumeric: Intl.RelativeTimeFormat;
 
   constructor(locale: string, private options: LocaleFormatterExtraOptions) {
     this.zodiacSign = new Intl.DateTimeFormat('fr-TN-u-ca-persian', {
@@ -37,6 +39,10 @@ export class LocaleFormatter {
       style: 'long',
       numeric: 'auto'
     });
+    this.timeLongNumeric = new Intl.RelativeTimeFormat(locale, {
+      style: 'long',
+      numeric: 'always'
+    });
 
     this.detectedTimeZone = this.dateDayMonthYear.resolvedOptions().timeZone;
   }
@@ -52,32 +58,32 @@ export class LocaleFormatter {
     return this.dateDayMonth.format(date);
   }
   dateToMonth(date: Date) {
-    // capitalizeFirstLetter
-    return this.dateMonth.format(date);
+    return capitalizeFirstLetter(this.dateMonth.format(date));
   }
   dateToWeekDay(date: Date) {
-    // capitalizeFirstLetter
-    return this.dateWeekDay.format(date);
+    return capitalizeFirstLetter(this.dateWeekDay.format(date));
   }
   dateToZodiacSign(date: Date) {
     const idx = Number(this.zodiacSign.format(date)) - 1;
 
     return this.options.zodiacSignList[idx] || '';
   }
+  /** @examples 'in 30 minutes', 'через 7 лет', 'через 14 років' */
   dateToDaysDiff(date: Date) {
     const days = getDateDayDiff(date);
     const phrase = this.timeLong.format(days, 'day');
 
     return {
       days,
-      phrase
-      // phrase: capitalizeFirstLetter(phrase)
+      phrase: capitalizeFirstLetter(phrase)
     };
   }
-  toAge(birthdayYear: number, currentYear: number) {
-    const age = currentYear - birthdayYear;
-
-    let formatted = this.timeLong.format(age, 'year');
+  /** @examples '30 минут', '7 лет', '14 років' */
+  toPlainTime(
+    value: number,
+    unit: 'year' | 'month' | 'day' | 'hour' | 'minute'
+  ) {
+    let formatted = this.timeLongNumeric.format(value, unit);
     // strip "ago" literal
     formatted = formatted.match(/(\d+\s[^\s]+)/gi)?.[0] || formatted;
 

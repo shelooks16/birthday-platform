@@ -22,7 +22,7 @@ export const initI18n = <
   formatterOptions: LocaleFormatterExtraOptions,
   options: InitI18nOptions = {}
 ): {
-  t: <T>(
+  t: <T = string>(
     key: DictKey,
     params?: Record<string, any>,
     defaultValue?: string

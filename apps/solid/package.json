@@ -23,6 +23,8 @@
     "@shared/general-utils": "*",
     "@shared/locales": "*",
     "@shared/memory-cache": "*",
+    "@shared/static-cms": "*",
+    "@shared/notification": "*",
     "@solid-primitives/storage": "^1.3.9",
     "@solidjs/meta": "^0.28.4",
     "@solidjs/router": "^0.8.2",

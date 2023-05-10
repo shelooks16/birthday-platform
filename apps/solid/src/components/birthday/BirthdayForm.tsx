@@ -31,14 +31,16 @@ import {
   Textarea,
   VStack
 } from '@hope-ui/solid';
+import { BirthdayDocument, NotifyBeforePreset } from '@shared/types';
+import { capitalizeFirstLetter, groupBy } from '@shared/general-utils';
+import { getNotifyBeforePresets } from '@shared/static-cms';
+import { parseNotifyBeforePreset } from '@shared/notification';
 import TimeZonePicker from '../timezone-picker';
 import { useUserProfileCtx } from '../../lib/user/user-profile.context';
 import {
   birthdayService,
   NewBirthdayData
 } from '../../lib/birthday/birthday.service';
-import { BirthdayDocument } from '@shared/types';
-import { capitalizeFirstLetter, groupBy } from '@shared/general-utils';
 import OptionalTooltip from '../OptionalTooltip';
 import { useNotificationChannelsCtx } from '../../lib/notificationChannel/notificationChannels.context';
 import EditNotificationChannelsBtn from '../notificationChannel/EditNotificationChannelsBtn';
@@ -84,7 +86,7 @@ const schema = yup.object({
   month: yup.number().min(0).max(11).required(),
   setupNotifications: yup.boolean().optional().default(false),
   notifyAtBefore: yup
-    .array(yup.string().required())
+    .array(yup.string<NotifyBeforePreset>().required())
     .when('setupNotifications', {
       is: true,
       then: (schema) => schema.required().min(1),
@@ -104,15 +106,6 @@ const schema = yup.object({
   })
 });
 type ISchema = yup.InferType<typeof schema>;
-
-const notifyAtBeforeOptions = ['30m', '1h', '6h', '1d', '3d', '7d'];
-
-// "30 minutes BEFORE",
-// "6 hours BEFORE",
-// "За 1 день до"
-
-// t('fLabel', { numOfDays: 1 });
-// \d+\s[^\s]+
 
 const FormSectionTitle: ParentComponent = (props) => {
   return (
@@ -168,6 +161,18 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
       props.onAfterSubmit?.(createdOrUpdated, values);
     }
   });
+
+  const notifyBeforeOptions = () =>
+    getNotifyBeforePresets().map((preset) => {
+      const { value: unitValue, humanUnit } = parseNotifyBeforePreset(preset);
+
+      return {
+        value: preset,
+        label: i18n().t('notification.notifyBeforePresetLabel', {
+          value: i18n().format.toPlainTime(unitValue, humanUnit)
+        })
+      };
+    });
 
   const channelGroups = createMemo(() =>
     channelsCtx.latest
@@ -333,8 +338,10 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
             onChange={(v) => setFields('notifyAtBefore', v)}
             multiple
           >
-            <For each={notifyAtBeforeOptions}>
-              {(item) => <SimpleOption value={item}>{item}</SimpleOption>}
+            <For each={notifyBeforeOptions()}>
+              {(item) => (
+                <SimpleOption value={item.value}>{item.label}</SimpleOption>
+              )}
             </For>
           </SimpleSelect>
           <FormErrorMessage>{errors('notifyAtBefore')?.[0]}</FormErrorMessage>

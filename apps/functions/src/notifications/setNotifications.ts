@@ -4,10 +4,12 @@ import {
   BirthdayDocument,
   BirthdayNotificationSettings,
   FrequencyUnit,
-  NotificationDocument
+  NotificationDocument,
+  NotifyBeforePreset
 } from '@shared/types';
 import { firestoreSnapshotToData, getTimestamp } from '@shared/firestore-utils';
 import { getTimezoneOffset } from '@shared/dates';
+import { parseNotifyBeforePreset } from '@shared/notification';
 import { logger } from '../utils/logger';
 import {
   createDebugHttpFn,
@@ -30,12 +32,12 @@ const isTheSameArr = (arr1?: any[], arr2?: any[]) =>
 
 export const calculateNotificationTimestamp = (
   birthDate: BirthDate,
-  frequencyFormula: string,
+  notifyBeforePreset: NotifyBeforePreset,
   targetYear: number,
   timeZone: string
 ) => {
-  const unitValue = parseInt(frequencyFormula, 10);
-  const unit = frequencyFormula.replace(/\d/g, '') as FrequencyUnit;
+  const { value: unitValue, frequencyUnit: unit } =
+    parseNotifyBeforePreset(notifyBeforePreset);
 
   const timestamp = new Date(targetYear, birthDate.month, birthDate.day);
 
