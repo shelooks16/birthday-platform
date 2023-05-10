@@ -6,6 +6,7 @@ import PageTitle from '../../components/PageTitle';
 import ViewPicker, { useView } from '../../components/ViewPicker';
 import { ROUTE_PATH } from '../../routes';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
+import NoBirthdaysText from '../../components/birthday/NoBirthdaysText';
 
 const BirthdayCalendar = lazy(
   () => import('../../components/birthday/calendar/BirthdayCalendar')
@@ -35,12 +36,43 @@ const DashBirthday: Component = () => {
         <Show when={birthdayList.latest}>
           <Switch>
             <Match when={view() === 'calendar'}>
-              <Box>
-                <BirthdayCalendar birthdays={birthdayList.latest!} />
+              <Box position="relative">
+                <Box
+                  css={
+                    birthdayList.latest!.length === 0
+                      ? {
+                          opacity: 0.3,
+                          filter: 'blur(4px)'
+                        }
+                      : undefined
+                  }
+                >
+                  <BirthdayCalendar birthdays={birthdayList.latest!} />
+                </Box>
+                <Show when={birthdayList.latest!.length === 0}>
+                  <Box
+                    position="absolute"
+                    w="100%"
+                    h="100%"
+                    top="$10"
+                    left="0"
+                    bottom="0"
+                    right="0"
+                    d="flex"
+                    justifyContent="center"
+                  >
+                    <NoBirthdaysText />
+                  </Box>
+                </Show>
               </Box>
             </Match>
             <Match when={view() === 'list'}>
-              <BirthdayList birthdays={birthdayList.latest!} />
+              <Show
+                when={birthdayList.latest!.length > 0}
+                fallback={<NoBirthdaysText />}
+              >
+                <BirthdayList birthdays={birthdayList.latest!} />
+              </Show>
             </Match>
           </Switch>
         </Show>

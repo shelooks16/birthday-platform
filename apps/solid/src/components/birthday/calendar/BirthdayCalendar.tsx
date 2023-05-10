@@ -34,7 +34,6 @@ import { IconChevronLeft, IconChevronRight } from '../../Icons';
 import MobileInfoBtn from './MobileInfoBtn';
 import { useI18n } from '../../../i18n.context';
 import BirthdayInfoBtnList from './BirthdayInfoBtnList';
-import { appConfig } from '../../../appConfig';
 
 const dayWithBirthday = {
   future: {
