@@ -150,7 +150,8 @@ export const confirmEmailOtp = createCallableFunction(
       type: ChannelType.email,
       value: verification.email,
       displayName: verification.email,
-      createdAt: getTimestamp()
+      createdAt: getTimestamp(),
+      updatedAt: getTimestamp()
     };
 
     notificationChannelRepo().atomicSetOne(batch, createdNotificationChannel);

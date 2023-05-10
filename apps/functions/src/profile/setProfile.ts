@@ -18,7 +18,8 @@ export const createProfileForUser = createAuthFunction(
         type: ChannelType.email,
         value: user.email,
         displayName: user.email,
-        createdAt: getTimestamp()
+        createdAt: getTimestamp(),
+        updatedAt: getTimestamp()
       });
     }
 

@@ -30,9 +30,9 @@ export const notificationChannelService = {
       firestoreSnapshotListToData<NotificationChannelDocument>(r.docs)
     );
   },
-  async $subToLatestChannelCreatedAfter(
+  async $subToLatestChannelSetAfter(
     profileId: string,
-    createdAfter: string,
+    setAfter: string,
     type: ChannelType,
     listener: (notificationChannel: NotificationChannelDocument) => void,
     onError?: (error: Error) => void
@@ -49,12 +49,12 @@ export const notificationChannelService = {
       ),
       where(typed<NotificationChannelDocumentField>('type'), '==', type),
       where(
-        typed<NotificationChannelDocumentField>('createdAt'),
+        typed<NotificationChannelDocumentField>('updatedAt'),
         '>',
-        createdAfter
+        setAfter
       ),
       limitToLast(1),
-      orderBy(typed<NotificationChannelDocumentField>('createdAt'))
+      orderBy(typed<NotificationChannelDocumentField>('updatedAt'))
     );
 
     return onSnapshot(

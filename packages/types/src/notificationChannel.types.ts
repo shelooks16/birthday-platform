@@ -16,6 +16,7 @@ export interface NotificationChannelDocument {
   value: string | number;
   displayName: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export type NotificationChannelDocumentField =

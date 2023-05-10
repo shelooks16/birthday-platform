@@ -56,7 +56,8 @@ export const connectUserProfile = async (
     if (existingChannel) {
       await notificationChannelRepo().updateOne({
         id: existingChannel.id,
-        displayName: channelDisplayName
+        displayName: channelDisplayName,
+        updatedAt: getTimestamp()
       });
 
       message = `${profile.displayName}, твой аккаунт уже подключен к этому боту. Данные были обновлены.`;
@@ -66,7 +67,8 @@ export const connectUserProfile = async (
         type: ChannelType.telegram,
         value: chatId,
         displayName: channelDisplayName,
-        createdAt: getTimestamp()
+        createdAt: getTimestamp(),
+        updatedAt: getTimestamp()
       });
 
       message =

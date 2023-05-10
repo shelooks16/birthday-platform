@@ -40,12 +40,16 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
     const clickedAt = new Date().toISOString();
 
     unsubFromLatestAdded =
-      await notificationChannelService.$subToLatestChannelCreatedAfter(
+      await notificationChannelService.$subToLatestChannelSetAfter(
         profileCtx.profile!.id,
         clickedAt,
         ChannelType.telegram,
-        (createdChannel) => {
-          mutate((chs) => (chs ? chs.concat(createdChannel) : chs));
+        (channel) => {
+          mutate((chs) =>
+            chs && !chs.some((c) => c.id === channel.id)
+              ? chs.concat(channel)
+              : chs
+          );
           unsubFromLatestAdded();
           setShowSnack(true);
         }
