@@ -30,12 +30,16 @@ export const generateBirthdayWish = createCallableFunction(
       birthday!.buddyName
     } in ${langMap[data.language ?? 'en']}`;
 
-    const completionResult = await createCompletion(prompt);
+    try {
+      const completionResult = await createCompletion(prompt);
 
-    const result: GenerateBirthdayWishResult = {
-      text: completionResult[0].text
-    };
+      const result: GenerateBirthdayWishResult = {
+        text: completionResult[0].text
+      };
 
-    return result;
+      return result;
+    } catch (err) {
+      throw new functions.https.HttpsError('unknown', err.message);
+    }
   }
 );

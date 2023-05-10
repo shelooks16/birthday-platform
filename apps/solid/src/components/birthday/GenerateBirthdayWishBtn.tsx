@@ -8,7 +8,8 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalHeader
+  ModalHeader,
+  notificationService
 } from '@hope-ui/solid';
 import { createSignal, ParentComponent, splitProps } from 'solid-js';
 import { birthdayService } from '../../lib/birthday/birthday.service';
@@ -37,15 +38,23 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
   const generate = async () => {
     setIsLoading(true);
 
-    const result = await birthdayService.generateBirthdayWish({
-      birthdayId: localProps.birthdayId
-    });
+    try {
+      const result = await birthdayService.generateBirthdayWish({
+        birthdayId: localProps.birthdayId
+      });
 
-    setText(result.text!);
-    setIsLoading(false);
+      setText(result.text!);
+      setIsLoading(false);
 
-    localProps.onBeforeOpen?.();
-    onOpen();
+      localProps.onBeforeOpen?.();
+      onOpen();
+    } catch (err) {
+      setIsLoading(false);
+      notificationService.show({
+        status: 'danger',
+        title: err.message
+      });
+    }
   };
 
   const handleClose = () => {
