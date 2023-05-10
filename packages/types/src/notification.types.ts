@@ -7,7 +7,14 @@ export enum FrequencyUnit {
   days = 'd'
 }
 
-export type NotifyFrequency = '30m' | '1h' | '6h' | '1d' | '3d' | '7d' | '1M';
+export type NotifyBeforePreset =
+  | '30m'
+  | '1h'
+  | '6h'
+  | '1d'
+  | '3d'
+  | '7d'
+  | '1M';
 
 export interface NotificationDocument {
   id: string;

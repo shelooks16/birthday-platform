@@ -1,3 +1,4 @@
+import { NotifyBeforePreset } from './notification.types';
 import { DeepKeyOf } from './typescript.types';
 
 export interface BirthDate {
@@ -9,7 +10,8 @@ export interface BirthDate {
 export interface BirthdayNotificationSettings {
   /** Points to @NotificationChannelDocument */
   notifyChannelsIds: string[];
-  notifyAtBefore: string[];
+  /** Formula-based value which indicates when to send "birthday-soon" notifications */
+  notifyAtBefore: NotifyBeforePreset[];
   timeZone: string;
 }
 
