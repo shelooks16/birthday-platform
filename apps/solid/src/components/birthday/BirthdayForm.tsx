@@ -32,7 +32,7 @@ import {
   VStack
 } from '@hope-ui/solid';
 import { BirthdayDocument, NotifyBeforePreset } from '@shared/types';
-import { capitalizeFirstLetter, groupBy } from '@shared/general-utils';
+import { groupBy } from '@shared/general-utils';
 import { getNotifyBeforePresets } from '@shared/static-cms';
 import { parseNotifyBeforePreset } from '@shared/notification';
 import TimeZonePicker from '../timezone-picker';
@@ -360,7 +360,11 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
               {(channelType) => (
                 <SelectOptGroup>
                   <SelectLabel>
-                    {capitalizeFirstLetter(channelType)}
+                    {i18n().t(
+                      `notificationChannel.labels.${channelType}` as any,
+                      {},
+                      channelType
+                    )}
                   </SelectLabel>
                   <For each={channelGroups()[channelType]}>
                     {(channel) => (
