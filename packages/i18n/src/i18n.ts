@@ -25,7 +25,7 @@ export const initI18n = <
   t: <T = string>(
     key: DictKey,
     params?: Record<string, any>,
-    defaultValue?: string
+    defaultValue?: any
   ) => T;
   format: LocaleFormatter;
 } => {
@@ -40,7 +40,7 @@ export const initI18n = <
   }
 
   const val = {
-    t: <T>(key: DictKey, params?: Record<string, any>, defaultValue?: string) =>
+    t: <T>(key: DictKey, params?: Record<string, any>, defaultValue?: any) =>
       translate(dictionary, key, params, defaultValue) as T,
     format: new LocaleFormatter(locale, formatterOptions)
   };

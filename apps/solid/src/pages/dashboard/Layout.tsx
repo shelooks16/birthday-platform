@@ -45,48 +45,38 @@ const Header = () => {
   );
 };
 
-type NavLink = {
-  label: string;
-  hrefKey: string;
-};
+const navsList = [
+  ROUTE_PATH.birthday,
+  ROUTE_PATH.addBirthday,
+  ROUTE_PATH.profile
+];
 
 const Navs = () => {
   const location = useLocation();
   const [i18n] = useI18n();
 
-  const findNavLink = (navs: NavLink[], pathname: string) =>
-    navs.find((item) => (ROUTE_PATH as any)[item.hrefKey] === pathname);
-
-  const [activeNavLink, setActiveNavLink] = createSignal(
-    findNavLink(i18n().t<NavLink[]>('dashboard.navs'), location.pathname)
+  const [activeHref, setActiveHref] = createSignal<string | undefined>(
+    navsList.find((href) => href === location.pathname)
   );
 
-  const isActive = (navLink: NavLink) =>
-    activeNavLink()?.hrefKey === navLink.hrefKey;
+  const isActive = (href: string) => activeHref() === href;
+  const getKeyOfHref = (href: string) =>
+    Object.keys(ROUTE_PATH).find((key) => (ROUTE_PATH as any)[key] === href);
 
-  createEffect(
-    on(
-      () => location.pathname,
-      (activePathname) => {
-        setActiveNavLink(
-          findNavLink(i18n().t<NavLink[]>('dashboard.navs'), activePathname)
-        );
-      }
-    )
-  );
+  createEffect(on(() => location.pathname, setActiveHref));
 
   return (
     <HStack gap="$1" justifyContent="center">
-      <For each={i18n().t<NavLink[]>('dashboard.navs')}>
-        {(item) => (
+      <For each={navsList}>
+        {(href) => (
           <Button
             as={A}
-            href={(ROUTE_PATH as any)[item.hrefKey]}
+            href={href}
             fontWeight="$normal"
-            variant={isActive(item) ? 'subtle' : 'ghost'}
+            variant={isActive(href) ? 'subtle' : 'ghost'}
             px={{ '@initial': '$2', '@sm': '$4' }}
             css={
-              !isActive(item)
+              !isActive(href)
                 ? {
                     color: '$neutral11',
                     _hover: {
@@ -101,7 +91,9 @@ const Navs = () => {
                   }
             }
           >
-            {item.label}
+            {i18n()
+              .t<{ hrefKey: string; label: string }[]>('dashboard.navs', {}, [])
+              .find((tt) => getKeyOfHref(href) === tt.hrefKey)?.label ?? href}
           </Button>
         )}
       </For>
