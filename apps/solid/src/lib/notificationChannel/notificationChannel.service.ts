@@ -9,7 +9,6 @@ import {
   NotificationChannelDocumentField
 } from '@shared/types';
 import { typed } from '@shared/general-utils';
-import { orderBy } from 'firebase/firestore';
 import { asyncLoadFirestore } from '../firebase';
 
 export const notificationChannelService = {
@@ -37,7 +36,7 @@ export const notificationChannelService = {
     listener: (notificationChannel: NotificationChannelDocument) => void,
     onError?: (error: Error) => void
   ) {
-    const [db, { collection, query, where, limitToLast, onSnapshot }] =
+    const [db, { collection, query, where, limitToLast, orderBy, onSnapshot }] =
       await asyncLoadFirestore();
 
     const q = query(
