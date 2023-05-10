@@ -16,7 +16,7 @@ import {
   IconButton,
   Button
 } from '@hope-ui/solid';
-import { IconEmail, IconTimes } from '../Icons';
+import { IconArrowLeft, IconEmail, IconTimes } from '../Icons';
 import { fadeInCss } from '../../lib/stitches.utils';
 import AddEmailChannelBtn from './email/AddEmailChannelBtn';
 import ConnectTelegramBotBtn from './telegram/ConnectTelegramBotBtn';
@@ -146,8 +146,16 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
       when={!currentScreen()}
       fallback={
         <Box>
-          <Box mb="$5">
-            <Button onClick={() => setCurrentScreen(null)}>Go back</Button>
+          <Box mb="$4">
+            <Button
+              onClick={() => setCurrentScreen(null)}
+              leftIcon={<IconArrowLeft fontSize="$lg" />}
+              size="sm"
+              variant="outline"
+              colorScheme="neutral"
+            >
+              Back to list
+            </Button>
           </Box>
           <Switch>
             <Match when={currentScreen() === ChannelType.email}>

@@ -97,7 +97,7 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
       <Show
         when={verificationInfo()}
         fallback={
-          <Box css={fadeInCss()}>
+          <Box>
             <form ref={emailForm.form}>
               <FormControl required invalid={!!emailForm.errors('email')}>
                 <FormLabel for="email">Email to add</FormLabel>
@@ -124,18 +124,16 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
           </Box>
         }
       >
-        <Box mb="$2">
-          <Button
-            onClick={handleCancelEmail}
-            variant="ghost"
-            size="sm"
-            display="flex"
-            pl="$0"
-          >
-            <IconArrowLeft fontSize="$xl" />
-            <Box ml="$2">Change email</Box>
-          </Button>
-        </Box>
+        <Button
+          onClick={handleCancelEmail}
+          leftIcon={<IconArrowLeft fontSize="$lg" />}
+          size="sm"
+          variant="outline"
+          colorScheme="neutral"
+          mb="$4"
+        >
+          Change email
+        </Button>
         <Box css={fadeInCss()}>
           <form ref={otpForm.form}>
             <FormControl invalid={!!otpForm.errors('otp')}>
