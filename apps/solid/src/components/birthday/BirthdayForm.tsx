@@ -175,7 +175,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
     });
 
   const channelGroups = createMemo(() =>
-    channelsCtx.latest
+    !channelsCtx.error && channelsCtx.latest?.length
       ? groupBy(channelsCtx.latest, (channel) => channel.type)
       : {}
   );
@@ -200,7 +200,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
   );
 
   createEffect(() => {
-    if (channelsCtx.latest?.length === 0) {
+    if (!channelsCtx.error && channelsCtx.latest?.length === 0) {
       setFields('setupNotifications', false);
     }
   });
@@ -304,7 +304,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
 
       <FormControl invalid={!!errors('setupNotifications')}>
         <OptionalTooltip
-          showWhen={!channelsCtx.latest?.length}
+          showWhen={!channelsCtx.error && !channelsCtx.latest?.length}
           label="Хотя бы 1 канал связи"
           closeOnClick={false}
         >
@@ -315,7 +315,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
               onChange={(ev: any) =>
                 setFields('setupNotifications', ev.target.checked)
               }
-              disabled={!channelsCtx.latest?.length}
+              disabled={!channelsCtx.error && !channelsCtx.latest?.length}
             >
               Окей, я хочу получать уведомления
             </Checkbox>

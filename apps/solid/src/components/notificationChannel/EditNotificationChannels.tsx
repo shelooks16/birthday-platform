@@ -122,7 +122,7 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
       {} as Record<string, NotificationChannelDocument[]>
     );
 
-    if (!channelsCtx.latest) return groups;
+    if (channelsCtx.error || !channelsCtx.latest?.length) return groups;
 
     channelsCtx.latest.forEach((channel) => {
       groups[channel.type].push(channel);
@@ -178,21 +178,23 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
                 )}
               </Heading>
 
-              <Show
-                when={channelsCtx.latest}
-                fallback={<ChannelListSkeleton />}
-              >
-                <Show
-                  when={channelGroups()[channelType].length > 0}
-                  fallback={<div>Nothing added</div>}
-                >
-                  <VStack alignItems="stretch" spacing="$2" css={fadeInCss()}>
-                    <For each={channelGroups()[channelType]}>
-                      {(channel) => <ChannelItem channel={channel} />}
-                    </For>
-                  </VStack>
-                </Show>
-              </Show>
+              <Switch fallback={<ChannelListSkeleton />}>
+                <Match when={channelsCtx.error}>
+                  <Box>{channelsCtx.error.message}</Box>
+                </Match>
+                <Match when={channelsCtx.latest}>
+                  <Show
+                    when={channelGroups()[channelType].length > 0}
+                    fallback={<div>Nothing added</div>}
+                  >
+                    <VStack alignItems="stretch" spacing="$2" css={fadeInCss()}>
+                      <For each={channelGroups()[channelType]}>
+                        {(channel) => <ChannelItem channel={channel} />}
+                      </For>
+                    </VStack>
+                  </Show>
+                </Match>
+              </Switch>
 
               <Box mt="$4">
                 <Switch>

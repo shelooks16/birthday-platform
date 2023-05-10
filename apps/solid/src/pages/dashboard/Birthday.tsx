@@ -33,49 +33,54 @@ const DashBirthday: Component = () => {
       </Box>
 
       <Suspense>
-        <Show when={birthdayList.latest}>
-          <Switch>
-            <Match when={view() === 'calendar'}>
-              <Box position="relative">
-                <Box
-                  css={
-                    birthdayList.latest!.length === 0
-                      ? {
-                          opacity: 0.3,
-                          filter: 'blur(4px)'
-                        }
-                      : undefined
-                  }
-                >
-                  <BirthdayCalendar birthdays={birthdayList.latest!} />
-                </Box>
-                <Show when={birthdayList.latest!.length === 0}>
+        <Switch>
+          <Match when={birthdayList.error}>
+            <Box>{birthdayList.error.message}</Box>
+          </Match>
+          <Match when={birthdayList.latest}>
+            <Switch>
+              <Match when={view() === 'calendar'}>
+                <Box position="relative">
                   <Box
-                    position="absolute"
-                    w="100%"
-                    h="100%"
-                    top="$10"
-                    left="0"
-                    bottom="0"
-                    right="0"
-                    d="flex"
-                    justifyContent="center"
+                    css={
+                      birthdayList.latest!.length === 0
+                        ? {
+                            opacity: 0.3,
+                            filter: 'blur(4px)'
+                          }
+                        : undefined
+                    }
                   >
-                    <NoBirthdaysText />
+                    <BirthdayCalendar birthdays={birthdayList.latest!} />
                   </Box>
+                  <Show when={birthdayList.latest!.length === 0}>
+                    <Box
+                      position="absolute"
+                      w="100%"
+                      h="100%"
+                      top="$10"
+                      left="0"
+                      bottom="0"
+                      right="0"
+                      d="flex"
+                      justifyContent="center"
+                    >
+                      <NoBirthdaysText />
+                    </Box>
+                  </Show>
+                </Box>
+              </Match>
+              <Match when={view() === 'list'}>
+                <Show
+                  when={birthdayList.latest!.length > 0}
+                  fallback={<NoBirthdaysText />}
+                >
+                  <BirthdayList birthdays={birthdayList.latest!} />
                 </Show>
-              </Box>
-            </Match>
-            <Match when={view() === 'list'}>
-              <Show
-                when={birthdayList.latest!.length > 0}
-                fallback={<NoBirthdaysText />}
-              >
-                <BirthdayList birthdays={birthdayList.latest!} />
-              </Show>
-            </Match>
-          </Switch>
-        </Show>
+              </Match>
+            </Switch>
+          </Match>
+        </Switch>
       </Suspense>
     </div>
   );
