@@ -68,6 +68,7 @@ const BirthInfoItem: Component<BirthInfoItemProps> = (props) => {
             </Box>
             <EnabledNotificationsPreview
               notificationSettings={props.birthday.notificationSettings!}
+              eachItemOnNewLine
             />
           </HStack>
         </Box>

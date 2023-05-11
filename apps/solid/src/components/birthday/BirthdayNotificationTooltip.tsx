@@ -27,6 +27,7 @@ export const BirthdayNotificationsTooltip: ParentComponent<
           <EnabledNotificationsPreview
             notificationSettings={localProps.notificationSettings!}
             inTooltip
+            eachItemOnNewLine
           />
         </Box>
       }

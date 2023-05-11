@@ -1,11 +1,15 @@
 import { Box, Heading } from '@hope-ui/solid';
 import { parseNotifyBeforePreset } from '@shared/notification';
-import { BirthdayNotificationSettings } from '@shared/types';
-import { Component } from 'solid-js';
+import {
+  BirthdayNotificationSettings,
+  NotifyBeforePreset
+} from '@shared/types';
+import { Component, For } from 'solid-js';
 import { useI18n } from '../../i18n.context';
 
 type EnabledNotificationsPreviewProps = {
   notificationSettings: BirthdayNotificationSettings;
+  eachItemOnNewLine?: boolean;
   inTooltip?: boolean;
 };
 
@@ -14,15 +18,17 @@ const EnabledNotificationsPreview: Component<
 > = (props) => {
   const [i18n] = useI18n();
 
-  const getPresetTestList = () => {
-    return props.notificationSettings.notifyAtBefore
-      .map((preset) => {
-        const { value: unitValue, humanUnit } = parseNotifyBeforePreset(preset);
+  const getPresetLabel = (preset: NotifyBeforePreset) => {
+    const { value: unitValue, humanUnit } = parseNotifyBeforePreset(preset);
 
-        return i18n().t('notification.notifyBeforePresetLabel', {
-          value: i18n().format.toPlainTime(unitValue, humanUnit)
-        });
-      })
+    return i18n().t('notification.notifyBeforePresetLabel', {
+      value: i18n().format.toPlainTime(unitValue, humanUnit)
+    });
+  };
+
+  const getPresetListAsFlatString = () => {
+    return props.notificationSettings.notifyAtBefore
+      .map((preset) => getPresetLabel(preset))
       .join(', ');
   };
 
@@ -33,7 +39,13 @@ const EnabledNotificationsPreview: Component<
         {props.notificationSettings.notifyAtBefore.length})
       </Heading>
       <Box mt={props.inTooltip ? '$2' : '0'} textTransform="lowercase">
-        {getPresetTestList()}
+        {props.eachItemOnNewLine ? (
+          <For each={props.notificationSettings.notifyAtBefore}>
+            {(preset) => <Box>{getPresetLabel(preset)}</Box>}
+          </For>
+        ) : (
+          getPresetListAsFlatString()
+        )}
       </Box>
     </Box>
   );
