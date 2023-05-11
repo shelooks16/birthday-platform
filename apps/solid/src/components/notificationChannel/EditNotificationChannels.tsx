@@ -16,7 +16,7 @@ import {
   IconButton,
   Button
 } from '@hope-ui/solid';
-import { IconArrowLeft, IconEmail, IconTimes } from '../Icons';
+import { IconArrowLeft, IconTimes } from '../Icons';
 import { fadeInCss } from '../../lib/stitches.utils';
 import AddEmailChannelBtn from './email/AddEmailChannelBtn';
 import ConnectTelegramBotBtn from './telegram/ConnectTelegramBotBtn';
@@ -30,6 +30,7 @@ import {
 import { notificationChannelService } from '../../lib/notificationChannel/notificationChannel.service';
 import AddEmailForm from './email/AddEmailForm';
 import { useI18n } from '../../i18n.context';
+import IconChannelType from '../notification/IconChannelType';
 
 const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
   props
@@ -172,7 +173,11 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
           {(channelType) => (
             <Box>
               <Heading display="flex" alignItems="center" mb="$1">
-                <IconEmail color="$neutral10" mr="$2" />{' '}
+                <IconChannelType
+                  channelType={channelType as ChannelType}
+                  color="$neutral10"
+                  mr="$2"
+                />
                 {i18n().t(
                   `notificationChannel.labels.${channelType}` as any,
                   {},
