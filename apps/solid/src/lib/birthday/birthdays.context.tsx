@@ -17,7 +17,10 @@ export const BirthdaysProvider: ParentComponent = (props) => {
   const [userCtx] = useUserCtx();
   const resourceReturn = createResource(
     () => userCtx.user?.uid,
-    birthdayService.getBirthdaysByProfileId
+    (profileId) =>
+      birthdayService
+        .db()
+        .then((db) => db.findMany({ where: [['profileId', '==', profileId]] }))
   );
 
   return (

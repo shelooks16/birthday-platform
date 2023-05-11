@@ -53,10 +53,14 @@ export function UserProfileContextProvider(props: ParentProps) {
   };
 
   const refetchProfile = async () => {
+    if (!userctx.user) return;
+
     setState('isLoading', true);
 
     try {
-      const p = await profileService.getProfileForCurrentUser();
+      const db = await profileService.db();
+      const p = await db.findById(userctx.user.uid);
+
       setProfile(p, null);
     } catch (err) {
       setProfile(null, err.message);
@@ -68,7 +72,8 @@ export function UserProfileContextProvider(props: ParentProps) {
 
     async function waitForProfile() {
       if (userctx.user) {
-        unsub = await profileService.$subToProfile(
+        const db = await profileService.db();
+        unsub = db.$findById(
           userctx.user.uid,
           (profile) => {
             if (profile) {

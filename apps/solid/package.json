@@ -19,6 +19,7 @@
     "@shared/dates": "*",
     "@shared/firestore-utils": "*",
     "@shared/firestore-collections": "*",
+    "@shared/firestore-web-utils": "*",
     "@shared/types": "*",
     "@shared/general-utils": "*",
     "@shared/locales": "*",

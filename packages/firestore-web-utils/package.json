@@ -1,0 +1,14 @@
+{
+  "name": "@shared/firestore-web-utils",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "dependencies": {
+    "@shared/firestore-utils": "*",
+    "firebase": "9.20.0"
+  }
+}

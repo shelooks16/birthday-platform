@@ -154,9 +154,11 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
         ...(values.description ? { buddyDescription: values.description } : {})
       };
 
+      const db = await birthdayService.db();
+
       const createdOrUpdated = props.birthdayId
-        ? await birthdayService.updateBirthdayById(props.birthdayId, data)
-        : await birthdayService.addNewBirthday(data);
+        ? await db.updateBirthday(props.birthdayId, data)
+        : await db.addNewBirthday(data);
 
       props.onAfterSubmit?.(createdOrUpdated, values);
     }

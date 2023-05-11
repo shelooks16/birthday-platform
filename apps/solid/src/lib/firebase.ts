@@ -39,16 +39,6 @@ export async function asyncLoadAuth(): Promise<
   return [cachedAuth, authSDK];
 }
 
-export async function getAuthUser(params?: { throwIfNull: boolean }) {
-  const [auth] = await asyncLoadAuth();
-
-  if (params?.throwIfNull && !auth.currentUser) {
-    throw new Error('User is not logged in');
-  }
-
-  return auth.currentUser;
-}
-
 export async function asyncLoadFirestore(): Promise<
   [Firestore, typeof import('firebase/firestore')]
 > {

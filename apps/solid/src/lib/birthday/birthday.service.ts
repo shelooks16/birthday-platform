@@ -1,94 +1,74 @@
+import type { Firestore } from 'firebase/firestore';
 import { FireCollection } from '@shared/firestore-collections';
-import {
-  firestoreSnapshotListToData,
-  firestoreSnapshotToData,
-  getTimestamp
-} from '@shared/firestore-utils';
+import { getTimestamp, WithId } from '@shared/firestore-utils';
 import {
   BirthdayDocument,
   BirthdayDocumentField,
   GenerateBirthdayWishPayload,
   GenerateBirthdayWishResult
 } from '@shared/types';
-import { typed } from '@shared/general-utils';
 import { resolveCurrentLocale } from '../../i18n.context';
-import {
-  asyncLoadFirestore,
-  asyncLoadFunctions,
-  getAuthUser
-} from '../firebase';
+import { asyncLoadFirestore, asyncLoadFunctions } from '../firebase';
+import { MemoryCache } from '@shared/memory-cache';
+import { FireWebCollectionRepository } from '@shared/firestore-web-utils';
+import { userService } from '../user/user.service';
 
 export type NewBirthdayData = Pick<
   BirthdayDocument,
   'birth' | 'buddyName' | 'notificationSettings' | 'buddyDescription'
 >;
 
-export const birthdayService = {
+class BirthdayRepo extends FireWebCollectionRepository<
+  BirthdayDocument,
+  BirthdayDocumentField
+> {
+  constructor(
+    firestore: Firestore,
+    firestoreSdk: typeof import('firebase/firestore')
+  ) {
+    super(firestore, firestoreSdk, FireCollection.birthdays.path());
+  }
+
   async addNewBirthday(data: NewBirthdayData): Promise<BirthdayDocument> {
-    const currentUser = await getAuthUser({ throwIfNull: true });
-    const [db, { addDoc, collection }] = await asyncLoadFirestore();
-    const createdAt = getTimestamp();
+    const user = await userService.getAuthUser({ throwIfNull: true });
 
-    const entry: Omit<BirthdayDocument, 'id'> = {
+    const entry: BirthdayDocument = {
       ...data,
-      profileId: currentUser!.uid,
-      createdAt
+      id: this.getRandomDocId(),
+      createdAt: getTimestamp(),
+      profileId: user!.uid
     };
 
-    const docRef = await addDoc(
-      collection(db, FireCollection.birthdays.path()),
-      entry
-    );
+    await this.setOne(entry);
 
-    return {
-      ...entry,
-      id: docRef.id
-    };
-  },
-  async updateBirthdayById(
+    return entry;
+  }
+
+  async updateBirthday(
     id: string,
     data: NewBirthdayData
   ): Promise<BirthdayDocument> {
-    const [db, { updateDoc, doc, deleteField, getDoc }] =
-      await asyncLoadFirestore();
+    const { deleteField } = this.firestoreInstance.firestoreSdk;
 
-    const updates: NewBirthdayData = {
+    const updates: WithId<NewBirthdayData> = {
       ...data,
+      id,
       buddyDescription: data.buddyDescription || (deleteField() as any)
     };
 
-    const docRef = doc(db, FireCollection.birthdays.docPath(id));
+    await this.updateOne(updates);
 
-    await updateDoc(docRef, updates);
+    return this.findById(id) as unknown as BirthdayDocument;
+  }
+}
 
-    return getDoc(docRef).then(
-      (r) => firestoreSnapshotToData<BirthdayDocument>(r)!
-    );
-  },
-  async deleteBirthdayById(id: string) {
-    const [db, { deleteDoc, doc }] = await asyncLoadFirestore();
+export const birthdayService = {
+  async db() {
+    return MemoryCache.getOrSet(FireCollection.birthdays.docMatch, async () => {
+      const [firestore, sdk] = await asyncLoadFirestore();
 
-    const docRef = doc(db, FireCollection.birthdays.docPath(id));
-
-    await deleteDoc(docRef);
-  },
-  async getBirthdaysByProfileId(id: string) {
-    const [db, { collection, query, where, getDocs }] =
-      await asyncLoadFirestore();
-
-    const q = query(
-      collection(db, FireCollection.birthdays.path()),
-      where(typed<BirthdayDocumentField>('profileId'), '==', id)
-    );
-
-    return getDocs(q).then((r) =>
-      firestoreSnapshotListToData<BirthdayDocument>(r.docs)
-    );
-  },
-  async getBirthdaysForCurrentuser() {
-    const currentUser = await getAuthUser({ throwIfNull: true });
-
-    return birthdayService.getBirthdaysByProfileId(currentUser!.uid);
+      return new BirthdayRepo(firestore, sdk);
+    });
   },
   async generateBirthdayWish(
     payload: Omit<GenerateBirthdayWishPayload, 'language'>

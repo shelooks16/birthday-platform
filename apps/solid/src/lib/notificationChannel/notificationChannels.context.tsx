@@ -18,7 +18,10 @@ export const NotificationChannelsProvider: ParentComponent = (props) => {
   const [userCtx] = useUserCtx();
   const resourceReturn = createResource(
     () => userCtx.user?.uid,
-    notificationChannelService.getChannelsByProfileId
+    (profileId) =>
+      notificationChannelService
+        .db()
+        .then((db) => db.findMany({ where: [['profileId', '==', profileId]] }))
   );
 
   return (
