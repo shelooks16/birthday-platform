@@ -8,9 +8,12 @@ import {
   GenerateBirthdayWishResult
 } from '@shared/types';
 import { resolveCurrentLocale } from '../../i18n.context';
-import { asyncLoadFirestore, asyncLoadFunctions } from '../firebase';
+import { asyncLoadFirestore, asyncLoadFunctions } from '../firebase/loaders';
 import { MemoryCache } from '@shared/memory-cache';
-import { FireWebCollectionRepository } from '@shared/firestore-web-utils';
+import {
+  FirestoreSdk,
+  FireWebCollectionRepository
+} from '@shared/firestore-web-utils';
 import { userService } from '../user/user.service';
 
 export type NewBirthdayData = Pick<
@@ -18,14 +21,14 @@ export type NewBirthdayData = Pick<
   'birth' | 'buddyName' | 'notificationSettings' | 'buddyDescription'
 >;
 
+type BirthdayRepoFireSdk = FirestoreSdk &
+  Pick<typeof import('firebase/firestore'), 'deleteField'>;
+
 class BirthdayRepo extends FireWebCollectionRepository<
   BirthdayDocument,
   BirthdayDocumentField
 > {
-  constructor(
-    firestore: Firestore,
-    firestoreSdk: typeof import('firebase/firestore')
-  ) {
+  constructor(firestore: Firestore, firestoreSdk: BirthdayRepoFireSdk) {
     super(firestore, firestoreSdk, FireCollection.birthdays.path());
   }
 
@@ -48,7 +51,7 @@ class BirthdayRepo extends FireWebCollectionRepository<
     id: string,
     data: NewBirthdayData
   ): Promise<BirthdayDocument> {
-    const { deleteField } = this.firestoreInstance.firestoreSdk;
+    const { deleteField } = this.firestoreSdk as BirthdayRepoFireSdk;
 
     const updates: WithId<NewBirthdayData> = {
       ...data,
@@ -65,7 +68,7 @@ class BirthdayRepo extends FireWebCollectionRepository<
 export const birthdayService = {
   async db() {
     return MemoryCache.getOrSet(FireCollection.birthdays.docMatch, async () => {
-      const [firestore, sdk] = await asyncLoadFirestore();
+      const { firestore, ...sdk } = await asyncLoadFirestore();
 
       return new BirthdayRepo(firestore, sdk);
     });
@@ -73,7 +76,7 @@ export const birthdayService = {
   async generateBirthdayWish(
     payload: Omit<GenerateBirthdayWishPayload, 'language'>
   ) {
-    const [functions, { httpsCallable }] = await asyncLoadFunctions();
+    const { functions, httpsCallable } = await asyncLoadFunctions();
 
     const sendGenerateBirthdayWish = httpsCallable<
       GenerateBirthdayWishPayload,

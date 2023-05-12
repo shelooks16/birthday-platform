@@ -4,11 +4,11 @@ import {
   SendEmailVerificationPayload,
   SendEmailVerificationResult
 } from '@shared/types';
-import { asyncLoadFunctions } from '../firebase';
+import { asyncLoadFunctions } from '../firebase/loaders';
 
 export const channelService = {
   async sendEmailVerification(payload: SendEmailVerificationPayload) {
-    const [functions, { httpsCallable }] = await asyncLoadFunctions();
+    const { functions, httpsCallable } = await asyncLoadFunctions();
 
     const sendVerification = httpsCallable<
       SendEmailVerificationPayload,
@@ -18,7 +18,7 @@ export const channelService = {
     return sendVerification(payload).then((result) => result.data);
   },
   async confirmEmailOtp(payload: ConfirmEmailOtpPayload) {
-    const [functions, { httpsCallable }] = await asyncLoadFunctions();
+    const { functions, httpsCallable } = await asyncLoadFunctions();
 
     const sendGuess = httpsCallable<
       ConfirmEmailOtpPayload,

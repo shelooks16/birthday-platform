@@ -13,6 +13,23 @@ import {
   WhereClause
 } from '@shared/firestore-utils';
 
+export type FirestoreSdk = Pick<
+  typeof import('firebase/firestore'),
+  | 'doc'
+  | 'collection'
+  | 'getDoc'
+  | 'onSnapshot'
+  | 'query'
+  | 'where'
+  | 'orderBy'
+  | 'limit'
+  | 'limitToLast'
+  | 'getDocs'
+  | 'setDoc'
+  | 'updateDoc'
+  | 'deleteDoc'
+>;
+
 export type FindManyWebOptions<FieldType extends string> = {
   where?: WhereClause<FieldType>[];
   orderBy?: {
@@ -30,7 +47,7 @@ export class FireWebCollectionRepository<
 
   constructor(
     protected firestore: Firestore,
-    protected firestoreSdk: typeof import('firebase/firestore'),
+    protected firestoreSdk: FirestoreSdk,
     collectionName: string
   ) {
     const { collection } = firestoreSdk;

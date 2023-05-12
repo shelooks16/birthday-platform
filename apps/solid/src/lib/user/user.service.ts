@@ -6,11 +6,11 @@ import type {
   UserCredential
 } from 'firebase/auth';
 import { isMobileView } from '../browser';
-import { asyncLoadAuth } from '../firebase';
+import { asyncLoadAuth } from '../firebase/loaders';
 
 export const userService = {
   async getAuthUser(params?: { throwIfNull: boolean }) {
-    const [auth] = await asyncLoadAuth();
+    const { auth } = await asyncLoadAuth();
 
     if (params?.throwIfNull && !auth.currentUser) {
       throw new Error('User is not logged in');
@@ -19,7 +19,7 @@ export const userService = {
     return auth.currentUser;
   },
   async signinWithGoogle() {
-    const [auth, { signInWithRedirect, signInWithPopup, GoogleAuthProvider }] =
+    const { auth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } =
       await asyncLoadAuth();
 
     const login = isMobileView() ? signInWithRedirect : signInWithPopup;
@@ -31,22 +31,22 @@ export const userService = {
     error?: ErrorFn,
     completed?: CompleteFn
   ) {
-    const [auth] = await asyncLoadAuth();
+    const { auth } = await asyncLoadAuth();
 
     return auth.onAuthStateChanged(nextOrObserver, error, completed);
   },
   async signOut() {
-    const [auth] = await asyncLoadAuth();
+    const { auth } = await asyncLoadAuth();
 
     return auth.signOut();
   },
   async getRedirectResult() {
-    const [auth, { getRedirectResult }] = await asyncLoadAuth();
+    const { auth, getRedirectResult } = await asyncLoadAuth();
 
     return getRedirectResult(auth);
   },
   async getAdditionalUserInfo(credential: UserCredential) {
-    const [, { getAdditionalUserInfo }] = await asyncLoadAuth();
+    const { getAdditionalUserInfo } = await asyncLoadAuth();
 
     return getAdditionalUserInfo(credential);
   }

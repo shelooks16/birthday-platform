@@ -3,7 +3,7 @@ import {
   NotificationChannelDocument,
   NotificationChannelDocumentField
 } from '@shared/types';
-import { asyncLoadFirestore } from '../firebase';
+import { asyncLoadFirestore } from '../firebase/loaders';
 import { MemoryCache } from '@shared/memory-cache';
 import { FireWebCollectionRepository } from '@shared/firestore-web-utils';
 
@@ -12,7 +12,7 @@ export const notificationChannelService = {
     return MemoryCache.getOrSet(
       FireCollection.notificationChannel.docMatch,
       async () => {
-        const [firestore, sdk] = await asyncLoadFirestore();
+        const { firestore, ...sdk } = await asyncLoadFirestore();
 
         return new FireWebCollectionRepository<
           NotificationChannelDocument,
