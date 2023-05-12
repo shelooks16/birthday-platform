@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "lint": "eslint --ext .tsx ."
+    "lint": "eslint --ext .tsx .",
+    "analyze": "npx vite-bundle-visualizer"
   },
   "license": "MIT",
   "dependencies": {
