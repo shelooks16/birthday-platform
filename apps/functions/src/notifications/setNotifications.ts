@@ -85,6 +85,7 @@ export const calculateNotificationTimestamp = (
 const buildNotificationDocs = async (
   birthdayId: string,
   birthDate: BirthDate,
+  profileId: string,
   notificationSettings: BirthdayNotificationSettings,
   year: number,
   checkForDuplicates = false
@@ -122,7 +123,9 @@ const buildNotificationDocs = async (
             }
 
             docs.push({
+              createdAt: getTimestamp(),
               sourceBirthdayId: birthdayId,
+              profileId,
               notifyAt,
               notificationChannelId,
               isScheduled: false,
@@ -139,7 +142,7 @@ const buildNotificationDocs = async (
 
 const onCreate: OnCreateHandler = async (docSnap) => {
   const birthdayDoc = firestoreSnapshotToData<BirthdayDocument>(docSnap)!;
-  const { id, notificationSettings, birth } = birthdayDoc;
+  const { id, notificationSettings, birth, profileId } = birthdayDoc;
 
   if (!notificationSettings) {
     logger.info('Exiting. Birthday comes without notifications', {
@@ -155,6 +158,7 @@ const onCreate: OnCreateHandler = async (docSnap) => {
   const notificationDocs = await buildNotificationDocs(
     id,
     birth,
+    profileId,
     notificationSettings,
     new Date().getFullYear()
   );
@@ -229,6 +233,7 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
     const notificationDocs = await buildNotificationDocs(
       birthdayAfter.id,
       birthdayAfter.birth,
+      birthdayAfter.profileId,
       birthdayAfter.notificationSettings,
       new Date().getFullYear()
     );
@@ -301,6 +306,7 @@ const createNotificationsForNewYear = async () => {
         const notificationDocs = await buildNotificationDocs(
           birthday.id,
           birthday.birth,
+          birthday.profileId,
           birthday.notificationSettings,
           targetYear,
           true

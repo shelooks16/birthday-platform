@@ -12,11 +12,18 @@ export class LocaleFormatter {
   private dateDayMonthYear: Intl.DateTimeFormat;
   private dateDayMonth: Intl.DateTimeFormat;
   private dateMonth: Intl.DateTimeFormat;
+  private dateMonthYear: Intl.DateTimeFormat;
+  private dateMonthYearWithTzArr: Intl.DateTimeFormat[];
   private dateWeekDay: Intl.DateTimeFormat;
+  private dateDayMonthTime: Intl.DateTimeFormat;
+  private dateDayMonthTimeWithTzArr: Intl.DateTimeFormat[];
   private timeLong: Intl.RelativeTimeFormat;
   private timeLongNumeric: Intl.RelativeTimeFormat;
 
-  constructor(locale: string, private options: LocaleFormatterExtraOptions) {
+  constructor(
+    private locale: string,
+    private options: LocaleFormatterExtraOptions
+  ) {
     this.zodiacSign = new Intl.DateTimeFormat('fr-TN-u-ca-persian', {
       month: 'numeric'
     });
@@ -43,6 +50,10 @@ export class LocaleFormatter {
       style: 'long',
       numeric: 'always'
     });
+    this.dateDayMonthTime = this.buildDateDayMonthTime();
+    this.dateDayMonthTimeWithTzArr = [];
+    this.dateMonthYear = this.buildDateMonthYear();
+    this.dateMonthYearWithTzArr = [];
 
     this.detectedTimeZone = this.dateDayMonthYear.resolvedOptions().timeZone;
   }
@@ -57,6 +68,47 @@ export class LocaleFormatter {
   dateToDayMonth(date: Date) {
     return this.dateDayMonth.format(date);
   }
+  dateToDayMonthTime(
+    date: Date,
+    /** If passed, formatted date will show time in timezone */
+    timeZone?: string
+  ) {
+    if (!timeZone) {
+      return this.dateDayMonthTime.format(date);
+    }
+
+    let withTzFormatter = this.dateDayMonthTimeWithTzArr.find(
+      (f) => f.resolvedOptions().timeZone === timeZone
+    );
+
+    if (!withTzFormatter) {
+      withTzFormatter = this.buildDateDayMonthTime(timeZone);
+
+      this.dateDayMonthTimeWithTzArr.push(withTzFormatter);
+    }
+
+    return withTzFormatter.format(date);
+  }
+  dateToMonthYear(
+    date: Date,
+    /** Format value according to timezone */
+    timeZone?: string
+  ) {
+    if (!timeZone) {
+      return capitalizeFirstLetter(this.dateMonthYear.format(date));
+    }
+
+    let withTzFormatter = this.dateMonthYearWithTzArr.find(
+      (f) => f.resolvedOptions().timeZone === timeZone
+    );
+
+    if (!withTzFormatter) {
+      withTzFormatter = this.buildDateMonthYear(timeZone);
+      this.dateMonthYearWithTzArr.push(withTzFormatter);
+    }
+
+    return capitalizeFirstLetter(withTzFormatter.format(date));
+  }
   dateToMonth(date: Date) {
     return capitalizeFirstLetter(this.dateMonth.format(date));
   }
@@ -68,7 +120,7 @@ export class LocaleFormatter {
 
     return this.options.zodiacSignList[idx] || '';
   }
-  /** @examples 'in 30 minutes', 'через 7 лет', 'через 14 років' */
+  /** @examples 'in 30 days', 'через 2 дня', 'через 1 рік' */
   dateToDaysDiff(date: Date) {
     const days = getDateDayDiff(date);
     const phrase = this.timeLong.format(days, 'day');
@@ -88,5 +140,25 @@ export class LocaleFormatter {
     formatted = formatted.match(/(\d+\s[^\s]+)/gi)?.[0] || formatted;
 
     return formatted;
+  }
+
+  private buildDateDayMonthTime(timeZone?: string) {
+    return new Intl.DateTimeFormat(this.locale, {
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      timeZoneName: 'shortGeneric',
+      hour12: false,
+      timeZone
+    });
+  }
+
+  private buildDateMonthYear(timeZone?: string) {
+    return new Intl.DateTimeFormat(this.locale, {
+      month: 'long',
+      year: 'numeric',
+      timeZone
+    });
   }
 }

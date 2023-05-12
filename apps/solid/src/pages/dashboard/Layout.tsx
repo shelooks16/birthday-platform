@@ -45,11 +45,7 @@ const Header = () => {
   );
 };
 
-const navsList = [
-  ROUTE_PATH.birthday,
-  ROUTE_PATH.addBirthday,
-  ROUTE_PATH.profile
-];
+const navsList = [ROUTE_PATH.birthday, ROUTE_PATH.profile];
 
 const Navs = () => {
   const location = useLocation();

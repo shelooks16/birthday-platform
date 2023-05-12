@@ -1,14 +1,17 @@
-import { notificationService } from '@hope-ui/solid';
+import { Box, IconButton, notificationService } from '@hope-ui/solid';
 import { BirthdayDocument } from '@shared/types';
+import { A } from '@solidjs/router';
 import { Component } from 'solid-js';
 import BirthdayForm from '../../components/birthday/BirthdayForm';
+import { IconArrowLeft } from '../../components/Icons';
 import PageTitle from '../../components/PageTitle';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
+import { ROUTE_PATH } from '../../routes';
 
 const DashAddBirthday: Component = () => {
   const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
 
-  const handleOnAfterSubmitForm = (createdBirthday: BirthdayDocument) => {
+  const handleOnAfterAdded = (createdBirthday: BirthdayDocument) => {
     mutateBirthdays((val) => (val ? val.concat(createdBirthday) : val));
 
     notificationService.show({
@@ -20,7 +23,18 @@ const DashAddBirthday: Component = () => {
   return (
     <div>
       <PageTitle>Add new birthday</PageTitle>
-      <BirthdayForm onAfterSubmit={handleOnAfterSubmitForm} />
+      <Box textAlign="center" mb="$2">
+        <IconButton
+          aria-label="dsa"
+          variant="ghost"
+          colorScheme="neutral"
+          rounded="$full"
+          icon={<IconArrowLeft fontSize="$xl" />}
+          as={A}
+          href={ROUTE_PATH.birthday}
+        />
+      </Box>
+      <BirthdayForm onAfterSubmit={handleOnAfterAdded} />
     </div>
   );
 };

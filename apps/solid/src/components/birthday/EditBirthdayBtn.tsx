@@ -10,9 +10,9 @@ import {
   IconButtonProps,
   notificationService
 } from '@hope-ui/solid';
-import { Drawer, DrawerOverlay } from '../Modal';
-import { BirthdayDocument } from '@shared/types';
 import { Component, splitProps } from 'solid-js';
+import { BirthdayDocument } from '@shared/types';
+import { Drawer, DrawerOverlay } from '../Modal';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 import { waitForDrawerAnimation } from '../../lib/stitches.utils';
 import { IconEdit } from '../Icons';
@@ -25,7 +25,7 @@ type EditBirthdayBtnProps = Omit<
 > & {
   birthday: BirthdayDocument;
   onBeforeOpen?: () => any;
-  onAfterClose?: () => any;
+  onAfterClose?: (isBirthdayAffected: boolean) => any;
 };
 
 const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
@@ -43,14 +43,14 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
     onOpen();
   };
 
-  const handleClose = async () => {
+  const handleClose = async (isAffected = false) => {
     onClose();
     await waitForDrawerAnimation();
-    localProps.onAfterClose?.();
+    localProps.onAfterClose?.(isAffected);
   };
 
-  const handleOnAfterAdded = async (updatedBirthday: BirthdayDocument) => {
-    await handleClose();
+  const handleOnAfterUpdated = async (updatedBirthday: BirthdayDocument) => {
+    await handleClose(true);
 
     mutateBirthdays((list) =>
       list
@@ -67,7 +67,7 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
   };
 
   const handleOnAfterDeleted = async (deletedBirthday: BirthdayDocument) => {
-    await handleClose();
+    await handleClose(true);
 
     mutateBirthdays((list) =>
       list ? list.filter((item) => item.id !== deletedBirthday.id) : list
@@ -120,7 +120,7 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
                   localProps.birthday.notificationSettings?.notifyChannelsIds,
                 timeZone: localProps.birthday.notificationSettings?.timeZone
               }}
-              onAfterSubmit={handleOnAfterAdded}
+              onAfterSubmit={handleOnAfterUpdated}
             />
 
             <Box textAlign="center" mt="$12">

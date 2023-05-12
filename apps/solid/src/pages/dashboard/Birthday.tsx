@@ -14,6 +14,9 @@ const BirthdayCalendar = lazy(
 const BirthdayList = lazy(
   () => import('../../components/birthday/list/BirthdayList')
 );
+const NotificationListView = lazy(
+  () => import('../../components/notification/NotificationListView')
+);
 
 const DashBirthday: Component = () => {
   useCheatCodes();
@@ -76,6 +79,14 @@ const DashBirthday: Component = () => {
                   fallback={<NoBirthdaysText />}
                 >
                   <BirthdayList birthdays={birthdayList.latest!} />
+                </Show>
+              </Match>
+              <Match when={view() === 'notifications'}>
+                <Show
+                  when={birthdayList.latest!.length > 0}
+                  fallback={<NoBirthdaysText />}
+                >
+                  <NotificationListView />
                 </Show>
               </Match>
             </Switch>

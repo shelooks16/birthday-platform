@@ -75,6 +75,11 @@ service cloud.firestore {
         && isOptionalValidString(newData(), 'timeZone', 5, 30);
     }
 
+    match /notification/{id} {
+      allow read: if existingData().profileId == request.auth.uid;
+      allow create, delete, update: if false;
+    }
+
     match /notificationChannel/{id} {
       allow read, delete: if existingData().profileId == request.auth.uid;
       allow create, update: if false;

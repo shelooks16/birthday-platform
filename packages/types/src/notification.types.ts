@@ -18,6 +18,7 @@ export type NotifyBeforePreset =
 
 export interface NotificationDocument {
   id: string;
+  createdAt: string;
   /**
    * Points to @BirthdayDocument
    */
@@ -26,6 +27,10 @@ export interface NotificationDocument {
    * Points to @NotificationChannelDocument
    */
   notificationChannelId: string;
+  /**
+   * Points to @ProfileDocument
+   */
+  profileId: string;
   /**
    * When notification must be sent. ISO format
    */
