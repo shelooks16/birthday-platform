@@ -14,6 +14,7 @@ import {
 import { createSignal, ParentComponent, splitProps } from 'solid-js';
 import { birthdayService } from '../../lib/birthday/birthday.service';
 import { useCopyToClipboard } from '../../lib/clipboard/useCopyToClipboard';
+import { waitForModalAnimation } from '../../lib/stitches.utils';
 import { Modal, ModalOverlay } from '../Modal';
 
 type GenerateBirthdayWishBtnProps = {
@@ -57,11 +58,10 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
     }
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
     onClose();
-    setTimeout(() => {
-      localProps.onAfterClose?.();
-    }, 250);
+    await waitForModalAnimation();
+    localProps.onAfterClose?.();
   };
 
   return (

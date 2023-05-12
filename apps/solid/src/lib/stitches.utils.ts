@@ -34,3 +34,6 @@ export const borderSpinCss = (color = '$accent8'): SystemStyleObject => ({
 
 export const waitForDrawerAnimation = () =>
   new Promise((resolve) => setTimeout(resolve, 550));
+
+export const waitForModalAnimation = () =>
+  new Promise((resolve) => setTimeout(resolve, 250));
