@@ -9,15 +9,6 @@ import { isMobileView } from '../browser';
 import { asyncLoadAuth } from '../firebase/loaders';
 
 export const userService = {
-  async getAuthUser(params?: { throwIfNull: boolean }) {
-    const { auth } = await asyncLoadAuth();
-
-    if (params?.throwIfNull && !auth.currentUser) {
-      throw new Error('User is not logged in');
-    }
-
-    return auth.currentUser;
-  },
   async signinWithGoogle() {
     const { auth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } =
       await asyncLoadAuth();

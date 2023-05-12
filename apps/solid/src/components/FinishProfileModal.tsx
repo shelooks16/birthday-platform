@@ -19,7 +19,7 @@ import { useUserProfileCtx } from '../lib/user/user-profile.context';
 import { profileService } from '../lib/user/profile.service';
 import TimeZonePicker from './timezone-picker';
 import { Modal, ModalOverlay } from './Modal';
-import { userService } from '../lib/user/user.service';
+import { useUserCtx } from '../lib/user/user.context';
 
 const schema = yup.object({
   timeZone: yup
@@ -35,17 +35,16 @@ type FormProps = {
 };
 
 const Form = (props: FormProps) => {
+  const [userCtx] = useUserCtx();
+
   const { form, errors, data, setFields, isSubmitting } =
     createForm<SubmitData>({
       extend: validator({ schema: schema as any }),
       onSubmit: async (values) => {
-        const currentUser = await userService.getAuthUser({
-          throwIfNull: true
-        });
         const db = await profileService.db();
 
         await db.updateOne({
-          id: currentUser!.uid,
+          id: userCtx.user!.uid,
           ...values
         });
         await props.onAfterSubmit?.(values);
