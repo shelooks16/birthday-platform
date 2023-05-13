@@ -17,6 +17,8 @@ export class LocaleFormatter {
   private dateWeekDay: Intl.DateTimeFormat;
   private dateDayMonthTime: Intl.DateTimeFormat;
   private dateDayMonthTimeWithTzArr: Intl.DateTimeFormat[];
+  private dateTzOffsetShortLabel: Intl.DateTimeFormat[];
+  private dateTzOffsetLongLabel: Intl.DateTimeFormat[];
   private timeLong: Intl.RelativeTimeFormat;
   private timeLongNumeric: Intl.RelativeTimeFormat;
 
@@ -54,6 +56,8 @@ export class LocaleFormatter {
     this.dateDayMonthTimeWithTzArr = [];
     this.dateMonthYear = this.buildDateMonthYear();
     this.dateMonthYearWithTzArr = [];
+    this.dateTzOffsetLongLabel = [];
+    this.dateTzOffsetShortLabel = [];
 
     this.detectedTimeZone = this.dateDayMonthYear.resolvedOptions().timeZone;
   }
@@ -119,6 +123,45 @@ export class LocaleFormatter {
     const idx = Number(this.zodiacSign.format(date)) - 1;
 
     return this.options.zodiacSignList[idx] || '';
+  }
+  /**
+   * @example
+   * '(GMT +2:00) Ukraine time (Europe/Kiev)'
+   */
+  dateToTimeZoneDescription(date: Date, timeZone: string) {
+    let shortLabelFormat = this.dateTzOffsetShortLabel.find(
+      (f) => f.resolvedOptions().timeZone === timeZone
+    );
+
+    if (!shortLabelFormat) {
+      shortLabelFormat = new Intl.DateTimeFormat(this.locale, {
+        timeZoneName: 'longOffset',
+        timeZone
+      });
+      this.dateTzOffsetShortLabel.push(shortLabelFormat);
+    }
+
+    let longLabelFormat = this.dateTzOffsetLongLabel.find(
+      (f) => f.resolvedOptions().timeZone === timeZone
+    );
+
+    if (!longLabelFormat) {
+      longLabelFormat = new Intl.DateTimeFormat(this.locale, {
+        timeZoneName: 'shortGeneric',
+        timeZone
+      });
+      this.dateTzOffsetLongLabel.push(longLabelFormat);
+    }
+
+    const shortLabel = shortLabelFormat
+      .formatToParts(date)
+      .find((i) => i.type === 'timeZoneName')?.value;
+
+    const longLabel = longLabelFormat
+      .formatToParts(date)
+      .find((i) => i.type === 'timeZoneName')?.value;
+
+    return `(${shortLabel}) ${longLabel} (${timeZone})`;
   }
   /** @examples 'in 30 days', 'через 2 дня', 'через 1 рік' */
   dateToDaysDiff(date: Date) {
