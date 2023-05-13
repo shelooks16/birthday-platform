@@ -66,12 +66,24 @@ export class LocaleFormatter {
     return this.detectedTimeZone;
   }
 
+  /**
+   * @example
+   * '30 мая 2012 г.', 'September 9, 2011'
+   */
   dateToDayMonthYear(date: Date) {
     return this.dateDayMonthYear.format(date);
   }
+  /**
+   * @example
+   * 'May 30', '30 Мая'
+   */
   dateToDayMonth(date: Date) {
     return this.dateDayMonth.format(date);
   }
+  /**
+   * @example
+   * 'September 8 at 18:00 Ukraine Time'
+   */
   dateToDayMonthTime(
     date: Date,
     /** If passed, formatted date will show time in timezone */
@@ -93,6 +105,10 @@ export class LocaleFormatter {
 
     return withTzFormatter.format(date);
   }
+  /**
+   * @example
+   * 'September 2023', 'Сентябрь 2023 г.'
+   */
   dateToMonthYear(
     date: Date,
     /** Format value according to timezone */
@@ -113,12 +129,24 @@ export class LocaleFormatter {
 
     return capitalizeFirstLetter(withTzFormatter.format(date));
   }
+  /**
+   * @example
+   * 'April', 'Сентябрь', 'Травень'
+   */
   dateToMonth(date: Date) {
     return capitalizeFirstLetter(this.dateMonth.format(date));
   }
+  /**
+   * @example
+   * 'Mon', 'Пт', 'Вт'
+   */
   dateToWeekDay(date: Date) {
     return capitalizeFirstLetter(this.dateWeekDay.format(date));
   }
+  /**
+   * @example
+   * 'Козерог', 'Taurus', 'Телець'
+   */
   dateToZodiacSign(date: Date) {
     const idx = Number(this.zodiacSign.format(date)) - 1;
 
@@ -163,7 +191,10 @@ export class LocaleFormatter {
 
     return `(${shortLabel}) ${longLabel} (${timeZone})`;
   }
-  /** @examples 'in 30 days', 'через 2 дня', 'через 1 рік' */
+  /**
+   * @example
+   * 'in 30 days', 'через 2 дня', 'через 1 рік'
+   */
   dateToDaysDiff(date: Date) {
     const days = getDateDayDiff(date);
     const phrase = this.timeLong.format(days, 'day');
@@ -173,7 +204,10 @@ export class LocaleFormatter {
       phrase: capitalizeFirstLetter(phrase)
     };
   }
-  /** @examples '30 минут', '7 лет', '14 років' */
+  /**
+   * @example
+   * '30 минут', '7 лет', '14 років'
+   */
   toPlainTime(
     value: number,
     unit: 'year' | 'month' | 'day' | 'hour' | 'minute'
