@@ -116,7 +116,7 @@ export class FireWebCollectionRepository<
 
     if (options.orderBy) {
       Object.keys(options.orderBy).forEach((field) => {
-        constraints.push(orderBy(field, orderBy[field]));
+        constraints.push(orderBy(field, options.orderBy![field]));
       });
     }
 
