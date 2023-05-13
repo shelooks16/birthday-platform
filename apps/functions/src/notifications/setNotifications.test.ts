@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { BirthDate } from '@shared/types';
+import { BirthDate, NotifyBeforePreset } from '@shared/types';
 import { calculateNotificationTimestamp } from './setNotifications';
 
 const createArgsForTimestamp = (
@@ -8,14 +8,14 @@ const createArgsForTimestamp = (
   day: number,
   year: number,
   frequency: string
-): [BirthDate, string, number, string] => {
+): [BirthDate, NotifyBeforePreset, number, string] => {
   return [
     {
       day,
       month,
       year: 1990
     },
-    frequency,
+    frequency as NotifyBeforePreset,
     year,
     timezone
   ];
