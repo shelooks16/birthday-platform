@@ -16,3 +16,6 @@ export const getTimezoneOffset = (timeZone: string, date = new Date()) => {
   );
   return (tzDate.getTime() - utcDate.getTime()) / 6e4;
 };
+
+export const loadTzList = async () =>
+  import('./tzList.json').then((mod) => mod.default);
