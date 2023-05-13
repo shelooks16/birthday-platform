@@ -31,6 +31,9 @@ const TimeZonePicker = (props: SimpleSelectProps) => {
   const today = new Date();
 
   const [value, setValue] = createSignal(untrack(() => props.value));
+  const [lastSelected, setLastSelected] = createSignal(
+    untrack(() => props.value)
+  );
 
   const createOption = (timeZone: string): Option => {
     return {
@@ -44,14 +47,18 @@ const TimeZonePicker = (props: SimpleSelectProps) => {
       return allTzList.latest.map((tz) => createOption(tz));
     }
 
-    if (!value() || value() === detectedTz) return [createOption(detectedTz)];
+    if (lastSelected())
+      return [createOption(lastSelected()), createOption(detectedTz)];
 
-    return [createOption(value()), createOption(detectedTz)];
+    return [createOption(detectedTz)];
   });
 
   const optionsAsync = createDeferred(options);
 
   const updateValue = (v: string) => {
+    if (v !== detectedTz) {
+      setLastSelected(v);
+    }
     setValue(v);
     props.onChange?.(v);
   };
