@@ -1,4 +1,4 @@
-import { secrets } from '../config';
+import { appConfig } from '../appConfig';
 import { connectUserProfile, getBirthdayList } from './bot.commands';
 import { BirthdayTelegramBot } from './bot.types';
 
@@ -9,7 +9,7 @@ export async function createTelegramBot() {
 
   const { Telegraf, Markup } = await import('telegraf');
 
-  const bot = new Telegraf(secrets.telegram.bot_token);
+  const bot = new Telegraf(appConfig.env.telegram.bot_token);
 
   bot.start(async (ctx) => {
     const message = await connectUserProfile(

@@ -1,9 +1,9 @@
-import { secrets } from '../config';
+import { appConfig } from '../appConfig';
 
 export const createEmailClient = async () => {
   const nodemailer = await import('nodemailer');
 
-  const c = secrets.mailclient;
+  const c = appConfig.env.mailclient;
 
   return nodemailer.createTransport(
     {

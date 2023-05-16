@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import { isEmulator } from './utils/emulator';
 
 interface Secrets {
   mailclient: {
@@ -16,4 +17,10 @@ interface Secrets {
   };
 }
 
-export const secrets = functions.config() as Secrets;
+const secrets = functions.config() as Secrets;
+
+export const appConfig = {
+  birthdayWishLimitPerDay: 3,
+  isDevEnv: isEmulator,
+  env: secrets
+};
