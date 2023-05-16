@@ -16,10 +16,13 @@ interface Secrets {
   };
 }
 
-const secrets = functions.config() as Secrets;
+let secrets: Secrets;
 
 export const appConfig = {
   birthdayWishLimitPerDay: 3,
   isDevEnv: process.env.FUNCTIONS_EMULATOR === 'true',
-  env: secrets
+  env: () => {
+    secrets = secrets ?? functions.config();
+    return secrets;
+  }
 };

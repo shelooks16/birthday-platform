@@ -3,7 +3,7 @@ import { appConfig } from '../appConfig';
 export const createEmailClient = async () => {
   const nodemailer = await import('nodemailer');
 
-  const c = appConfig.env.mailclient;
+  const c = appConfig.env().mailclient;
 
   return nodemailer.createTransport(
     {

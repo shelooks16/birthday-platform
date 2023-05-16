@@ -9,7 +9,7 @@ export async function createTelegramBot() {
 
   const { Telegraf, Markup } = await import('telegraf');
 
-  const bot = new Telegraf(appConfig.env.telegram.bot_token);
+  const bot = new Telegraf(appConfig.env().telegram.bot_token);
 
   bot.start(async (ctx) => {
     const message = await connectUserProfile(
