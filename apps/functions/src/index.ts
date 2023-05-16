@@ -13,7 +13,7 @@ if (appConfig.isDevEnv) {
 initializeApp();
 
 export * from './profile';
-export * from './birthday';
+export * from './birthdayWish';
 export * from './emailVerification';
 export * from './notifications';
 export * from './notificationChannel';

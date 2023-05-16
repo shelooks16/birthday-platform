@@ -19,7 +19,7 @@ interface Secrets {
 let secrets: Secrets;
 
 export const appConfig = {
-  birthdayWishLimitPerDay: 3,
+  birthdayWishLimitPerGenerate: 3,
   isDevEnv: process.env.FUNCTIONS_EMULATOR === 'true',
   env: () => {
     secrets = secrets ?? functions.config();

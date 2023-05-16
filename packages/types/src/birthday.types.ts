@@ -29,12 +29,3 @@ export interface BirthdayDocument {
 }
 
 export type BirthdayDocumentField = DeepKeyOf<BirthdayDocument>;
-
-export interface GenerateBirthdayWishPayload {
-  birthdayId: string;
-  language?: string;
-}
-
-export interface GenerateBirthdayWishResult {
-  text?: string;
-}

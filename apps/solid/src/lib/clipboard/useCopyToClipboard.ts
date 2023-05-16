@@ -1,7 +1,7 @@
 import { createSignal, createEffect, onCleanup, Accessor } from 'solid-js';
 import { copyToClipboard } from './clipboard.utils';
 
-export function useCopyToClipboard(text: Accessor<any>, timeout = 1500) {
+export function useCopyToClipboard(text: Accessor<string>, timeout = 1500) {
   const [hasCopied, setHasCopied] = createSignal(false);
 
   const copy = async () => {

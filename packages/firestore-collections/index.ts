@@ -9,6 +9,11 @@ export const FireCollection = {
     path: () => 'birthday',
     docPath: (id: string) => `birthday/${id}`
   },
+  birthdayWish: {
+    docMatch: 'birthdayWish/{id}',
+    path: () => 'birthdayWish',
+    docPath: (id: string) => `birthdayWish/${id}`
+  },
   notifications: {
     docMatch: 'notification/{id}',
     path: () => 'notification',
