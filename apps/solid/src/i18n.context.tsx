@@ -14,6 +14,8 @@ import { Meta } from '@solidjs/meta';
 import {
   ITranslationWeb,
   loadDictionary,
+  localeToDialect,
+  SupportedLocale,
   TranslationKeyWeb
 } from '@shared/locales';
 import { appConfig } from './appConfig';
@@ -99,15 +101,19 @@ export const I18nProvider: ParentComponent = (props) => {
   });
 
   const i18n = createMemo<I18N>((prev) => {
-    const lang = locale();
+    const lang = locale() as SupportedLocale;
     const langDict = loadedDicts[lang];
 
     if (!langDict) return prev as any;
 
     return MemoryCache.getOrSet('i18n' + lang, () =>
-      initI18n<ITranslationWeb, TranslationKeyWeb>(lang, langDict, {
-        zodiacSignList: langDict.zodiacSign
-      })
+      initI18n<ITranslationWeb, TranslationKeyWeb>(
+        localeToDialect(lang),
+        langDict,
+        {
+          zodiacSignList: langDict.zodiacSign
+        }
+      )
     );
   });
 
