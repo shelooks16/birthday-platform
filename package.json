@@ -12,8 +12,8 @@
     "test": "turbo run test",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,md}\"",
-    "emulators": "npx wait-on apps/functions/build/package.json && sh firebase-emulators.sh",
-    "setup-env": "sh setup-env.sh",
+    "emulators": "npx wait-on apps/functions/build/package.json && node firebase-emulators.mjs",
+    "setup-env": "node setup-env.mjs",
     "export-indexes": "firebase firestore:indexes > firestore.indexes.json"
   },
   "devDependencies": {
