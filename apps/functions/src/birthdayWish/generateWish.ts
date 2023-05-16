@@ -5,12 +5,13 @@ import {
   GenerateBirthdayWishPayload,
   GenerateBirthdayWishResult
 } from '@shared/types';
+import { getTimestamp } from '@shared/firestore-utils';
+import { documentId } from '@shared/firestore-admin-utils';
 import { requireAuth } from '../utils/auth';
 import { createCallableFunction } from '../utils/createFunction';
 import { birthdayRepo } from '../birthday/birthday.repository';
 import { createCompletion } from '../openai/completion';
 import { birthdayWishRepo } from './birthdayWish.repository';
-import { getTimestamp } from '@shared/firestore-utils';
 import { appConfig } from '../appConfig';
 
 const langMap = {
@@ -45,7 +46,15 @@ export const generateBirthdayWish = createCallableFunction(
   async (data: GenerateBirthdayWishPayload, ctx) => {
     requireAuth(ctx);
 
-    const birthday = await birthdayRepo().findById(data.birthdayId);
+    const birthday = await birthdayRepo()
+      .findMany({
+        where: [
+          [documentId(), '==', data.birthdayId],
+          ['profileId', '==', ctx.auth!.uid]
+        ],
+        limit: 1
+      })
+      .then((r) => (r.length > 0 ? r[0] : null));
 
     if (!birthday) {
       throw new functions.https.HttpsError(
