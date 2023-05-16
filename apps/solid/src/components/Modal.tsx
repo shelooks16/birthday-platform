@@ -41,13 +41,16 @@ const useManageZIndex = (): Accessor<ModalOverlayProps<'div'>> => {
   };
 
   onMount(() => {
-    setMyIdx(MemoryCache.getOrSet(Z_INDEX_CACHE_KEY, () => 0));
+    const idx = MemoryCache.set<number>(
+      Z_INDEX_CACHE_KEY,
+      (val = 0) => val + 1
+    );
 
-    MemoryCache.set<number>(Z_INDEX_CACHE_KEY, (val) => val! + 1);
+    setMyIdx(idx);
   });
 
   onCleanup(() => {
-    MemoryCache.set<number>(Z_INDEX_CACHE_KEY, (val) => (val ? val - 1 : 0));
+    MemoryCache.set<number>(Z_INDEX_CACHE_KEY, (val = 1) => val - 1);
   });
 
   return props;
