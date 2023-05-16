@@ -129,10 +129,10 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
             </Show>
             <Show when={result()}>
               <HStack mb="$2" justifyContent="space-between">
-                <Box fontSize="$xs" color="$neutral10">
+                <Box fontSize="$sm" color="$neutral10">
                   Attempt {visibleAttempt() + 1}/{result()!.generateMaxCount}
                 </Box>
-                <ButtonGroup attached size="xs" variant="outline">
+                <ButtonGroup attached size="sm" variant="outline">
                   <IconButton
                     onClick={() => setVisibleAttempt((p) => p - 1)}
                     disabled={visibleAttempt() === 0}
@@ -147,23 +147,22 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
                   />
                 </ButtonGroup>
               </HStack>
-              <Box innerHTML={getVisibleWish()} />
+              <Box innerHTML={getVisibleWish()} fontSize="$base" />
 
               <HStack justifyContent="space-between" mt="$4" gap="$4">
                 <Button size="sm" onClick={copyToClipboard}>
                   {hasCopied() ? 'Текст скопирован' : 'Скопировать'}
                 </Button>
-                <Button
-                  size="sm"
-                  onClick={regenerate}
-                  loading={isLoading()}
-                  variant="ghost"
-                  disabled={
-                    result()!.generatedCount === result()!.generateMaxCount
-                  }
-                >
-                  Переделать
-                </Button>
+                {result()!.generatedCount !== result()!.generateMaxCount && (
+                  <Button
+                    size="sm"
+                    onClick={regenerate}
+                    loading={isLoading()}
+                    variant="ghost"
+                  >
+                    Переделать
+                  </Button>
+                )}
               </HStack>
             </Show>
           </ModalBody>
