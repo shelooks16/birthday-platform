@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions';
 import type { UserRecord } from 'firebase-admin/auth';
 import type { DocumentSnapshot } from 'firebase-admin/firestore';
-import { isEmulator } from './emulator';
 import { logger } from './logger';
+import { appConfig } from '../appConfig';
 
 const REGION = 'europe-west1';
 
@@ -155,7 +155,7 @@ export const createScheduledFunction = (
 export const createDebugHttpFn = (
   cb?: (req: functions.https.Request, res: functions.Response<any>) => any
 ) => {
-  return isEmulator
+  return appConfig.isDevEnv
     ? functions.region(REGION).https.onRequest(async (req, res) => {
         let body: any = { status: 'ok' };
 

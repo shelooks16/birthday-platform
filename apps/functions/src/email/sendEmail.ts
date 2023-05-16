@@ -1,11 +1,11 @@
 import { logger } from '../utils/logger';
 import { SendEmailData } from '@shared/types';
-import { isEmulator } from '../utils/emulator';
 import { createEmailClient } from './emailClient';
+import { appConfig } from '../appConfig';
 
 export const sendEmail = async (options: SendEmailData) => {
-  if (isEmulator) {
-    logger.warn('Emulator detected, email will not be sent', {
+  if (appConfig.isDevEnv) {
+    logger.warn('Dev environment detected, email will not be sent', {
       emailOptions: options
     });
     return;
