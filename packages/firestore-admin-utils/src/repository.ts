@@ -62,7 +62,7 @@ export class FireCollectionRepository<
       .then((snap) => firestoreSnapshotToData<DocData>(snap));
   }
 
-  async findMany(options: FindManyOptions<FieldType> = {}) {
+  private buildQueryForFindMany(options: FindManyOptions<FieldType>) {
     const { limit, limitToLast, orderBy, where } = options;
 
     let query = this.collectionRef as FirestoreCollectionQuery;
@@ -89,9 +89,20 @@ export class FireCollectionRepository<
       query = query.limitToLast(limitToLast);
     }
 
-    return query
+    return query;
+  }
+
+  async findMany(options: FindManyOptions<FieldType> = {}) {
+    return this.buildQueryForFindMany(options)
       .get()
       .then((snap) => firestoreSnapshotListToData<DocData>(snap.docs));
+  }
+
+  async count(options: FindManyOptions<FieldType> = {}) {
+    return this.buildQueryForFindMany(options)
+      .count()
+      .get()
+      .then((val) => val.data().count);
   }
 
   async runQuery(queryBuilder?: QueryBuilder) {
