@@ -8,6 +8,7 @@ import {
   FormLabel,
   Heading,
   Skeleton,
+  Stack,
   VStack,
   VStackOptions
 } from '@hope-ui/solid';
@@ -16,6 +17,7 @@ import { useUserProfileCtx } from '../../lib/user/user-profile.context';
 import PageTitle from '../../components/PageTitle';
 import LanguagePicker from '../../components/LanguagePicker';
 import EditNotificationChannels from '../../components/notificationChannel/EditNotificationChannels';
+import ExportBirthdaysBtn from '../../components/ExportBirthdaysBtn';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
   return (
@@ -85,6 +87,12 @@ const DashProfile: Component = () => {
             </FormControl>
           </Show>
         </VStack>
+      </Section>
+
+      <Section title="Import/Export">
+        <Stack justifyContent="start">
+          <ExportBirthdaysBtn />
+        </Stack>
       </Section>
 
       <Box textAlign="center" mt="$24">

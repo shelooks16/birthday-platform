@@ -29,3 +29,8 @@ export interface BirthdayDocument {
 }
 
 export type BirthdayDocumentField = DeepKeyOf<BirthdayDocument>;
+
+export type BirthdayImportExport = Pick<
+  BirthdayDocument,
+  'buddyName' | 'buddyDescription' | 'birth'
+>;

@@ -1,9 +1,10 @@
 import {
+  BirthdayImportExport,
   GenerateBirthdayWishPayload,
   GenerateBirthdayWishResult
 } from '@shared/types';
 import { resolveCurrentLocale } from '../../i18n.context';
-import { asyncLoadFunctions } from '../firebase/loaders';
+import { asyncLoadAuth, asyncLoadFunctions } from '../firebase/loaders';
 
 export const birthdayService = {
   async db() {
@@ -23,5 +24,19 @@ export const birthdayService = {
       ...payload,
       language: resolveCurrentLocale()
     }).then((result) => result.data);
+  },
+  async exportBirthdays() {
+    const { auth } = await asyncLoadAuth();
+
+    const db = await birthdayService.db();
+    const birthdays = await db.findMany({
+      where: [['profileId', '==', auth.currentUser!.uid]]
+    });
+
+    return birthdays.map<BirthdayImportExport>((b) => ({
+      buddyName: b.buddyName,
+      buddyDescription: b.buddyDescription || '',
+      birth: b.birth
+    }));
   }
 };
