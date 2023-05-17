@@ -17,7 +17,7 @@ import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 import { waitForDrawerAnimation } from '../../lib/stitches.utils';
 import { IconEdit } from '../Icons';
 import BirthdayForm from './BirthdayForm';
-import DeleteBirthdayBtn from './DeleteBirthdatBtn';
+import DeleteBirthdayBtn from './DeleteBirthdayBtn';
 
 type EditBirthdayBtnProps = Omit<
   IconButtonProps<'button'>,
