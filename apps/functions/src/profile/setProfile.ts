@@ -27,8 +27,7 @@ export const createProfileForUser = createAuthFunction(
       id: user.uid,
       createdAt: getTimestamp(),
       displayName: user.displayName || user.email || user.uid,
-      botPairingCode: profileRepo().getRandomDocId(),
-      ...(user.photoURL ? { avatar: user.photoURL } : {})
+      botPairingCode: profileRepo().getRandomDocId()
     });
 
     await batch.commit();

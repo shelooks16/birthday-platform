@@ -7,7 +7,6 @@ export interface ProfileDocument {
   /** Profile secret to pair with chat bots */
   botPairingCode: string;
   timeZone?: string;
-  avatar?: string;
 }
 
 export type ProfileDocumentField = DeepKeyOf<ProfileDocument>;

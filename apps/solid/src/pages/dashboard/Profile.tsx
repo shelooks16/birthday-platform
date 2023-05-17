@@ -1,19 +1,14 @@
-import { Component, For, Show, ParentComponent } from 'solid-js';
+import { Component, ParentComponent } from 'solid-js';
 import {
   Box,
   Button,
-  Checkbox,
   FormControl,
-  FormHelperText,
   FormLabel,
   Heading,
-  Skeleton,
   Stack,
-  VStack,
-  VStackOptions
+  VStack
 } from '@hope-ui/solid';
 import { useSignOut } from '../../lib/user/signin';
-import { useUserProfileCtx } from '../../lib/user/user-profile.context';
 import PageTitle from '../../components/PageTitle';
 import LanguagePicker from '../../components/LanguagePicker';
 import EditNotificationChannels from '../../components/notificationChannel/EditNotificationChannels';
@@ -34,28 +29,7 @@ const Section: ParentComponent<{ title: string }> = (props) => {
   );
 };
 
-const LoadingSkeleton: Component<{
-  num: number;
-  spacing: VStackOptions['spacing'];
-}> = (props) => {
-  return (
-    <VStack alignItems="stretch" spacing={props.spacing}>
-      <For each={Array(props.num).fill(null)}>
-        {() => (
-          <Skeleton>
-            <Box>Loading</Box>
-          </Skeleton>
-        )}
-      </For>
-    </VStack>
-  );
-};
-
-const makePublicUrl = (profileId: string) =>
-  location.origin + '/profile/' + profileId;
-
 const DashProfile: Component = () => {
-  const [profilectx] = useUserProfileCtx();
   const signOut = useSignOut();
 
   return (
@@ -72,20 +46,6 @@ const DashProfile: Component = () => {
             <FormLabel for="lang-picker-trigger">Display language</FormLabel>
             <LanguagePicker id="lang-picker" />
           </FormControl>
-
-          <Show
-            when={profilectx.profile}
-            fallback={<LoadingSkeleton num={2} spacing="$2" />}
-          >
-            <FormControl>
-              <Box>
-                <Checkbox>Public profile</Checkbox>
-              </Box>
-              <FormHelperText>
-                Your public URL is {makePublicUrl('1245')}
-              </FormHelperText>
-            </FormControl>
-          </Show>
         </VStack>
       </Section>
 
