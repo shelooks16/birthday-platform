@@ -22,6 +22,9 @@ Object.keys(pckJson.dependencies).forEach((packageName) => {
   }
 });
 
+const isProd = process.env.FUNCTIONS_BUILD_MODE === 'production';
+const isDev = !isProd;
+
 export default defineConfig({
   publicDir: 'env',
   build: {
@@ -29,10 +32,10 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'functions',
       fileName: 'index',
-      formats: ['es', 'umd']
+      formats: ['cjs']
     },
     outDir: 'build',
-    copyPublicDir: process.env.FUNCTIONS_BUILD_MODE !== 'production',
+    copyPublicDir: isDev,
 
     rollupOptions: {
       external: externalDepsList,
@@ -42,18 +45,15 @@ export default defineConfig({
             name: pckJson.name,
             version: pckJson.version,
             engines: pckJson.engines,
-            main: './index.umd.js',
-            module: './index.js',
-            exports: {
-              '.': {
-                import: './index.js',
-                require: './index.umd.js'
-              }
-            }
+            main: './index.js'
           },
           additionalDependencies: externalDepsObj
         })
-      ]
+      ],
+      output: {
+        preserveModules: isProd,
+        inlineDynamicImports: isDev
+      }
     }
   }
 });
