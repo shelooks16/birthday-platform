@@ -281,7 +281,7 @@ const DayCell: Component<DayCellProps> = (props) => {
             </Box>
           </Box>
 
-          {isToday() && (
+          <Show when={isToday()}>
             <DaysLeftText
               date={props.date}
               css={{
@@ -301,7 +301,7 @@ const DayCell: Component<DayCellProps> = (props) => {
                 }
               }}
             />
-          )}
+          </Show>
 
           <Show when={props.birthdays.length > 0}>
             <Box

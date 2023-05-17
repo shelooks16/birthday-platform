@@ -153,7 +153,9 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
                 <Button size="sm" onClick={copyToClipboard}>
                   {hasCopied() ? 'Текст скопирован' : 'Скопировать'}
                 </Button>
-                {result()!.generatedCount !== result()!.generateMaxCount && (
+                <Show
+                  when={result()!.generatedCount !== result()!.generateMaxCount}
+                >
                   <Button
                     size="sm"
                     onClick={regenerate}
@@ -162,7 +164,7 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
                   >
                     Переделать
                   </Button>
-                )}
+                </Show>
               </HStack>
             </Show>
           </ModalBody>

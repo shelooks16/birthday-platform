@@ -70,11 +70,11 @@ const NotificationListView: Component = () => {
           <Heading as="h2" size="xl" color="$neutral11">
             Upcoming notifications
           </Heading>
-          {isApplyingFilter() && (
+          <Show when={isApplyingFilter()}>
             <Box>
               <Spinner size="xs" />
             </Box>
-          )}
+          </Show>
         </HStack>
         <Box>
           <SimpleSelect

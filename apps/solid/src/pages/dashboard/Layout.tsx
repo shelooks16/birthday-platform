@@ -104,7 +104,7 @@ export default function DashboardLayout() {
     <Container
       px="$3"
       pt="$3"
-      pb={{ '@initial': '$10', '@md': '$40' }}
+      pb={{ '@initial': '$10', '@md': '$20' }}
       maxWidth={{ '@lg': 750 }}
     >
       <Box mb="$6">

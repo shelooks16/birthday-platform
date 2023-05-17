@@ -144,7 +144,7 @@ const BirthdayListItem: Component<BirthdayListItemProps> = (props) => {
         </Text>
       </Show>
 
-      {props.isToday && (
+      <Show when={props.isToday}>
         <GenerateBirthdayWishBtn
           birthdayId={props.birthday.id}
           colorScheme="accent"
@@ -154,7 +154,7 @@ const BirthdayListItem: Component<BirthdayListItemProps> = (props) => {
         >
           {props.birthday.buddyName}
         </GenerateBirthdayWishBtn>
-      )}
+      </Show>
     </Box>
   );
 };
