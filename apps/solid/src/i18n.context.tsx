@@ -115,21 +115,9 @@ export const I18nProvider: ParentComponent = (props) => {
       ? settings.locale
       : appConfig.defaultLocale
   );
-  const [dict] = createResource<ITranslationWeb, string>(
-    () => locale(),
-    (l) => localeToDictLoader[l]()
+  const [dict] = createResource<ITranslationWeb, string>(locale, (l) =>
+    localeToDictLoader[l]()
   );
-
-  createEffect(() => {
-    if (!dict.loading) {
-      setLoadedDicts(locale(), (d) => Object.assign(d || {}, dict()));
-    }
-  });
-
-  createEffect(() => {
-    document.documentElement.lang = locale();
-    setSettings(locale());
-  });
 
   const i18n = createMemo<I18nWeb>((prev) => {
     const lang = locale() as SupportedLocale;
@@ -149,6 +137,17 @@ export const I18nProvider: ParentComponent = (props) => {
   });
 
   useTranslateValidationSchema(i18n);
+
+  createEffect(() => {
+    if (!dict.loading) {
+      setLoadedDicts(locale(), (d) => Object.assign(d || {}, dict()));
+    }
+  });
+
+  createEffect(() => {
+    document.documentElement.lang = locale();
+    setSettings(locale());
+  });
 
   const ctx: I18nContextInterface = [
     i18n,
