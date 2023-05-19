@@ -18,5 +18,6 @@ export {
   setDoc,
   updateDoc,
   deleteDoc,
-  deleteField
+  deleteField,
+  writeBatch
 } from 'firebase/firestore';

@@ -3,7 +3,9 @@ import type {
   DocumentData,
   Firestore,
   OrderByDirection,
-  QueryConstraint
+  QueryConstraint,
+  WriteBatch,
+  Transaction
 } from 'firebase/firestore';
 import {
   firestoreSnapshotToData,
@@ -12,6 +14,8 @@ import {
   WithOptionalId,
   WhereClause
 } from '@shared/firestore-utils';
+
+export type BatchOrTransactionWeb = WriteBatch | Transaction;
 
 export type FirestoreSdk = Pick<
   typeof import('firebase/firestore'),
@@ -28,6 +32,7 @@ export type FirestoreSdk = Pick<
   | 'setDoc'
   | 'updateDoc'
   | 'deleteDoc'
+  | 'writeBatch'
 >;
 
 export type FindManyWebOptions<FieldType extends string> = {
@@ -168,6 +173,24 @@ export class FireWebCollectionRepository<
 
     await setDoc(this.getDocRef(id), dataWithoutId, { merge: false });
   }
+  atomicSetOne(
+    batchOrTr: BatchOrTransactionWeb,
+    data: WithOptionalId<DocData>
+  ) {
+    const { id, ...dataWithoutId } = data;
+
+    (batchOrTr as WriteBatch).set(this.getDocRef(id), dataWithoutId, {
+      merge: false
+    });
+  }
+  atomicSetMany(
+    batchOrTr: BatchOrTransactionWeb,
+    dataArr: WithOptionalId<DocData>[]
+  ) {
+    dataArr.forEach((data) => {
+      this.atomicSetOne(batchOrTr, data);
+    });
+  }
 
   async updateOne(data: WithId<Partial<DocData>>) {
     const { id, ...dataWithoutId } = data;
@@ -175,6 +198,12 @@ export class FireWebCollectionRepository<
     const { updateDoc } = this.firestoreSdk;
 
     await updateDoc(this.getDocRef(id), dataWithoutId);
+  }
+
+  batch() {
+    const { writeBatch } = this.firestoreSdk;
+
+    return writeBatch(this.firestore);
   }
 
   getSubCollection<
