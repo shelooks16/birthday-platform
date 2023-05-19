@@ -1,9 +1,13 @@
 import home from './home.json';
 import dashboard from './dashboard.json';
+import validation from './validation.json';
 import common from '../common';
 
-export default () => ({
+const langs = () => ({
   ...common(),
   home,
-  dashboard
+  dashboard,
+  validation
 });
+
+export default langs;

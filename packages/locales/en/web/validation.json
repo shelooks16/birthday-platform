@@ -1,0 +1,17 @@
+{
+  "string": {
+    "minLength": "Must have minimum {{ min }} characters",
+    "maxLength": "Must have maximum {{ max }} characters"
+  },
+  "number": {
+    "minLength": "Must be {{ min }} or greater",
+    "maxLength": "Must be {{ max }} or less"
+  },
+  "array": {
+    "minLength": "Must have minimum {{ min }} elements",
+    "maxLength": "Must have maximum {{ max }} elements"
+  },
+  "mixed": {
+    "required": "Field is required"
+  }
+}

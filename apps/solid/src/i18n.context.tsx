@@ -21,6 +21,7 @@ import {
 import { appConfig } from './appConfig';
 import { initI18n } from '@shared/i18n';
 import { MemoryCache } from '@shared/memory-cache';
+import { setLocale as setYupLocale } from 'yup';
 
 const localeToDictLoader = appConfig.languages.reduce<{
   [lang: string]: () => Promise<any>;
@@ -29,10 +30,12 @@ const localeToDictLoader = appConfig.languages.reduce<{
   return acc;
 }, {});
 
-type I18N = ReturnType<typeof initI18n<ITranslationWeb, TranslationKeyWeb>>;
+export type I18nWeb = ReturnType<
+  typeof initI18n<ITranslationWeb, TranslationKeyWeb>
+>;
 
 type I18nContextInterface = [
-  i18n: Accessor<I18N>,
+  i18n: Accessor<I18nWeb>,
   actions: {
     /**
      * Switch to the language in the parameters.
@@ -51,7 +54,35 @@ export const resolveCurrentLocale = () =>
   localStorage.getItem('locale') || appConfig.defaultLocale;
 
 export const resolveCurrentI18nInstance = () =>
-  MemoryCache.get<I18N>('i18n' + resolveCurrentLocale());
+  MemoryCache.get<I18nWeb>('i18n' + resolveCurrentLocale());
+
+const useTranslateValidationSchema = (i18n: Accessor<I18nWeb>) => {
+  createEffect(() => {
+    const instance = i18n();
+
+    if (!instance) return;
+
+    const { t } = instance;
+
+    setYupLocale({
+      string: {
+        min: ({ min }) => t('validation.string.minLength', { min }),
+        max: ({ max }) => t('validation.string.maxLength', { max })
+      },
+      number: {
+        min: ({ min }) => t('validation.number.minLength', { min }),
+        max: ({ max }) => t('validation.number.maxLength', { max })
+      },
+      array: {
+        min: ({ min }) => t('validation.array.minLength', { min }),
+        max: ({ max }) => t('validation.array.minLength', { max })
+      },
+      mixed: {
+        required: t('validation.mixed.required')
+      }
+    });
+  });
+};
 
 const useSettings = () => {
   const [settings, setSettings] = createLocalStorage();
@@ -100,7 +131,7 @@ export const I18nProvider: ParentComponent = (props) => {
     setSettings(locale());
   });
 
-  const i18n = createMemo<I18N>((prev) => {
+  const i18n = createMemo<I18nWeb>((prev) => {
     const lang = locale() as SupportedLocale;
     const langDict = loadedDicts[lang];
 
@@ -116,6 +147,8 @@ export const I18nProvider: ParentComponent = (props) => {
       )
     );
   });
+
+  useTranslateValidationSchema(i18n);
 
   const ctx: I18nContextInterface = [
     i18n,
