@@ -78,7 +78,8 @@ const useTranslateValidationSchema = (i18n: Accessor<I18nWeb>) => {
         max: ({ max }) => t('validation.array.minLength', { max })
       },
       mixed: {
-        required: t('validation.mixed.required')
+        required: t('validation.mixed.required'),
+        notType: ({ type }) => t('validation.mixed.notType', { type })
       }
     });
   });

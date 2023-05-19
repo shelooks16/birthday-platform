@@ -12,6 +12,7 @@
     "maxLength": "Must have maximum {{ max }} elements"
   },
   "mixed": {
-    "required": "Field is required"
+    "required": "Field is required",
+    "notType": "Field must have type {{ type }}"
   }
 }
