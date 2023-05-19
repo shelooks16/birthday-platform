@@ -19,16 +19,16 @@ service cloud.firestore {
       }
       function validateDoB(val) {
         return verifyObjectFieldsPresence(val, ['year', 'month', 'day'], [])
-          && val.year < request.time.year() && val.year > 1950
+          && val.year >= 1950 && val.year <= request.time.year()
           && val.month >= 0 && val.month <= 11
-          && val.day > 0 && val.day <= 31;
+          && val.day >= 1 && val.day <= 31;
       }
       function validateNotificationSettings(val) {
         return val == null ? true : (
           verifyObjectFieldsPresence(val, ['notifyChannelsIds', 'notifyAtBefore', 'timeZone'], [])
           && isValidNotifyChannels(val.notifyChannelsIds)
           && isValidNotifyAtBefore(val.notifyAtBefore)
-          && isValidString(val.timeZone, 5, 30)
+          && isValidString(val.timeZone, 1, 30)
         );
       }
       function validateBuddyName(val) {
@@ -72,7 +72,7 @@ service cloud.firestore {
       allow read: if id == request.auth.uid;
       allow update: if id == request.auth.uid 
         && updatingOnlyFields(['timeZone'])
-        && isOptionalValidString(newData(), 'timeZone', 5, 30);
+        && isOptionalValidString(newData(), 'timeZone', 1, 30);
     }
 
     match /notification/{id} {

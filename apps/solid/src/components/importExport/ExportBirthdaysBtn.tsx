@@ -1,7 +1,7 @@
 import { Component, createSignal } from 'solid-js';
 import { Button, ButtonProps, notificationService } from '@hope-ui/solid';
-import { birthdayService } from '../lib/birthday/birthday.service';
-import { useUserProfileCtx } from '../lib/user/user-profile.context';
+import { birthdayService } from '../../lib/birthday/birthday.service';
+import { useUserProfileCtx } from '../../lib/user/user-profile.context';
 
 const downloadIntoFile = (
   data: string,

@@ -12,7 +12,8 @@ import { useSignOut } from '../../lib/user/signin';
 import PageTitle from '../../components/PageTitle';
 import LanguagePicker from '../../components/LanguagePicker';
 import EditNotificationChannels from '../../components/notificationChannel/EditNotificationChannels';
-import ExportBirthdaysBtn from '../../components/ExportBirthdaysBtn';
+import ExportBirthdaysBtn from '../../components/importExport/ExportBirthdaysBtn';
+import ImportBirthdaysBtn from '../../components/importExport/ImportBirthdaysBtn';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
   return (
@@ -52,6 +53,7 @@ const DashProfile: Component = () => {
       <Section title="Import/Export">
         <Stack justifyContent="start">
           <ExportBirthdaysBtn />
+          <ImportBirthdaysBtn />
         </Stack>
       </Section>
 
