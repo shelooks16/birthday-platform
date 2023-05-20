@@ -20,15 +20,13 @@ import { profileService } from '../lib/user/profile.service';
 import TimeZonePicker from './timezone-picker';
 import { Modal, ModalOverlay } from './Modal';
 import { useUserCtx } from '../lib/user/user.context';
+import { birthdayField } from '../lib/birthday/birthday.validation';
 
-const schema = yup.object({
-  timeZone: yup
-    .string()
-    .required('Timezone is required')
-    .trim()
-    .min(4, 'Timezone is required')
-});
-type SubmitData = yup.InferType<typeof schema>;
+const schema = () =>
+  yup.object({
+    timeZone: birthdayField.notificationSettings.timeZone().required()
+  });
+type SubmitData = yup.InferType<ReturnType<typeof schema>>;
 
 type FormProps = {
   onAfterSubmit?: (data: SubmitData) => any;

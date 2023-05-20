@@ -31,7 +31,7 @@ import {
   Textarea,
   VStack
 } from '@hope-ui/solid';
-import { BirthdayDocument, NotifyBeforePreset } from '@shared/types';
+import { BirthdayDocument } from '@shared/types';
 import { groupBy } from '@shared/general-utils';
 import { getNotifyBeforePresets } from '@shared/static-cms';
 import { parseNotifyBeforePreset } from '@shared/notification';
@@ -43,6 +43,7 @@ import OptionalTooltip from '../OptionalTooltip';
 import { useNotificationChannelsCtx } from '../../lib/notificationChannel/notificationChannels.context';
 import EditNotificationChannelsBtn from '../notificationChannel/EditNotificationChannelsBtn';
 import { useI18n } from '../../i18n.context';
+import { birthdayField } from '../../lib/birthday/birthday.validation';
 
 const maxAllowedAge = 80;
 const minAllowedAge = 0;
@@ -76,34 +77,37 @@ function listDays(monthIdx: number, year: number) {
     .map((_val, idx) => idx + 1);
 }
 
-const schema = yup.object({
-  name: yup.string().required().trim().min(3),
-  description: yup.string().optional(),
-  day: yup.number().min(1).max(31).required(),
-  year: yup.number().min(downYear).max(upYear).required(),
-  month: yup.number().min(0).max(11).required(),
-  setupNotifications: yup.boolean().optional().default(false),
-  notifyAtBefore: yup
-    .array(yup.string<NotifyBeforePreset>().required())
-    .when('setupNotifications', {
-      is: true,
-      then: (schema) => schema.required().min(1),
-      otherwise: (schema) => schema.optional()
-    }),
-  notifyChannelsIds: yup
-    .array(yup.string().required())
-    .when('setupNotifications', {
-      is: true,
-      then: (schema) => schema.required().min(1),
-      otherwise: (schema) => schema.optional()
-    }),
-  timeZone: yup.string().when('setupNotifications', {
-    is: true,
-    then: (schema) => schema.required(),
-    otherwise: (schema) => schema.optional()
-  })
-});
-type ISchema = yup.InferType<typeof schema>;
+const schema = () =>
+  yup.object({
+    name: birthdayField.buddyName().required(),
+    description: birthdayField.buddyDescription().optional(),
+    day: birthdayField.birth.day().required(),
+    year: birthdayField.birth.year().required(),
+    month: birthdayField.birth.month().required(),
+    setupNotifications: yup.boolean().optional().default(false),
+    notifyAtBefore: birthdayField.notificationSettings
+      .notifyAtBefore()
+      .when('setupNotifications', {
+        is: true,
+        then: (schema) => schema.required(),
+        otherwise: (schema) => schema.optional()
+      }),
+    notifyChannelsIds: birthdayField.notificationSettings
+      .notifyChannelsIds()
+      .when('setupNotifications', {
+        is: true,
+        then: (schema) => schema.required(),
+        otherwise: (schema) => schema.optional()
+      }),
+    timeZone: birthdayField.notificationSettings
+      .timeZone()
+      .when('setupNotifications', {
+        is: true,
+        then: (schema) => schema.required(),
+        otherwise: (schema) => schema.optional()
+      })
+  });
+type ISchema = yup.InferType<ReturnType<typeof schema>>;
 
 const FormSectionTitle: ParentComponent = (props) => {
   return (
@@ -129,7 +133,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
   const [i18n] = useI18n();
 
   const { form, errors, data, setFields, isSubmitting } = createForm<ISchema>({
-    extend: validator({ schema: schema as any }),
+    extend: validator({ schema: schema() as any }),
     initialValues: {
       timeZone: profilectx.profile?.timeZone,
       ...props.initialData
