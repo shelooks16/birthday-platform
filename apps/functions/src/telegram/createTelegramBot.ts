@@ -1,6 +1,32 @@
 import { MemoryCache } from '@shared/memory-cache';
+import { ChannelType } from '@shared/types';
 import { appConfig } from '../appConfig';
-import { connectUserProfile, getBirthdayList } from './bot.commands';
+import {
+  connectUserProfile,
+  getBirthdayList,
+  getMe,
+  getNotifications
+} from './bot.commands';
+
+// Get id from https://t.me/RawDataBot
+const WELCOME_STICKER_ID =
+  'CAACAgUAAxkBAAEgTD5kSXgMrMOKFYaxB0Cv8FUrZwn2CgACuw8AAsZRxhX44kGODQJCei8E';
+
+const getCommandListMsg = () => {
+  return (
+    `Список комманд:\n` +
+    '/me - Аккаунты подключенные к этому боту\n' +
+    '/birthdays - Список твоих днюх\n' +
+    '/notifications - Список ближайших уведомлений\n' +
+    '/tnotifications - Список ближайших уведомлений через телеграм'
+  );
+};
+
+const formatError = (error: any) => {
+  const msg = error?.message || error?.description || error.status;
+
+  return 'Ошибка: ' + msg;
+};
 
 const telegramBot = async () => {
   const { Telegraf } = await import('telegraf');
@@ -8,49 +34,74 @@ const telegramBot = async () => {
   const bot = new Telegraf(appConfig.env().telegram.bot_token);
 
   bot.start(async (ctx) => {
-    const message = await connectUserProfile(
-      ctx.chat.id,
-      ctx.from.username ??
-        ctx.from.first_name ??
-        ctx.from.last_name ??
-        ctx.from.id,
-      ctx.startPayload
-    );
+    try {
+      const message = await connectUserProfile(
+        ctx.chat.id,
+        ctx.from.username ??
+          ctx.from.first_name ??
+          ctx.from.last_name ??
+          ctx.from.id,
+        ctx.startPayload
+      );
 
-    if (message) {
-      await ctx.sendMessage(message);
+      if (message) {
+        await ctx.sendMessage(message);
+      }
+
+      await ctx.replyWithSticker(WELCOME_STICKER_ID);
+      await ctx.sendMessage(getCommandListMsg());
+    } catch (err) {
+      await ctx.sendMessage(formatError(err));
+    }
+  });
+  bot.command('me', async (ctx) => {
+    try {
+      const msg = await getMe(ctx.chat.id);
+
+      await ctx.sendMessage(msg);
+    } catch (err) {
+      await ctx.sendMessage(formatError(err));
     }
   });
   bot.command('birthdays', async (ctx) => {
-    const messages = await getBirthdayList(ctx.chat.id);
+    try {
+      const messages = await getBirthdayList(ctx.chat.id);
 
-    for (const msg of messages) {
-      await ctx.sendMessage(msg);
+      for (const msg of messages) {
+        await ctx.sendMessage(msg);
+      }
+    } catch (err) {
+      await ctx.sendMessage(formatError(err));
     }
   });
-  bot.on(['message'], (ctx) => {
-    if ('reply_to_message' in ctx.message) {
-      console.log(ctx.message.reply_to_message);
+  bot.command('notifications', async (ctx) => {
+    try {
+      const messages = await getNotifications(ctx.chat.id);
+
+      for (const msg of messages) {
+        await ctx.sendMessage(msg);
+      }
+    } catch (err) {
+      await ctx.sendMessage(formatError(err));
     }
   });
+  bot.command('tnotifications', async (ctx) => {
+    try {
+      const messages = await getNotifications(
+        ctx.chat.id,
+        ChannelType.telegram
+      );
 
-  // bot.command('remove', (ctx) => {
-  //   return ctx.replyWithHTML(
-  //     '<b>Coke</b> or <i>Pepsi?</i>',
-  //     Markup.removeKeyboard()
-  //   );
-  // });
-
-  // bot.command('custom', async (ctx) => {
-  //   return await ctx.replyWithSticker(
-  //     'CAACAgUAAxkBAAEgTD5kSXgMrMOKFYaxB0Cv8FUrZwn2CgACuw8AAsZRxhX44kGODQJCei8E'
-  //   );
-  //   // Markup.keyboard([
-  //   //   ['🔍 Search', '😎 Popular'], // Row1 with 2 buttons
-  //   //   ['☸ Setting', '📞 Feedback'], // Row2 with 2 buttons
-  //   //   ['📢 Ads', '⭐️ Rate us', '👥 Share'] // Row3 with 3 buttons
-  //   // ]).oneTime()
-  // });
+      for (const msg of messages) {
+        await ctx.sendMessage(msg);
+      }
+    } catch (err) {
+      await ctx.sendMessage(formatError(err));
+    }
+  });
+  bot.hears(/.*/, async (ctx) => {
+    await ctx.sendMessage(getCommandListMsg());
+  });
 
   return bot;
 };
