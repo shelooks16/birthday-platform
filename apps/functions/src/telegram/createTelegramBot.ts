@@ -1,13 +1,9 @@
+import { MemoryCache } from '@shared/memory-cache';
 import { appConfig } from '../appConfig';
 import { connectUserProfile, getBirthdayList } from './bot.commands';
-import { BirthdayTelegramBot } from './bot.types';
 
-let cachedBot: BirthdayTelegramBot;
-
-export async function createTelegramBot() {
-  if (cachedBot) return cachedBot;
-
-  const { Telegraf, Markup } = await import('telegraf');
+const telegramBot = async () => {
+  const { Telegraf } = await import('telegraf');
 
   const bot = new Telegraf(appConfig.env().telegram.bot_token);
 
@@ -56,7 +52,8 @@ export async function createTelegramBot() {
   //   // ]).oneTime()
   // });
 
-  cachedBot = bot;
-
   return bot;
-}
+};
+
+export const createTelegramBot = async () =>
+  MemoryCache.getOrSet('telegrambot', telegramBot);

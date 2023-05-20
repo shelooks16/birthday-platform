@@ -1,6 +1,7 @@
+import { MemoryCache } from '@shared/memory-cache';
 import { appConfig } from '../appConfig';
 
-export const createOpenAiClient = async () => {
+const openAiClient = async () => {
   const { Configuration, OpenAIApi } = await import('openai');
 
   const apiKey = appConfig.env().openai?.secretkey;
@@ -15,3 +16,6 @@ export const createOpenAiClient = async () => {
 
   return new OpenAIApi(configuration);
 };
+
+export const createOpenAiClient = async () =>
+  MemoryCache.getOrSet('openai', openAiClient);

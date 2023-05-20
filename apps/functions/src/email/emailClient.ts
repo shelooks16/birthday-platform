@@ -1,6 +1,7 @@
+import { MemoryCache } from '@shared/memory-cache';
 import { appConfig } from '../appConfig';
 
-export const createEmailClient = async () => {
+const emailClient = async () => {
   const nodemailer = await import('nodemailer');
 
   const c = appConfig.env().mailclient;
@@ -27,3 +28,6 @@ export const createEmailClient = async () => {
     }
   );
 };
+
+export const createEmailClient = async () =>
+  MemoryCache.getOrSet('emailclient', emailClient);
