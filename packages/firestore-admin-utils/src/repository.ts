@@ -98,6 +98,19 @@ export class FireCollectionRepository<
       .then((snap) => firestoreSnapshotListToData<DocData>(snap.docs));
   }
 
+  async findManyByIds(ids: string[]) {
+    const docs = ids.map((id) => this.getDocRef(id));
+
+    return this.firestore
+      .getAll(...docs)
+      .then(
+        (snap) =>
+          firestoreSnapshotListToData<DocData>(
+            snap
+          ) as (WithId<DocData> | null)[]
+      );
+  }
+
   async count(options: FindManyOptions<FieldType> = {}) {
     return this.buildQueryForFindMany(options)
       .count()
