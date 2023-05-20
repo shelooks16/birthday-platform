@@ -12,7 +12,10 @@ export const notificationDataService = {
     const db = await this.db();
 
     return db.findMany({
-      where: [['profileId', '==', profileId]],
+      where: [
+        ['profileId', '==', profileId],
+        ['isSent', '==', false]
+      ],
       orderBy: {
         notifyAt: orderByNotifyAt
       }
