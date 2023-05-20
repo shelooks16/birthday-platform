@@ -50,9 +50,7 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
     setIsLoading(true);
 
     try {
-      const db = await notificationChannelService.db();
-
-      await db.deleteById(props.channel.id);
+      await notificationChannelService.deleteById(props.channel.id);
 
       notificationService.show({
         status: 'success',

@@ -33,14 +33,7 @@ export const useNotificationList = (filter?: Accessor<NotificationsFilter>) => {
       };
     },
     ({ profileId, filter = {} }) =>
-      notificationDataService.db().then((db) => {
-        return db.findMany({
-          where: [['profileId', '==', profileId]],
-          orderBy: {
-            notifyAt: filter.orderByNotifyAt ?? 'asc'
-          }
-        });
-      })
+      notificationDataService.findForProfile(profileId, filter.orderByNotifyAt)
   );
 
   const notificationListWithRelations = createMemo<

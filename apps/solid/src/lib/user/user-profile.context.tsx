@@ -58,8 +58,7 @@ export function UserProfileContextProvider(props: ParentProps) {
     setState('isLoading', true);
 
     try {
-      const db = await profileService.db();
-      const p = await db.findById(userctx.user.uid);
+      const p = await profileService.getMyProfile();
 
       setProfile(p, null);
     } catch (err) {
@@ -72,9 +71,7 @@ export function UserProfileContextProvider(props: ParentProps) {
 
     async function waitForProfile() {
       if (userctx.user) {
-        const db = await profileService.db();
-        unsub = db.$findById(
-          userctx.user.uid,
+        unsub = await profileService.$getMyProfile(
           (profile) => {
             if (profile) {
               unsub();

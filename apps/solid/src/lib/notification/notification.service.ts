@@ -4,5 +4,18 @@ export const notificationDataService = {
     return import('./notification.repository').then(
       (mod) => mod.notificationRepo
     );
+  },
+  async findForProfile(
+    profileId: string,
+    orderByNotifyAt: 'asc' | 'desc' = 'asc'
+  ) {
+    const db = await this.db();
+
+    return db.findMany({
+      where: [['profileId', '==', profileId]],
+      orderBy: {
+        notifyAt: orderByNotifyAt
+      }
+    });
   }
 };

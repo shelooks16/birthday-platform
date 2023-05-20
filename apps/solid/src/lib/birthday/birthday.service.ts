@@ -7,10 +7,39 @@ import {
 } from '@shared/types';
 import { resolveCurrentLocale } from '../../i18n.context';
 import { asyncLoadAuth, asyncLoadFunctions } from '../firebase/loaders';
+import { downloadIntoFile } from './downloadFile';
+
+import type { NewBirthdayData } from './birthday.repository';
+export type { NewBirthdayData } from './birthday.repository';
 
 export const birthdayService = {
   async db() {
     return import('./birthday.repository').then((mod) => mod.birthdayRepo);
+  },
+  async deleteById(id: string) {
+    const db = await this.db();
+    await db.deleteById(id);
+  },
+  async findForProfile(profileId: string) {
+    const db = await this.db();
+
+    return db.findMany({ where: [['profileId', '==', profileId]] });
+  },
+  async addBirthday(data: NewBirthdayData) {
+    const db = await this.db();
+    const { auth } = await asyncLoadAuth();
+
+    return db.addNewBirthday({ ...data, profileId: auth.currentUser!.uid });
+  },
+  async updateBirthday(id: string, data: NewBirthdayData) {
+    const db = await this.db();
+
+    await db.updateBirthday({
+      ...data,
+      id
+    });
+
+    return db.findById(id) as unknown as BirthdayDocument;
   },
   async generateBirthdayWish(
     payload: Omit<GenerateBirthdayWishPayload, 'language'>
@@ -35,11 +64,22 @@ export const birthdayService = {
       where: [['profileId', '==', auth.currentUser!.uid]]
     });
 
-    return birthdays.map<BirthdayImportExport>((b) => ({
+    const exportedBirthdays = birthdays.map<BirthdayImportExport>((b) => ({
       buddyName: b.buddyName,
       buddyDescription: b.buddyDescription || '',
       birth: b.birth
     }));
+
+    const fileName = downloadIntoFile(
+      JSON.stringify(exportedBirthdays, null, 2),
+      'birthdays_export',
+      'json'
+    );
+
+    return {
+      exportedBirthdays,
+      fileName
+    };
   },
   async importBirthdays(importedBirthdays: BirthdayImportExport[]) {
     const { auth } = await asyncLoadAuth();

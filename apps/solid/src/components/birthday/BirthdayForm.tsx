@@ -37,8 +37,10 @@ import { getNotifyBeforePresets } from '@shared/static-cms';
 import { parseNotifyBeforePreset } from '@shared/notification';
 import TimeZonePicker from '../timezone-picker';
 import { useUserProfileCtx } from '../../lib/user/user-profile.context';
-import type { NewBirthdayData } from '../../lib/birthday/birthday.repository';
-import { birthdayService } from '../../lib/birthday/birthday.service';
+import {
+  birthdayService,
+  NewBirthdayData
+} from '../../lib/birthday/birthday.service';
 import OptionalTooltip from '../OptionalTooltip';
 import { useNotificationChannelsCtx } from '../../lib/notificationChannel/notificationChannels.context';
 import EditNotificationChannelsBtn from '../notificationChannel/EditNotificationChannelsBtn';
@@ -156,11 +158,9 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
         ...(values.description ? { buddyDescription: values.description } : {})
       };
 
-      const db = await birthdayService.db();
-
       const createdOrUpdated = props.birthdayId
-        ? await db.updateBirthday(props.birthdayId, data)
-        : await db.addNewBirthday(profilectx.profile!.id, data);
+        ? await birthdayService.updateBirthday(props.birthdayId, data)
+        : await birthdayService.addBirthday(data);
 
       props.onAfterSubmit?.(createdOrUpdated, values);
     }

@@ -16,9 +16,7 @@ const DeleteBirthdayBtn: Component<DeleteBirthdayBtnProps> = (props) => {
     setIsDeleting(true);
 
     try {
-      const db = await birthdayService.db();
-      await db.deleteById(props.birthday.id);
-
+      await birthdayService.deleteById(props.birthday.id);
       props.onAfterDeleted?.(props.birthday);
     } catch (err) {
       if (props.onError) {

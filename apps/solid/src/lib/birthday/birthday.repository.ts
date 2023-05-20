@@ -25,12 +25,10 @@ class BirthdayRepo extends FireWebCollectionRepository<
   }
 
   async addNewBirthday(
-    profileId: string,
-    data: NewBirthdayData
+    data: NewBirthdayData & { profileId: string }
   ): Promise<BirthdayDocument> {
     const entry: BirthdayDocument = {
       ...data,
-      profileId,
       id: this.getRandomDocId(),
       createdAt: getTimestamp()
     };
@@ -40,21 +38,15 @@ class BirthdayRepo extends FireWebCollectionRepository<
     return entry;
   }
 
-  async updateBirthday(
-    id: string,
-    data: NewBirthdayData
-  ): Promise<BirthdayDocument> {
+  async updateBirthday(data: WithId<NewBirthdayData>) {
     const { deleteField } = this.firestoreSdk as BirthdayRepoFireSdk;
 
     const updates: WithId<NewBirthdayData> = {
       ...data,
-      id,
       buddyDescription: data.buddyDescription || (deleteField() as any)
     };
 
     await this.updateOne(updates);
-
-    return this.findById(id) as unknown as BirthdayDocument;
   }
 }
 

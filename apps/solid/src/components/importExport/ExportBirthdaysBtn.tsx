@@ -3,30 +3,6 @@ import { Button, ButtonProps, notificationService } from '@hope-ui/solid';
 import { birthdayService } from '../../lib/birthday/birthday.service';
 import { useUserProfileCtx } from '../../lib/user/user-profile.context';
 
-const downloadIntoFile = (
-  data: string,
-  fileNamePrefix: string,
-  extension: 'json' | 'csv'
-) => {
-  const fileName = fileNamePrefix + '_' + Date.now() + '.' + extension;
-
-  const element = document.createElement('a');
-  element.setAttribute(
-    'href',
-    'data:text/plain;charset=utf-8,' + encodeURIComponent(data)
-  );
-  element.setAttribute('download', fileName);
-
-  element.style.display = 'none';
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
-
-  return fileName;
-};
-
 type ExportBirthdaysBtnProps = Omit<
   ButtonProps<'button'>,
   'onClick' | 'loading'
@@ -50,17 +26,12 @@ const ExportBirthdaysBtn: Component<ExportBirthdaysBtnProps> = (props) => {
     setIsLoading(true);
 
     try {
-      const birthdays = await birthdayService.exportBirthdays();
-
-      const fileName = downloadIntoFile(
-        JSON.stringify(birthdays, null, 2),
-        'birthdays_export',
-        'json'
-      );
+      const { fileName, exportedBirthdays } =
+        await birthdayService.exportBirthdays();
 
       notificationService.show({
         status: 'success',
-        title: `Exported to ${fileName}`
+        title: `Exported ${exportedBirthdays.length} birthdays to ${fileName}`
       });
     } catch (err) {
       notificationService.show({

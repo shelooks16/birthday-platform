@@ -37,34 +37,20 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
 
   const handleClick = async () => {
     disposeListeners();
-    const clickedAt = new Date().toISOString();
 
-    const db = await notificationChannelService.db();
-
-    unsubFromLatestAdded = db.$findMany(
-      {
-        where: [
-          ['profileId', '==', profileCtx.profile!.id],
-          ['type', '==', ChannelType.telegram],
-          ['updatedAt', '>', clickedAt]
-        ],
-        orderBy: { updatedAt: 'asc' },
-        limitToLast: 1
-      },
-      (channels) => {
-        const channel = channels[0];
-
-        if (!channel) return;
-
-        mutate((chs) =>
-          chs && !chs.some((c) => c.id === channel.id)
-            ? chs.concat(channel)
-            : chs
-        );
-        unsubFromLatestAdded();
-        setShowSnack(true);
-      }
-    );
+    unsubFromLatestAdded =
+      await notificationChannelService.$findLatestUpdatedChannelForMyProfile(
+        ChannelType.telegram,
+        (channel) => {
+          mutate((chs) =>
+            chs && !chs.some((c) => c.id === channel.id)
+              ? chs.concat(channel)
+              : chs
+          );
+          unsubFromLatestAdded();
+          setShowSnack(true);
+        }
+      );
 
     const listener = () => {
       if (document.hidden) return;
