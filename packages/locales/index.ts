@@ -35,8 +35,13 @@ export const loadDictionary = (locale: SupportedLocale) =>
 export const localeToDialect = (locale: SupportedLocale) =>
   localeMap[locale].dialect;
 
+export type ITranslationCommon = Awaited<ReturnType<(typeof en)['common']>>;
+export type TranslationKeyCommon = DeepKeyOf<ITranslationCommon>;
+
 export type ITranslationWeb = Awaited<ReturnType<(typeof en)['web']>>;
 export type TranslationKeyWeb = DeepKeyOf<ITranslationWeb>;
 
-export type ITranslationCommon = Awaited<ReturnType<(typeof en)['common']>>;
-export type TranslationKeyCommon = DeepKeyOf<ITranslationCommon>;
+export type ITranslationFunctions = Awaited<
+  ReturnType<(typeof en)['functions']>
+>;
+export type TranslationKeyFunctions = DeepKeyOf<ITranslationFunctions>;

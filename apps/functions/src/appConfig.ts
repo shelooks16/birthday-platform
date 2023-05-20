@@ -1,3 +1,4 @@
+import { fallbackLocale, localeList } from '@shared/locales';
 import * as functions from 'firebase-functions';
 
 interface Secrets {
@@ -21,6 +22,8 @@ let secrets: Secrets;
 export const appConfig = {
   birthdayWishLimitPerGenerate: 3,
   isDevEnv: process.env.FUNCTIONS_EMULATOR === 'true',
+  languages: localeList,
+  defaultLocale: fallbackLocale,
   env: () => {
     secrets = secrets ?? functions.config();
     return secrets;
