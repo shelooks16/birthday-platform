@@ -9,6 +9,7 @@ import {
 } from 'solid-js';
 import { userService } from './user.service';
 import { useNavigate } from '@solidjs/router';
+import { ROUTE_PATH } from '../../routes';
 
 type UserState = {
   user: User | null;
@@ -32,7 +33,7 @@ export const useRedirectIfSignedOut = () => {
 
   createEffect(() => {
     if (userctx.isSignedOut) {
-      navigate('/');
+      navigate(ROUTE_PATH.index);
     }
   });
 };

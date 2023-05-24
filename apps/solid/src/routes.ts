@@ -5,13 +5,18 @@ export enum ROUTE_PATH {
   index = '/',
   birthday = '/dash',
   addBirthday = '/dash/birthday/add',
-  profile = '/dash/profile'
+  profile = '/dash/profile',
+  onboarding = '/onboarding'
 }
 
 export const routes: RouteDefinition[] = [
   {
     path: ROUTE_PATH.index,
     component: lazy(() => import('./pages/Home'))
+  },
+  {
+    path: ROUTE_PATH.onboarding,
+    component: lazy(() => import('./pages/Onboarding'))
   },
   {
     path: ROUTE_PATH.birthday,

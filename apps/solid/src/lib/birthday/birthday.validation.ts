@@ -1,4 +1,5 @@
 import { NotifyBeforePreset } from '@shared/types';
+import { commonField } from '../common-validation';
 import * as yup from 'yup';
 
 export const birthdayField = {
@@ -13,6 +14,6 @@ export const birthdayField = {
     notifyAtBefore: () =>
       yup.array(yup.string<NotifyBeforePreset>().required()).min(1),
     notifyChannelsIds: () => yup.array(yup.string().required()).min(1),
-    timeZone: () => yup.string().trim().min(1).max(30)
+    timeZone: commonField.timeZone
   }
 };

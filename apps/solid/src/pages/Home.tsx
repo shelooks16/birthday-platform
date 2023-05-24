@@ -5,8 +5,8 @@ import { useUserCtx } from '../lib/user/user.context';
 
 const Home: Component = () => {
   const [usrCtx] = useUserCtx();
-  const handleGoogleLogin = useGoogleSignin();
-  const handleSignOut = useSignOut();
+  const { signInWithGoogle } = useGoogleSignin();
+  const { signOut } = useSignOut();
 
   return (
     <div>
@@ -21,8 +21,8 @@ const Home: Component = () => {
           <div>Logged in {usrCtx.user?.uid}</div>
         </Match>
       </Switch>
-      <Button onClick={handleGoogleLogin}>Login google</Button>
-      <Button onClick={handleSignOut}>Sign out</Button>
+      <Button onClick={signInWithGoogle}>Login google</Button>
+      <Button onClick={signOut}>Sign out</Button>
     </div>
   );
 };

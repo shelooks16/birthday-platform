@@ -2,18 +2,16 @@ import { Component, ParentComponent } from 'solid-js';
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
   Heading,
-  Stack,
-  VStack
+  notificationService,
+  Stack
 } from '@hope-ui/solid';
 import { useSignOut } from '../../lib/user/signin';
 import PageTitle from '../../components/PageTitle';
-import LanguagePicker from '../../components/LanguagePicker';
 import EditNotificationChannels from '../../components/notificationChannel/EditNotificationChannels';
 import ExportBirthdaysBtn from '../../components/importExport/ExportBirthdaysBtn';
 import ImportBirthdaysBtn from '../../components/importExport/ImportBirthdaysBtn';
+import ProfileForm from '../../components/profile/ProfileForm';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
   return (
@@ -31,7 +29,14 @@ const Section: ParentComponent<{ title: string }> = (props) => {
 };
 
 const DashProfile: Component = () => {
-  const signOut = useSignOut();
+  const { signOut, isSigningOut } = useSignOut();
+
+  const onProfileSaved = () => {
+    notificationService.show({
+      status: 'success',
+      title: 'Information saved'
+    });
+  };
 
   return (
     <div>
@@ -42,12 +47,7 @@ const DashProfile: Component = () => {
       </Section>
 
       <Section title="Settings">
-        <VStack alignItems="start" gap="$4">
-          <FormControl>
-            <FormLabel for="lang-picker-trigger">Display language</FormLabel>
-            <LanguagePicker id="lang-picker" />
-          </FormControl>
-        </VStack>
+        <ProfileForm onAfterSubmit={onProfileSaved} />
       </Section>
 
       <Section title="Import/Export">
@@ -60,6 +60,7 @@ const DashProfile: Component = () => {
       <Box textAlign="center" mt="$24">
         <Button
           onClick={signOut}
+          loading={isSigningOut()}
           type="button"
           colorScheme="danger"
           variant="ghost"

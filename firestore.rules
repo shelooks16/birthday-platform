@@ -71,8 +71,9 @@ service cloud.firestore {
     match /profile/{id} {
       allow read: if id == request.auth.uid;
       allow update: if id == request.auth.uid 
-        && updatingOnlyFields(['timeZone'])
-        && isOptionalValidString(newData(), 'timeZone', 1, 30);
+        && updatingOnlyFields(['timeZone', 'locale'])
+        && isOptionalValidString(newData(), 'timeZone', 1, 30)
+        && newData().keys().hasAny(['locale']) ? newData().locale in ['en', 'uk', 'ru'] : true;
     }
 
     match /notification/{id} {

@@ -7,9 +7,12 @@ import {
   HStack,
   Skeleton
 } from '@hope-ui/solid';
-import { For, createSignal, lazy, createEffect, on } from 'solid-js';
+import { For, createSignal, createEffect, on, Switch, Match } from 'solid-js';
 import { A, Outlet, useLocation } from '@solidjs/router';
-import { useUserProfileCtx } from '../../lib/user/user-profile.context';
+import {
+  useRedirectIfOnboardingNotFinished,
+  useUserProfileCtx
+} from '../../lib/user/user-profile.context';
 import { fadeInCss } from '../../lib/stitches.utils';
 import { ROUTE_PATH } from '../../routes';
 import { useRedirectIfSignedOut } from '../../lib/user/user.context';
@@ -17,10 +20,6 @@ import { useI18n } from '../../i18n.context';
 import ColorModeToggle from '../../components/ColorModeToggle';
 import { BirthdaysProvider } from '../../lib/birthday/birthdays.context';
 import { NotificationChannelsProvider } from '../../lib/notificationChannel/notificationChannels.context';
-
-const FinishProfileModal = lazy(
-  () => import('../../components/FinishProfileModal')
-);
 
 const Header = () => {
   const [profilectx] = useUserProfileCtx();
@@ -99,6 +98,7 @@ const Navs = () => {
 
 export default function DashboardLayout() {
   useRedirectIfSignedOut();
+  const [profileCtx] = useRedirectIfOnboardingNotFinished();
 
   return (
     <Container
@@ -107,19 +107,27 @@ export default function DashboardLayout() {
       pb={{ '@initial': '$10', '@md': '$20' }}
       maxWidth={{ '@lg': 750 }}
     >
-      <Box mb="$6">
-        <Header />
-      </Box>
-      <Navs />
-      <Divider my="$4" />
+      <Switch>
+        <Match when={profileCtx.isLoading}>
+          <div>...</div>
+        </Match>
+        <Match when={profileCtx.error}>
+          <div>{profileCtx.error!.message}</div>
+        </Match>
+        <Match when={profileCtx.profile}>
+          <Box mb="$6">
+            <Header />
+          </Box>
+          <Navs />
+          <Divider my="$4" />
 
-      <BirthdaysProvider>
-        <NotificationChannelsProvider>
-          <Outlet />
-        </NotificationChannelsProvider>
-      </BirthdaysProvider>
-
-      <FinishProfileModal />
+          <BirthdaysProvider>
+            <NotificationChannelsProvider>
+              <Outlet />
+            </NotificationChannelsProvider>
+          </BirthdaysProvider>
+        </Match>
+      </Switch>
     </Container>
   );
 }

@@ -5,6 +5,9 @@ export const profileService = {
   async db() {
     return import('./profile.repository').then((mod) => mod.profileRepo);
   },
+  isProfileCompleted(profile: ProfileDocument) {
+    return profile.timeZone && profile.locale;
+  },
   async getMyProfile() {
     const { auth } = await asyncLoadAuth();
     const db = await this.db();
@@ -20,7 +23,7 @@ export const profileService = {
 
     return db.$findById(auth.currentUser!.uid, listener, onError);
   },
-  async updateMyProfile(data: Partial<Omit<ProfileDocument, 'id'>>) {
+  async updateMyProfile(data: Pick<ProfileDocument, 'timeZone' | 'locale'>) {
     const { auth } = await asyncLoadAuth();
     const db = await this.db();
 

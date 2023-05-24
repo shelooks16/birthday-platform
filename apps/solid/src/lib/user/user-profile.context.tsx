@@ -11,6 +11,9 @@ import { ProfileDocument } from '@shared/types';
 import { useUserCtx } from './user.context';
 import { profileService } from './profile.service';
 import { notificationService } from '@hope-ui/solid';
+import { useNavigate } from '@solidjs/router';
+import { ROUTE_PATH } from '../../routes';
+import { useI18n } from '../../i18n.context';
 
 type ProfileState = {
   profile: ProfileDocument | null;
@@ -20,7 +23,6 @@ type ProfileState = {
 
 type ProfileStateOps = {
   setProfile: (profile?: ProfileDocument | null, error?: Error | null) => void;
-  refetchProfile: () => Promise<any>;
 };
 
 type IUserProfileCtx = [ProfileState, ProfileStateOps];
@@ -29,8 +31,28 @@ export const UserProfileCtx = createContext<IUserProfileCtx>();
 export const useUserProfileCtx = () =>
   useContext(UserProfileCtx) as IUserProfileCtx;
 
+export const useRedirectIfOnboardingNotFinished = () => {
+  const profileCtxReturn = useUserProfileCtx();
+  const [profileCtx] = profileCtxReturn;
+
+  const navigate = useNavigate();
+
+  createEffect(() => {
+    if (
+      !profileCtx.error &&
+      profileCtx.profile &&
+      !profileService.isProfileCompleted(profileCtx.profile)
+    ) {
+      navigate(ROUTE_PATH.onboarding);
+    }
+  });
+
+  return profileCtxReturn;
+};
+
 export function UserProfileContextProvider(props: ParentProps) {
   const [userctx] = useUserCtx();
+  const [, { locale }] = useI18n();
   const [state, setState] = createStore<ProfileState>({
     profile: null,
     isLoading: false,
@@ -52,20 +74,6 @@ export function UserProfileContextProvider(props: ParentProps) {
     );
   };
 
-  const refetchProfile = async () => {
-    if (!userctx.user) return;
-
-    setState('isLoading', true);
-
-    try {
-      const p = await profileService.getMyProfile();
-
-      setProfile(p, null);
-    } catch (err) {
-      setProfile(null, err.message);
-    }
-  };
-
   createEffect(() => {
     setState('isLoading', true);
 
@@ -76,6 +84,7 @@ export function UserProfileContextProvider(props: ParentProps) {
             if (profile) {
               unsub();
               notificationService.hide('new-profile');
+              locale(profile.locale);
             }
 
             setProfile(profile);
@@ -101,7 +110,7 @@ export function UserProfileContextProvider(props: ParentProps) {
     unsub && unsub();
   });
 
-  const ctx: IUserProfileCtx = [state, { setProfile, refetchProfile }];
+  const ctx: IUserProfileCtx = [state, { setProfile }];
 
   return (
     <UserProfileCtx.Provider value={ctx}>
