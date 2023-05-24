@@ -2,7 +2,7 @@ import { LocaleFormatter, LocaleFormatterExtraOptions } from './formatter';
 import type { PolyfilExtraOptions } from './polyfill';
 import { translate } from './translate';
 
-const loadPolyfil = (locale: string, options: PolyfilExtraOptions = {}) =>
+const loadPolyfill = (locale: string, options: PolyfilExtraOptions = {}) =>
   import('./polyfill').then((m) => m.i18nPolyfill(locale, options));
 
 export type I18n<DictKey extends string> = {
@@ -24,14 +24,15 @@ export const initI18n = async <
   formatterOptions: LocaleFormatterExtraOptions,
   onPolyfillError?: (message: string) => any
 ) => {
-  await loadPolyfil(locale, { forceLoadAll: false, onError: onPolyfillError });
+  await loadPolyfill(locale, { forceLoadAll: false, onError: onPolyfillError });
 
+  // *think* use js Proxy to catch LocaleFormatter method errors, then apply polyfill
   let format: LocaleFormatter;
 
   try {
     format = new LocaleFormatter(locale, formatterOptions);
   } catch (err) {
-    await loadPolyfil(locale, {
+    await loadPolyfill(locale, {
       forceLoadAll: true,
       onError: onPolyfillError
     });
