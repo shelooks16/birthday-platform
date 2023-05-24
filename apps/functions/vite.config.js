@@ -8,17 +8,22 @@ import { defineConfig } from 'vite';
 import generatePackageJson from 'rollup-plugin-generate-package-json';
 import pckJson from './package.json';
 
-const externalDepsList = [
-  'node:path',
-  'firebase-admin/app',
-  'firebase-admin/firestore'
-];
-const externalDepsObj = {};
+// dependencies which must NOT be packaged along with functions
+const externalDepsList = ['node:path', /firebase-admin/, /@formatjs/];
+// dependencies that functions use but they are not listed in package.json
+const additionalDependencies = {
+  '@formatjs/intl-datetimeformat': '^6.8.0',
+  '@formatjs/intl-getcanonicallocales': '^2.2.0',
+  '@formatjs/intl-locale': '^3.3.0',
+  '@formatjs/intl-numberformat': '^8.5.0',
+  '@formatjs/intl-pluralrules': '^5.2.2',
+  '@formatjs/intl-relativetimeformat': '^11.2.2'
+};
 
 Object.keys(pckJson.dependencies).forEach((packageName) => {
   if (pckJson.dependencies[packageName] !== '*') {
     externalDepsList.push(packageName);
-    externalDepsObj[packageName] = pckJson.dependencies[packageName];
+    additionalDependencies[packageName] = pckJson.dependencies[packageName];
   }
 });
 
@@ -47,7 +52,7 @@ export default defineConfig({
             engines: pckJson.engines,
             main: './index.js'
           },
-          additionalDependencies: externalDepsObj
+          additionalDependencies
         })
       ],
       output: {

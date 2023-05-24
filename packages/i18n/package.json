@@ -8,6 +8,12 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
+    "@formatjs/intl-datetimeformat": "^6.8.0",
+    "@formatjs/intl-getcanonicallocales": "^2.2.0",
+    "@formatjs/intl-locale": "^3.3.0",
+    "@formatjs/intl-numberformat": "^8.5.0",
+    "@formatjs/intl-pluralrules": "^5.2.2",
+    "@formatjs/intl-relativetimeformat": "^11.2.2",
     "@shared/dates": "*",
     "@shared/general-utils": "*"
   }

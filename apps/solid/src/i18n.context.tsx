@@ -6,9 +6,10 @@ import {
   createSignal,
   createMemo,
   useContext,
-  Accessor
+  Accessor,
+  Switch,
+  Match
 } from 'solid-js';
-import { createStore } from 'solid-js/store';
 import { createLocalStorage } from '@solid-primitives/storage';
 import { Meta } from '@solidjs/meta';
 import {
@@ -19,7 +20,7 @@ import {
   TranslationKeyWeb
 } from '@shared/locales';
 import { appConfig } from './appConfig';
-import { initI18n } from '@shared/i18n';
+import { I18n, initI18n } from '@shared/i18n';
 import { MemoryCache } from '@shared/memory-cache';
 import { setLocale as setYupLocale } from 'yup';
 
@@ -30,9 +31,7 @@ const localeToDictLoader = appConfig.languages.reduce<{
   return acc;
 }, {});
 
-export type I18nWeb = ReturnType<
-  typeof initI18n<ITranslationWeb, TranslationKeyWeb>
->;
+export type I18nWeb = I18n<TranslationKeyWeb>;
 
 type I18nContextInterface = [
   i18n: Accessor<I18nWeb>,
@@ -107,48 +106,39 @@ const useSettings = () => {
 export const I18nProvider: ParentComponent = (props) => {
   const [settings, setSettings] = useSettings();
 
-  const [loadedDicts, setLoadedDicts] = createStore<
-    Record<string, ITranslationWeb>
-  >({} as any);
-
   const [locale, setLocale] = createSignal(
     settings.locale in localeToDictLoader
       ? settings.locale
       : appConfig.defaultLocale
   );
-  const [dict] = createResource<ITranslationWeb, string>(locale, (l) =>
-    localeToDictLoader[l]()
-  );
-
-  const i18n = createMemo<I18nWeb>((prev) => {
-    const lang = locale() as SupportedLocale;
-    const langDict = loadedDicts[lang];
-
-    if (!langDict) return prev as any;
-
-    return MemoryCache.getOrSet('i18n' + lang, () =>
-      initI18n<ITranslationWeb, TranslationKeyWeb>(
-        localeToDialect(lang),
-        langDict,
-        {
-          zodiacSignList: langDict.zodiacSign
-        }
-      )
-    );
-  });
-
-  useTranslateValidationSchema(i18n);
-
-  createEffect(() => {
-    if (!dict.loading) {
-      setLoadedDicts(locale(), (d) => Object.assign(d || {}, dict()));
-    }
-  });
 
   createEffect(() => {
     document.documentElement.lang = locale();
     setSettings(locale());
   });
+
+  const [i18nResource] = createResource<I18nWeb, string>(locale, async (l) => {
+    const dictionary = await localeToDictLoader[l]();
+
+    return MemoryCache.getOrSet('i18n' + l, () =>
+      initI18n<ITranslationWeb, TranslationKeyWeb>(
+        localeToDialect(l as SupportedLocale),
+        dictionary,
+        {
+          zodiacSignList: dictionary.zodiacSign
+        },
+        console.log
+      )
+    );
+  });
+
+  const i18n = createMemo<I18nWeb>(() =>
+    !i18nResource.error && i18nResource.latest
+      ? i18nResource.latest
+      : (null as unknown as I18nWeb)
+  );
+
+  useTranslateValidationSchema(i18n);
 
   const ctx: I18nContextInterface = [
     i18n,
@@ -160,7 +150,12 @@ export const I18nProvider: ParentComponent = (props) => {
   return (
     <I18nContext.Provider value={ctx}>
       <Meta name="lang" content={locale()} />
-      {props.children}
+      <Switch>
+        <Match when={i18nResource.error}>
+          <div>{i18nResource.error.message}</div>
+        </Match>
+        <Match when={i18n()}>{props.children}</Match>
+      </Switch>
     </I18nContext.Provider>
   );
 };
