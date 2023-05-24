@@ -23,6 +23,8 @@ export const appConfig = {
   birthdayWishLimitPerGenerate: 3,
   isDevEnv: process.env.FUNCTIONS_EMULATOR === 'true',
   languages: localeList,
+  isLanguageSupported: (locale?: string) =>
+    locale ? appConfig.languages.some((l) => l.locale === locale) : false,
   defaultLocale: fallbackLocale,
   env: () => {
     secrets = secrets ?? functions.config();

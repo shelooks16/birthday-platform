@@ -28,7 +28,7 @@ const loadI18n = async (locale: SupportedLocale) => {
 export const useI18n = async (
   locale: SupportedLocale = appConfig.defaultLocale
 ) => {
-  if (!appConfig.languages.some((lang) => locale === lang.locale)) {
+  if (!appConfig.isLanguageSupported(locale)) {
     logger.warn('Locale is not supported. Using default locale fallback.', {
       locale,
       defaultLocale: appConfig.defaultLocale

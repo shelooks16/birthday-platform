@@ -2,6 +2,7 @@ import { Button, ButtonProps, notificationService } from '@hope-ui/solid';
 import { MemoryCache } from '@shared/memory-cache';
 import { ChannelType } from '@shared/types';
 import { Component, onCleanup, createSignal } from 'solid-js';
+import { useI18n } from '../../../i18n.context';
 import { notificationChannelService } from '../../../lib/notificationChannel/notificationChannel.service';
 import { useNotificationChannelsCtx } from '../../../lib/notificationChannel/notificationChannels.context';
 import { getConnectTelegramBotHref } from '../../../lib/telegramBot';
@@ -19,6 +20,7 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
 ) => {
   const [showSnack, setShowSnack] = createSignal(false);
   const [profileCtx] = useUserProfileCtx();
+  const [, { locale }] = useI18n();
   const [, { mutate }] = useNotificationChannelsCtx();
 
   let unsubFromLatestAdded: () => void;
@@ -82,7 +84,8 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
       href={
         profileCtx.profile
           ? getConnectTelegramBotHref({
-              pairingCode: profileCtx.profile.botPairingCode
+              pairingCode: profileCtx.profile.botPairingCode,
+              locale: locale()
             })
           : ''
       }

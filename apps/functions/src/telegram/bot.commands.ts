@@ -1,10 +1,12 @@
 import { BirthdayDocumentWithDate, splitBirthdays } from '@shared/birthday';
 import { getTimestamp, WhereClause } from '@shared/firestore-utils';
+import { SupportedLocale } from '@shared/locales';
 import {
   ChannelType,
   NotificationChannelDocumentField,
   TeleBotStartPayload
 } from '@shared/types';
+import { appConfig } from '../appConfig';
 import { birthdayRepo } from '../birthday/birthday.repository';
 import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
 import { notificationRepo } from '../notifications/notification.repository';
@@ -24,7 +26,10 @@ const parseStartPayload = (payload: any) => {
     }
 
     const result: TeleBotStartPayload = {
-      pairingCode: parsed.pairingCode
+      pairingCode: parsed.pairingCode,
+      locale: appConfig.isLanguageSupported(parsed.locale)
+        ? parsed.locale
+        : undefined
     };
 
     return result;
@@ -39,6 +44,7 @@ export const connectUserProfile = async (
   startPayload?: string
 ) => {
   const payload = parseStartPayload(startPayload);
+  let locale = (payload?.locale ?? appConfig.defaultLocale) as SupportedLocale;
 
   if (!payload) return 'Привет!';
 
@@ -46,7 +52,13 @@ export const connectUserProfile = async (
 
   const profile = await profileRepo().findByBotPairingCode(payload.pairingCode);
 
-  if (!profile) return 'Профиль пользователя не найден. Попробуй заново.';
+  if (!profile) {
+    return 'Профиль пользователя не найден. Попробуй заново.';
+  }
+
+  locale = appConfig.isLanguageSupported(profile.locale)
+    ? (profile.locale as SupportedLocale)
+    : locale;
 
   const existingChannel =
     await notificationChannelRepo().findChannelByProfileId(

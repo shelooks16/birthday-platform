@@ -7,6 +7,8 @@ export const appConfig = {
   },
   defaultBirthdaysView: 'calendar',
   languages: localeList,
+  isLanguageSupported: (locale?: string) =>
+    locale ? appConfig.languages.some((l) => l.locale === locale) : false,
   defaultLocale: fallbackLocale,
   isDevEnv: import.meta.env.DEV,
   env: {
