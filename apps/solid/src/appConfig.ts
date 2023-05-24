@@ -18,6 +18,10 @@ export const appConfig = {
       messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
       appId: import.meta.env.VITE_FIREBASE_APP_ID
     },
-    telegramBotId: import.meta.env.VITE_TELEGRAM_BOT_ID
+    telegramBotId: import.meta.env.VITE_TELEGRAM_BOT_ID,
+    sentry: {
+      dsn: import.meta.env.VITE_SENTRY_DSN,
+      environment: import.meta.env.VITE_SENTRY_ENVIRONMENT
+    }
   }
 };
