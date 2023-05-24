@@ -34,7 +34,7 @@ type FormProps = {
 const Form = (props: FormProps) => {
   const { form, errors, data, setFields, isSubmitting } =
     createForm<SubmitData>({
-      extend: validator({ schema: schema as any }),
+      extend: validator({ schema: schema() as any }),
       onSubmit: async (values) => {
         await profileService.updateMyProfile(values);
         await props.onAfterSubmit?.(values);
