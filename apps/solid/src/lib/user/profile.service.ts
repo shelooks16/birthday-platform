@@ -23,7 +23,9 @@ export const profileService = {
 
     return db.$findById(auth.currentUser!.uid, listener, onError);
   },
-  async updateMyProfile(data: Pick<ProfileDocument, 'timeZone' | 'locale'>) {
+  async updateMyProfile(
+    data: Pick<ProfileDocument, 'displayName' | 'timeZone' | 'locale'>
+  ) {
     const { auth } = await asyncLoadAuth();
     const db = await this.db();
 

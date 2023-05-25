@@ -69,9 +69,14 @@ service cloud.firestore {
     }
 
     match /profile/{id} {
+      function validateDisplayName(val) {
+        return isValidString(val, 1, 30);
+      }
+
       allow read: if id == request.auth.uid;
       allow update: if id == request.auth.uid 
-        && updatingOnlyFields(['timeZone', 'locale'])
+        && updatingOnlyFields(['displayName', 'timeZone', 'locale'])
+        && validateDisplayName(newData().displayName)
         && isOptionalValidString(newData(), 'timeZone', 1, 30)
         && newData().keys().hasAny(['locale']) ? newData().locale in ['en', 'uk', 'ru'] : true;
     }

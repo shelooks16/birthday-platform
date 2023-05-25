@@ -7,7 +7,7 @@ import {
 } from '@hope-ui/solid';
 import { useNavigate } from '@solidjs/router';
 import { Component, Match, Switch } from 'solid-js';
-import ProfileForm, { ISchema } from '../components/profile/ProfileForm';
+import ProfileForm from '../components/profile/ProfileForm';
 import { useSignOut } from '../lib/user/signin';
 import { useUserProfileCtx } from '../lib/user/user-profile.context';
 import { useRedirectIfSignedOut } from '../lib/user/user.context';
@@ -16,13 +16,11 @@ import { ROUTE_PATH } from '../routes';
 const Onboarding: Component = () => {
   useRedirectIfSignedOut();
 
-  const [profileCtx, { setProfile }] = useUserProfileCtx();
+  const [profileCtx] = useUserProfileCtx();
   const { signOut, isSigningOut } = useSignOut();
   const navigate = useNavigate();
 
-  const handleFinishOnboarding = async (data: ISchema) => {
-    setProfile({ ...profileCtx.profile!, ...data });
-
+  const handleFinishOnboarding = async () => {
     notificationService.show({
       status: 'success',
       title: 'Information saved'

@@ -5,7 +5,8 @@ import {
   FormHelperText,
   Button,
   FormErrorMessage,
-  VStack
+  VStack,
+  Input
 } from '@hope-ui/solid';
 import { createForm } from '@felte/solid';
 import { validator } from '@felte/validator-yup';
@@ -18,6 +19,7 @@ import { useI18n } from '../../i18n.context';
 
 const schema = () =>
   yup.object({
+    displayName: profileField.displayName().required(),
     timeZone: profileField.timeZone().required(),
     locale: profileField.locale().required()
   });
@@ -29,10 +31,11 @@ type ProfileFormProps = {
 };
 
 const ProfileForm = (props: ProfileFormProps) => {
-  const [profilectx] = useUserProfileCtx();
+  const [profilectx, { setProfile }] = useUserProfileCtx();
   const [, { locale }] = useI18n();
   const { form, errors, data, setFields, isSubmitting } = createForm<ISchema>({
     initialValues: {
+      displayName: profilectx.profile?.displayName,
       timeZone: profilectx.profile?.timeZone,
       locale: (profilectx.profile?.locale ?? locale()) as any,
       ...props.initialData
@@ -40,13 +43,27 @@ const ProfileForm = (props: ProfileFormProps) => {
     extend: validator({ schema: schema() as any }),
     onSubmit: async (values) => {
       await profileService.updateMyProfile(values);
+
       locale(values.locale);
+      setProfile({ ...profilectx.profile!, ...values });
+
       await props.onAfterSubmit?.(values);
     }
   });
 
   return (
     <VStack as="form" ref={form} spacing="$4" alignItems="stretch">
+      <FormControl required invalid={!!errors('displayName')}>
+        <FormLabel>Display name</FormLabel>
+        <Input
+          type="text"
+          name="displayName"
+          autocomplete="off"
+          placeholder="Твое имя"
+        />
+        <FormErrorMessage>{errors('displayName')?.[0]}</FormErrorMessage>
+      </FormControl>
+
       <FormControl required invalid={!!errors('locale')}>
         <FormLabel for="locale-picker-trigger">
           Set language preference
