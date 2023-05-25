@@ -13,6 +13,7 @@
   },
   "mixed": {
     "required": "Field is required",
-    "notType": "Field must have type {{ type }}"
+    "notType": "Field must have type {{ type }}",
+    "oneOf": "Value must be one of: {{ values }}"
   }
 }

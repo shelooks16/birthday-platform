@@ -78,7 +78,8 @@ const useTranslateValidationSchema = (i18n: Accessor<I18nWeb>) => {
       },
       mixed: {
         required: t('validation.mixed.required'),
-        notType: ({ type }) => t('validation.mixed.notType', { type })
+        notType: ({ type }) => t('validation.mixed.notType', { type }),
+        oneOf: ({ values }) => t('validation.mixed.oneOf', { values })
       }
     });
   });

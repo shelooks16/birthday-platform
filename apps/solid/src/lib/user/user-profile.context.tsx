@@ -14,6 +14,7 @@ import { notificationService } from '@hope-ui/solid';
 import { useNavigate } from '@solidjs/router';
 import { ROUTE_PATH } from '../../routes';
 import { useI18n } from '../../i18n.context';
+import { appConfig } from '../../appConfig';
 
 type ProfileState = {
   profile: ProfileDocument | null;
@@ -84,7 +85,9 @@ export function UserProfileContextProvider(props: ParentProps) {
             if (profile) {
               unsub();
               notificationService.hide('new-profile');
-              locale(profile.locale);
+              if (appConfig.isLanguageSupported(profile.locale)) {
+                locale(profile.locale);
+              }
             }
 
             setProfile(profile);
