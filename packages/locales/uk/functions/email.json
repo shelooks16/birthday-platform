@@ -1,0 +1,12 @@
+{
+  "templates": {
+    "birthdaySoon": {
+      "subject": "Днюха {{ buddyName }} вже близько",
+      "html": "<div>Привіт, {{ name }}!</div><br /><div><b>{{ buddyName }}</b> скоро буде відмічати свою днюху на <b>{{ birthday }}</b></div>"
+    },
+    "emailVerification": {
+      "subject": "Підтвердження пошти",
+      "html": "<div>Привіт, {{ name }}!</div><br /><div>Щоб підтвердити цю пошту, використовуй наступний код:</div><br /><div><b>{{ otp }}</b></div>"
+    }
+  }
+}

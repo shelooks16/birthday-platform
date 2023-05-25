@@ -1,0 +1,12 @@
+{
+  "templates": {
+    "birthdaySoon": {
+      "subject": "{{ buddyName }}'s birthday starts soon",
+      "html": "<div>Hellooo, {{ name }}!</div><br /><div><b>{{ buddyName }}</b> will soon celebrate his birthday on <b>{{ birthday }}</b></div>"
+    },
+    "emailVerification": {
+      "subject": "Email verification",
+      "html": "<div>Hi, {{ name }}!</div><br /><div>To verify this email use OTP:</div><br /><div><b>{{ otp }}</b></div>"
+    }
+  }
+}

@@ -5,7 +5,6 @@ import { ChannelType, NotificationDocument } from '@shared/types';
 import { logger } from '../utils/logger';
 import { createOnUpdateFunction } from '../utils/createFunction';
 import { sendEmail } from '../email/sendEmail';
-import { mailTemplate } from '../email/templates';
 import { sendTelegramMessage } from '../telegram/sendMessage';
 import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
 import { notificationRepo } from './notification.repository';
@@ -76,9 +75,16 @@ export const sendNotification = createOnUpdateFunction(
         case ChannelType.email: {
           await sendEmail({
             to: channel.value as string,
-            subject: mailTemplate.birthdaySoon.subject(),
-            html: mailTemplate.birthdaySoon.html()
+            subject: i18n.t('email.templates.birthdaySoon.subject', {
+              buddyName: birthday.buddyName
+            }),
+            html: i18n.t('email.templates.birthdaySoon.html', {
+              name: profile.displayName,
+              buddyName: birthday.buddyName,
+              birthday: i18n.format.dateToDayMonth(birthdayDate)
+            })
           });
+
           break;
         }
         case ChannelType.telegram: {

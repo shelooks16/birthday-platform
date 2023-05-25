@@ -16,9 +16,10 @@ import {
 } from '../utils/createFunction';
 import { requireAuth } from '../utils/auth';
 import { sendEmail } from '../email/sendEmail';
-import { mailTemplate } from '../email/templates';
 import { emailVerificationRepo } from './emailVerification.repository';
 import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
+import { profileRepo } from '../profile/profile.repository';
+import { useI18n } from '../i18n.context';
 
 function randomizeInRange(min: number, max: number) {
   const random = Math.random();
@@ -86,6 +87,14 @@ export const processEmailForVerification = createOnCreateFunction(
       firestoreSnapshotToData<EmailVerificationDocument>(snap)!;
 
     try {
+      const profile = await profileRepo().findById(verificationDoc.profileId);
+
+      if (!profile) {
+        throw new Error(`Profile not found: ${verificationDoc.profileId}`);
+      }
+
+      const i18n = await useI18n(profile.locale);
+
       await notificationChannelRepo().runTransaction(async (tr) => {
         emailVerificationRepo().atomicUpdateOne(tr, {
           id: verificationDoc.id,
@@ -95,8 +104,9 @@ export const processEmailForVerification = createOnCreateFunction(
 
         await sendEmail({
           to: verificationDoc.email,
-          subject: mailTemplate.emailVerification.subject(),
-          html: mailTemplate.emailVerification.html({
+          subject: i18n.t('email.templates.emailVerification.subject'),
+          html: i18n.t('email.templates.emailVerification.html', {
+            name: profile.displayName,
             otp: verificationDoc.otp
           })
         });
