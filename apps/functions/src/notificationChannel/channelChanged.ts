@@ -8,7 +8,9 @@ import { FireCollection } from '@shared/firestore-collections';
 import { createOnDeleteFunction } from '../utils/createFunction';
 import { logger } from '../utils/logger';
 import { birthdayRepo } from '../birthday/birthday.repository';
-import { createTelegramBot } from '../telegram/createTelegramBot';
+import { sendTelegramMessage } from '../telegram/sendMessage';
+import { profileRepo } from '../profile/profile.repository';
+import { useI18n } from '../i18n.context';
 
 export const onChannelDeleteUpdateAffectedDocuments = createOnDeleteFunction(
   FireCollection.notificationChannel.docMatch,
@@ -72,14 +74,24 @@ export const onChannelDeleteSendByeMessage = createOnDeleteFunction(
       type: deletedChannel.type
     });
 
+    const profile = await profileRepo().findById(deletedChannel.profileId);
+
+    if (!profile) {
+      logger.info('Profile not found', {
+        profileId: deletedChannel.profileId
+      });
+      return;
+    }
+
+    const i18n = await useI18n(profile.locale);
+
     switch (deletedChannel.type) {
       case ChannelType.telegram: {
-        const bot = await createTelegramBot();
-
-        await bot.telegram.sendMessage(
+        await sendTelegramMessage(
           deletedChannel.value,
-          'Этот бот был отключен для нотификаций.'
+          i18n.t('telegramBot.disconnectMessage', { name: profile.displayName })
         );
+
         break;
       }
       default: {

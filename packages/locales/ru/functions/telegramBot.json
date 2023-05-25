@@ -31,5 +31,6 @@
     "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
     "noItems": "Уведомления не настроены"
   },
-  "notificationMessage": "Привееет! {{ buddyName }} скоро будет отмечать свою днюху на {{ birthday }}"
+  "notificationMessage": "Привееет! {{ buddyName }} скоро будет отмечать свою днюху на {{ birthday }}",
+  "disconnectMessage": "Этот бот был отключен для {{ name }}"
 }

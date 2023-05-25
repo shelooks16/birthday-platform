@@ -31,5 +31,6 @@
     "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
     "noItems": "Повідомлення не налаштовано"
   },
-  "notificationMessage": "Привіт! {{ buddyName }} скоро буде відмічати свою днюху на {{ birthday }}"
+  "notificationMessage": "Привіт! {{ buddyName }} скоро буде відмічати свою днюху на {{ birthday }}",
+  "disconnectMessage": "Цей бот було відключено для {{ name }}"
 }

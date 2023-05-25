@@ -31,5 +31,6 @@
     "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
     "noItems": "Notifications are not configured"
   },
-  "notificationMessage": "Hellooo! {{ buddyName }} will soon celebrate his birthday on {{ birthday }}"
+  "notificationMessage": "Hellooo! {{ buddyName }} will soon celebrate his birthday on {{ birthday }}",
+  "disconnectMessage": "This bot was disconnected for {{ name }}"
 }
