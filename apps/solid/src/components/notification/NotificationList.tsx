@@ -5,7 +5,6 @@ import { useI18n } from '../../i18n.context';
 import { NotificationDocumentWithRelations } from '../../lib/notification/useNotificationList';
 import { IconUserCircle } from '../Icons';
 import IconChannelType from './IconChannelType';
-import EditBirthdayBtn from '../birthday/EditBirthdayBtn';
 
 type NotificationListProps = {
   notifications: NotificationDocumentWithRelations[];
@@ -73,11 +72,6 @@ const NotificationList: Component<NotificationListProps> = (props) => {
                       d={{ '@initial': 'block', '@sm': 'none' }}
                     />
                     <Box>{notification._sourceBirthday?.buddyName ?? '-'}</Box>
-                    <Show when={notification._sourceBirthday}>
-                      <EditBirthdayBtn
-                        birthday={notification._sourceBirthday!}
-                      />
-                    </Show>
                   </HStack>
                 </Box>
               </SimpleGrid>
