@@ -13,7 +13,6 @@ import {
 import { Component, splitProps } from 'solid-js';
 import { BirthdayDocument } from '@shared/types';
 import { Drawer, DrawerOverlay } from '../Modal';
-import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 import { waitForDrawerAnimation } from '../../lib/stitches.utils';
 import { IconEdit } from '../Icons';
 import BirthdayForm from './BirthdayForm';
@@ -34,8 +33,6 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
     'onBeforeOpen',
     'onAfterClose'
   ]);
-  const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
-
   const { isOpen, onOpen, onClose } = createDisclosure();
 
   const handleOpen = () => {
@@ -52,14 +49,6 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
   const handleOnAfterUpdated = async (updatedBirthday: BirthdayDocument) => {
     await handleClose(true);
 
-    mutateBirthdays((list) =>
-      list
-        ? list.map((item) =>
-            item.id === updatedBirthday.id ? updatedBirthday : item
-          )
-        : list
-    );
-
     notificationService.show({
       status: 'success',
       title: `${updatedBirthday.buddyName} updated`
@@ -68,10 +57,6 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
 
   const handleOnAfterDeleted = async (deletedBirthday: BirthdayDocument) => {
     await handleClose(true);
-
-    mutateBirthdays((list) =>
-      list ? list.filter((item) => item.id !== deletedBirthday.id) : list
-    );
 
     notificationService.show({
       status: 'success',

@@ -5,15 +5,10 @@ import { Component } from 'solid-js';
 import BirthdayForm from '../../components/birthday/BirthdayForm';
 import { IconArrowLeft } from '../../components/Icons';
 import PageTitle from '../../components/PageTitle';
-import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 import { ROUTE_PATH } from '../../routes';
 
 const DashAddBirthday: Component = () => {
-  const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
-
   const handleOnAfterAdded = (createdBirthday: BirthdayDocument) => {
-    mutateBirthdays((val) => (val ? val.concat(createdBirthday) : val));
-
     notificationService.show({
       status: 'success',
       title: `${createdBirthday.buddyName} was created`

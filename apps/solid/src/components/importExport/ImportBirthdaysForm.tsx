@@ -11,6 +11,7 @@ import { BirthdayDocument, BirthdayImportExport } from '@shared/types';
 import * as yup from 'yup';
 import { birthdayService } from '../../lib/birthday/birthday.service';
 import { birthdayField } from '../../lib/birthday/birthday.validation';
+import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 
 const ShowExampleBtn = () => {
   const EXAMPLE: BirthdayImportExport[] = [
@@ -115,6 +116,7 @@ type ImportBirthdaysFormProps = {
 };
 
 const ImportBirthdaysForm: Component<ImportBirthdaysFormProps> = (props) => {
+  const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
   const [file, setFile] = createSignal<File>();
   const [importedBirthdays, setImportedBirthdays] =
     createSignal<BirthdayImportExport[]>();
@@ -169,6 +171,8 @@ const ImportBirthdaysForm: Component<ImportBirthdaysFormProps> = (props) => {
 
     try {
       const birthdays = await birthdayService.importBirthdays(bs);
+
+      mutateBirthdays((p) => (p ? p.concat(birthdays) : p));
       props.onAfterSubmit?.(birthdays);
     } catch (err) {
       setErrors([err.message]);

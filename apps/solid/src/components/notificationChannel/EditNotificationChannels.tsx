@@ -31,11 +31,13 @@ import { notificationChannelService } from '../../lib/notificationChannel/notifi
 import AddEmailForm from './email/AddEmailForm';
 import { useI18n } from '../../i18n.context';
 import IconChannelType from '../notification/IconChannelType';
+import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 
 const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
   props
 ) => {
-  const [, { mutate }] = useNotificationChannelsCtx();
+  const [, { mutate: mutateChannels }] = useNotificationChannelsCtx();
+  const [birthdaysCtx, { refetch: refetchBirthdays }] = useBirthdaysCtx();
   const [isLoading, setIsLoading] = createSignal(false);
 
   const handleRemoveChannel = async () => {
@@ -47,20 +49,33 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
       return;
     }
 
+    const channelId = props.channel.id;
+
     setIsLoading(true);
 
     try {
-      await notificationChannelService.deleteById(props.channel.id);
+      await notificationChannelService.deleteById(channelId);
 
       notificationService.show({
         status: 'success',
         title: `Removed ${props.channel.displayName}`
       });
 
-      const channelId = props.channel.id;
-      mutate((channels) =>
+      mutateChannels((channels) =>
         channels ? channels.filter((c) => c.id !== channelId) : channels
       );
+
+      if (
+        !birthdaysCtx.error &&
+        birthdaysCtx.latest?.some((b) =>
+          b.notificationSettings?.notifyChannelsIds.includes(channelId)
+        )
+      ) {
+        // *think* listen for server updates with realtime listener
+        setTimeout(() => {
+          refetchBirthdays();
+        }, 2500);
+      }
     } catch (err) {
       notificationService.show({
         status: 'danger',

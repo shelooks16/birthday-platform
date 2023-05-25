@@ -15,7 +15,7 @@ import {
 } from '@hope-ui/solid';
 import { Drawer, DrawerOverlay } from '../../Modal';
 import { BirthdayDocument } from '@shared/types';
-import { Component, For, splitProps, Show, createMemo } from 'solid-js';
+import { Component, Index, splitProps, Show, createMemo } from 'solid-js';
 import GenerateBirthdayWishBtn from '../GenerateBirthdayWishBtn';
 import EditBirthdayBtn from '../EditBirthdayBtn';
 import { IconBell } from '../../Icons';
@@ -158,15 +158,15 @@ const MobileInfoBtn: Component<MobileInfoBtnProps> = (props) => {
           <Divider />
           <DrawerBody my="$2" zIndex="9999999">
             <VStack spacing="$8" alignItems="stretch">
-              <For each={localProps.birthdays}>
+              <Index each={localProps.birthdays}>
                 {(item) => (
                   <BirthInfoItem
-                    birthday={item}
+                    birthday={item()}
                     targetDate={localProps.targetDate}
                     showGenerateWish={localProps.showGenerateWish}
                   />
                 )}
-              </For>
+              </Index>
             </VStack>
           </DrawerBody>
         </DrawerContent>

@@ -46,6 +46,7 @@ import { useNotificationChannelsCtx } from '../../lib/notificationChannel/notifi
 import EditNotificationChannelsBtn from '../notificationChannel/EditNotificationChannelsBtn';
 import { useI18n } from '../../i18n.context';
 import { birthdayField } from '../../lib/birthday/birthday.validation';
+import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 
 const maxAllowedAge = 80;
 const minAllowedAge = 0;
@@ -120,16 +121,14 @@ const FormSectionTitle: ParentComponent = (props) => {
 };
 
 export type BirthdayFormProps = {
-  onAfterSubmit?: (
-    createdOrUpdatedBirthday: BirthdayDocument,
-    formData: ISchema
-  ) => any;
+  onAfterSubmit?: (createdOrUpdatedBirthday: BirthdayDocument) => any;
   initialData?: Partial<ISchema>;
   /** If passed, edit existing birthday */
   birthdayId?: string;
 };
 
 const BirthdayForm: Component<BirthdayFormProps> = (props) => {
+  const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
   const [profilectx] = useUserProfileCtx();
   const [channelsCtx] = useNotificationChannelsCtx();
   const [i18n] = useI18n();
@@ -162,7 +161,19 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
         ? await birthdayService.updateBirthday(props.birthdayId, data)
         : await birthdayService.addBirthday(data);
 
-      props.onAfterSubmit?.(createdOrUpdated, values);
+      if (props.birthdayId) {
+        mutateBirthdays((list) =>
+          list
+            ? list.map((item) =>
+                item.id === createdOrUpdated.id ? createdOrUpdated : item
+              )
+            : list
+        );
+      } else {
+        mutateBirthdays((val) => (val ? val.concat(createdOrUpdated) : val));
+      }
+
+      props.onAfterSubmit?.(createdOrUpdated);
     }
   });
 

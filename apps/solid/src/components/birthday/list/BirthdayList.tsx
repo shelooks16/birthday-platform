@@ -1,7 +1,7 @@
 import { Box, SimpleGrid } from '@hope-ui/solid';
 import { BirthdayDocumentWithDate, splitBirthdays } from '@shared/birthday';
 import { BirthdayDocument } from '@shared/types';
-import { Component, createMemo, For, Show } from 'solid-js';
+import { Component, createMemo, Index, Show } from 'solid-js';
 import { useI18n } from '../../../i18n.context';
 import { borderSpinCss, fadeInCss } from '../../../lib/stitches.utils';
 import BirthdayListItem from './BirthdayListItem';
@@ -40,13 +40,13 @@ const BirthdaySublistGrid: Component<BirthdaySublistGridProps> = (props) => {
           gap="$8"
           css={fadeInCss()}
         >
-          <For each={props.list}>
+          <Index each={props.list}>
             {(b) => (
               <Box p="$2">
-                <BirthdayListItem birthday={b} isToday={props.isToday} />
+                <BirthdayListItem birthday={b()} isToday={props.isToday} />
               </Box>
             )}
-          </For>
+          </Index>
         </SimpleGrid>
       </Box>
     </Show>

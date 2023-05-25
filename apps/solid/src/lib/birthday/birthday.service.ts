@@ -59,7 +59,7 @@ export const birthdayService = {
   async exportBirthdays() {
     const { auth } = await asyncLoadAuth();
 
-    const db = await birthdayService.db();
+    const db = await this.db();
     const birthdays = await db.findMany({
       where: [['profileId', '==', auth.currentUser!.uid]]
     });
@@ -84,7 +84,7 @@ export const birthdayService = {
   async importBirthdays(importedBirthdays: BirthdayImportExport[]) {
     const { auth } = await asyncLoadAuth();
 
-    const db = await birthdayService.db();
+    const db = await this.db();
     const batch = db.batch();
 
     const birthdays = importedBirthdays.map<BirthdayDocument>((b) => ({

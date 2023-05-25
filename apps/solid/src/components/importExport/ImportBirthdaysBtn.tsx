@@ -13,7 +13,6 @@ import {
 import { Modal, ModalOverlay } from '../Modal';
 import { waitForModalAnimation } from '../../lib/stitches.utils';
 import { BirthdayDocument } from '@shared/types';
-import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 import ImportBirthdaysForm from './ImportBirthdaysForm';
 
 type ExportBirthdaysBtnProps = Omit<
@@ -23,7 +22,6 @@ type ExportBirthdaysBtnProps = Omit<
 
 const ImportBirthdaysBtn: Component<ExportBirthdaysBtnProps> = (props) => {
   const { isOpen, onOpen, onClose } = createDisclosure();
-  const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
 
   const handleSuccess = async (data: BirthdayDocument[]) => {
     onClose();
@@ -33,8 +31,6 @@ const ImportBirthdaysBtn: Component<ExportBirthdaysBtnProps> = (props) => {
       status: 'success',
       title: `${data.length} birthdays were imported`
     });
-
-    mutateBirthdays((p) => (p ? p.concat(data) : p));
   };
 
   return (
