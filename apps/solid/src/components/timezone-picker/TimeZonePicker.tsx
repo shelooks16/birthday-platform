@@ -32,7 +32,7 @@ const TimeZonePicker = (props: SimpleSelectProps) => {
 
   const [value, setValue] = createSignal(untrack(() => props.value));
   const [lastSelected, setLastSelected] = createSignal(
-    untrack(() => props.value)
+    untrack(() => (props.value === detectedTz ? '' : props.value))
   );
 
   const createOption = (timeZone: string): Option => {
@@ -47,8 +47,9 @@ const TimeZonePicker = (props: SimpleSelectProps) => {
       return allTzList.latest.map((tz) => createOption(tz));
     }
 
-    if (lastSelected())
+    if (lastSelected()) {
       return [createOption(lastSelected()), createOption(detectedTz)];
+    }
 
     return [createOption(detectedTz)];
   });
