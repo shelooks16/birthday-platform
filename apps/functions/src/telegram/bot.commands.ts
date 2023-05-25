@@ -36,6 +36,24 @@ const parseStartPayload = (payload: any) => {
   }
 };
 
+export const getConnectedProfiles = async (chatId: number) => {
+  const channels = await notificationChannelRepo().findMany({
+    where: [
+      ['type', '==', ChannelType.telegram],
+      ['value', '==', chatId]
+    ]
+  });
+
+  const profileIds = channels.map((ch) => ch.profileId);
+
+  const profiles =
+    profileIds.length === 0
+      ? []
+      : await profileRepo().findManyByIds(profileIds);
+
+  return { profiles, channels };
+};
+
 export const connectUserProfile = async (
   chatId: number,
   channelDisplayName: string,
@@ -46,8 +64,15 @@ export const connectUserProfile = async (
   let locale = (payload?.locale ?? appConfig.defaultLocale) as SupportedLocale;
   let i18n = await useI18n(locale);
 
-  if (!payload)
+  if (!payload) {
+    const { profiles } = await getConnectedProfiles(chatId);
+    locale = appConfig.isLanguageSupported(profiles['0']?.locale)
+      ? (profiles['0']?.locale as SupportedLocale)
+      : locale;
+    i18n = await useI18n(locale);
+
     return [i18n.t('telegramBot.connectProfile.noPayloadMessage'), locale];
+  }
 
   let message = '';
 
@@ -95,24 +120,6 @@ export const connectUserProfile = async (
   }
 
   return [message, locale];
-};
-
-export const getConnectedProfiles = async (chatId: number) => {
-  const channels = await notificationChannelRepo().findMany({
-    where: [
-      ['type', '==', ChannelType.telegram],
-      ['value', '==', chatId]
-    ]
-  });
-
-  const profileIds = channels.map((ch) => ch.profileId);
-
-  const profiles =
-    profileIds.length === 0
-      ? []
-      : await profileRepo().findManyByIds(profileIds);
-
-  return { profiles, channels };
 };
 
 const buildMessageForSplit = (
