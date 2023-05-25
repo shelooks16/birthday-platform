@@ -20,20 +20,17 @@ const parseStartPayload = (payload: any) => {
   try {
     const payloadStr = Buffer.from(payload, 'base64').toString();
 
-    const parsed = JSON.parse(payloadStr) as Partial<TeleBotStartPayload>;
+    const parsed = JSON.parse(payloadStr) as TeleBotStartPayload;
+    const [pairingCode, locale] = parsed;
 
-    if (!parsed.pairingCode) {
+    if (!pairingCode) {
       return null;
     }
 
-    const result: TeleBotStartPayload = {
-      pairingCode: parsed.pairingCode,
-      locale: appConfig.isLanguageSupported(parsed.locale)
-        ? parsed.locale
-        : undefined
+    return {
+      pairingCode,
+      locale: appConfig.isLanguageSupported(locale) ? locale : undefined
     };
-
-    return result;
   } catch (err) {
     return null;
   }

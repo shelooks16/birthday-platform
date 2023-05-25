@@ -83,10 +83,10 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
       disabled={!profileCtx.profile}
       href={
         profileCtx.profile
-          ? getConnectTelegramBotHref({
-              pairingCode: profileCtx.profile.botPairingCode,
-              locale: locale()
-            })
+          ? getConnectTelegramBotHref([
+              profileCtx.profile.botPairingCode,
+              locale()
+            ])
           : ''
       }
     >

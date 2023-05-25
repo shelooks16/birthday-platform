@@ -1,4 +1,4 @@
-export interface TeleBotStartPayload {
-  pairingCode: string;
-  locale?: string;
-}
+type PairingCode = string;
+type Locale = string;
+
+export type TeleBotStartPayload = [PairingCode, Locale?];
