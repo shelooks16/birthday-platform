@@ -20,14 +20,16 @@
     "todayListTitle": "Сегодня",
     "futureListTitle": "Наступающие",
     "pastListTitle": "Прошедшие",
-    "item": "{{ buddyName }} | {{ birthday }}"
+    "item": "{{ buddyName }} | {{ birthday }}",
+    "noItems": "Ничего нет"
   },
   "/me": {
     "item": "{{ name }} подключен на языке: {{ language }}"
   },
   "/notifications": {
     "title": "Ближайшие уведомления для {{ name }}",
-    "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}"
+    "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
+    "noItems": "Уведомления не настроены"
   },
   "notificationMessage": "Привееет! {{ buddyName }} скоро будет отмечать свою днюху на {{ birthday }}"
 }

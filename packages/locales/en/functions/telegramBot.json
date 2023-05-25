@@ -20,14 +20,16 @@
     "todayListTitle": "Today",
     "futureListTitle": "Upcoming",
     "pastListTitle": "Past",
-    "item": "{{ buddyName }} | {{ birthday }}"
+    "item": "{{ buddyName }} | {{ birthday }}",
+    "noItems": "Nothing found"
   },
   "/me": {
     "item": "{{ name }} is connected with language: {{ language }}"
   },
   "/notifications": {
     "title": "Upcoming notifications for {{ name }}",
-    "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}"
+    "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
+    "noItems": "Notifications are not configured"
   },
   "notificationMessage": "Hellooo! {{ buddyName }} will soon celebrate his birthday on {{ birthday }}"
 }

@@ -192,6 +192,10 @@ export const getBirthdayList = async (chatId: number) => {
         );
       }
 
+      if (lists.length === 1) {
+        lists.push(i18n.t('telegramBot./birthdays.noItems'));
+      }
+
       messages.push(lists.join('\n\n'));
     })
   );
@@ -223,6 +227,10 @@ export const getMe = async (chatId: number) => {
           })
       );
     }
+  }
+
+  if (messages.length === 0) {
+    messages.push('-');
   }
 
   return messages.join('\n');
@@ -261,7 +269,11 @@ export const getNotifications = async (
       });
       const channelIds = channels.map((ch) => ch.id);
 
-      if (channelIds.length === 0) return;
+      if (channelIds.length === 0) {
+        lists.push(i18n.t('telegramBot./notifications.noItems'));
+        messages.push(lists.join('\n'));
+        return;
+      }
 
       const notifications = await notificationRepo().findMany({
         where: [
@@ -274,7 +286,11 @@ export const getNotifications = async (
         }
       });
 
-      if (notifications.length === 0) return;
+      if (notifications.length === 0) {
+        lists.push(i18n.t('telegramBot./notifications.noItems'));
+        messages.push(lists.join('\n'));
+        return;
+      }
 
       const birthdays = await birthdayRepo().findManyByIds(
         Array.from(new Set(notifications.map((n) => n.sourceBirthdayId)))
