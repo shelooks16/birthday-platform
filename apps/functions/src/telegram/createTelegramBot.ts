@@ -1,9 +1,11 @@
 import { MemoryCache } from '@shared/memory-cache';
 import { ChannelType } from '@shared/types';
 import { appConfig } from '../appConfig';
+import { useI18n } from '../i18n.context';
 import {
   connectUserProfile,
   getBirthdayList,
+  getConnectedProfiles,
   getMe,
   getNotifications
 } from './bot.commands';
@@ -12,20 +14,24 @@ import {
 const WELCOME_STICKER_ID =
   'CAACAgUAAxkBAAEgTD5kSXgMrMOKFYaxB0Cv8FUrZwn2CgACuw8AAsZRxhX44kGODQJCei8E';
 
-const getCommandListMsg = () => {
+const getCommandListMsg = async (locale?: string) => {
+  const { t } = await useI18n(locale);
+
   return (
-    `Список комманд:\n` +
-    '/me - Аккаунты подключенные к этому боту\n' +
-    '/birthdays - Список твоих днюх\n' +
-    '/notifications - Список ближайших уведомлений\n' +
-    '/tnotifications - Список ближайших уведомлений через телеграм'
+    `${t('telegramBot.commandList.title')}:\n` +
+    `/me - ${t('telegramBot.commandList.command.me')}\n` +
+    `/birthdays - ${t('telegramBot.commandList.command.birthdays')}\n` +
+    `/notifications - ${t('telegramBot.commandList.command.notifications')}\n` +
+    `/tnotifications - ${t('telegramBot.commandList.command.tnotifications')}`
   );
 };
 
-const formatError = (error: any) => {
-  const msg = error?.message || error?.description || error.status;
+const formatError = async (error: any, locale?: string) => {
+  const { t } = await useI18n(locale);
 
-  return 'Ошибка: ' + msg;
+  const message = error?.message || error?.description || error.status;
+
+  return t('telegramBot.errorMessage', { message });
 };
 
 const telegramBot = async () => {
@@ -35,7 +41,7 @@ const telegramBot = async () => {
 
   bot.start(async (ctx) => {
     try {
-      const message = await connectUserProfile(
+      const [message, locale] = await connectUserProfile(
         ctx.chat.id,
         ctx.from.username ??
           ctx.from.first_name ??
@@ -49,9 +55,9 @@ const telegramBot = async () => {
       }
 
       await ctx.replyWithSticker(WELCOME_STICKER_ID);
-      await ctx.sendMessage(getCommandListMsg());
+      await ctx.sendMessage(await getCommandListMsg(locale));
     } catch (err) {
-      await ctx.sendMessage(formatError(err));
+      await ctx.sendMessage(await formatError(err));
     }
   });
   bot.command('me', async (ctx) => {
@@ -60,7 +66,7 @@ const telegramBot = async () => {
 
       await ctx.sendMessage(msg);
     } catch (err) {
-      await ctx.sendMessage(formatError(err));
+      await ctx.sendMessage(await formatError(err));
     }
   });
   bot.command('birthdays', async (ctx) => {
@@ -71,7 +77,7 @@ const telegramBot = async () => {
         await ctx.sendMessage(msg);
       }
     } catch (err) {
-      await ctx.sendMessage(formatError(err));
+      await ctx.sendMessage(await formatError(err));
     }
   });
   bot.command('notifications', async (ctx) => {
@@ -82,7 +88,7 @@ const telegramBot = async () => {
         await ctx.sendMessage(msg);
       }
     } catch (err) {
-      await ctx.sendMessage(formatError(err));
+      await ctx.sendMessage(await formatError(err));
     }
   });
   bot.command('tnotifications', async (ctx) => {
@@ -96,11 +102,17 @@ const telegramBot = async () => {
         await ctx.sendMessage(msg);
       }
     } catch (err) {
-      await ctx.sendMessage(formatError(err));
+      await ctx.sendMessage(await formatError(err));
     }
   });
   bot.hears(/.*/, async (ctx) => {
-    await ctx.sendMessage(getCommandListMsg());
+    try {
+      const { profiles } = await getConnectedProfiles(ctx.chat.id);
+
+      await ctx.sendMessage(await getCommandListMsg(profiles['0']?.locale));
+    } catch (err) {
+      await ctx.sendMessage(await formatError(err));
+    }
   });
 
   return bot;

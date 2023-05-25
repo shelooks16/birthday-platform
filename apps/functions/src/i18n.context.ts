@@ -25,9 +25,7 @@ const loadI18n = async (locale: SupportedLocale) => {
   );
 };
 
-export const useI18n = async (
-  locale: SupportedLocale = appConfig.defaultLocale
-) => {
+export const useI18n = async (locale: string = appConfig.defaultLocale) => {
   if (!appConfig.isLanguageSupported(locale)) {
     logger.warn('Locale is not supported. Using default locale fallback.', {
       locale,
@@ -36,5 +34,7 @@ export const useI18n = async (
     locale = appConfig.defaultLocale;
   }
 
-  return MemoryCache.getOrSet('i18n' + locale, () => loadI18n(locale));
+  return MemoryCache.getOrSet('i18n' + locale, () =>
+    loadI18n(locale as SupportedLocale)
+  );
 };

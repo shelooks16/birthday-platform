@@ -8,6 +8,7 @@ import {
 } from '@shared/types';
 import { appConfig } from '../appConfig';
 import { birthdayRepo } from '../birthday/birthday.repository';
+import { I18nFunctions, useI18n } from '../i18n.context';
 import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
 import { notificationRepo } from '../notifications/notification.repository';
 import { profileRepo } from '../profile/profile.repository';
@@ -44,21 +45,25 @@ export const connectUserProfile = async (
   startPayload?: string
 ) => {
   const payload = parseStartPayload(startPayload);
-  let locale = (payload?.locale ?? appConfig.defaultLocale) as SupportedLocale;
 
-  if (!payload) return 'Привет!';
+  let locale = (payload?.locale ?? appConfig.defaultLocale) as SupportedLocale;
+  let i18n = await useI18n(locale);
+
+  if (!payload)
+    return [i18n.t('telegramBot.connectProfile.noPayloadMessage'), locale];
 
   let message = '';
 
   const profile = await profileRepo().findByBotPairingCode(payload.pairingCode);
 
   if (!profile) {
-    return 'Профиль пользователя не найден. Попробуй заново.';
+    return [i18n.t('telegramBot.connectProfile.profileNotFound'), locale];
   }
 
   locale = appConfig.isLanguageSupported(profile.locale)
     ? (profile.locale as SupportedLocale)
     : locale;
+  i18n = await useI18n(locale);
 
   const existingChannel =
     await notificationChannelRepo().findChannelByProfileId(
@@ -74,7 +79,9 @@ export const connectUserProfile = async (
       updatedAt: getTimestamp()
     });
 
-    message = `${profile.displayName}, твой аккаунт уже подключен к этому боту. Данные были обновлены.`;
+    message = i18n.t('telegramBot.connectProfile.alreadyConnected', {
+      name: profile.displayName
+    });
   } else {
     await notificationChannelRepo().setOne({
       profileId: profile.id,
@@ -85,16 +92,15 @@ export const connectUserProfile = async (
       updatedAt: getTimestamp()
     });
 
-    message =
-      `Привет, ${profile.displayName}!\n` +
-      'Твой аккаунт теперь подключен к этому боту.\n' +
-      'Бот будет отправлять тебе нотификации о днюхах. Помимо нотификаций, бот так же выполняет другие функции.';
+    message = i18n.t('telegramBot.connectProfile.newConnected', {
+      name: profile.displayName
+    });
   }
 
-  return message;
+  return [message, locale];
 };
 
-const getConnectedProfiles = async (chatId: number) => {
+export const getConnectedProfiles = async (chatId: number) => {
   const channels = await notificationChannelRepo().findMany({
     where: [
       ['type', '==', ChannelType.telegram],
@@ -102,22 +108,29 @@ const getConnectedProfiles = async (chatId: number) => {
     ]
   });
 
-  const profiles = await profileRepo().findManyByIds(
-    channels.map((ch) => ch.profileId)
-  );
+  const profileIds = channels.map((ch) => ch.profileId);
+
+  const profiles =
+    profileIds.length === 0
+      ? []
+      : await profileRepo().findManyByIds(profileIds);
 
   return { profiles, channels };
 };
 
 const buildMessageForSplit = (
+  list: BirthdayDocumentWithDate[],
   title: string,
-  list: BirthdayDocumentWithDate[]
+  i18n: I18nFunctions
 ) => {
   const messages: string[] = [`-- ${title} --`];
 
   list.forEach((b) => {
     messages.push(
-      `${b.buddyName} - ${b.birth.year}.${b.birth.month + 1}.${b.birth.day}`
+      i18n.t('telegramBot./birthdays.item', {
+        buddyName: b.buddyName,
+        birthday: i18n.format.dateToDayMonth(b.asDateActiveYear)
+      })
     );
   });
 
@@ -133,24 +146,46 @@ export const getBirthdayList = async (chatId: number) => {
     profiles.map(async (profile) => {
       if (!profile) return;
 
+      const i18n = await useI18n(profile.locale);
+
       const birthdays = await birthdayRepo().findMany({
         where: [['profileId', '==', profile.id]]
       });
 
       const { todayList, pastList, upcomingList } = splitBirthdays(birthdays);
 
-      const lists: string[] = [`Birthdays for ${profile.displayName}`];
+      const lists: string[] = [
+        i18n.t('telegramBot./birthdays.title', { name: profile.displayName })
+      ];
 
       if (todayList.length) {
-        lists.push(buildMessageForSplit('Today', todayList));
+        lists.push(
+          buildMessageForSplit(
+            todayList,
+            i18n.t('telegramBot./birthdays.todayListTitle'),
+            i18n
+          )
+        );
       }
 
       if (upcomingList.length) {
-        lists.push(buildMessageForSplit('Upcoming', upcomingList));
+        lists.push(
+          buildMessageForSplit(
+            upcomingList,
+            i18n.t('telegramBot./birthdays.futureListTitle'),
+            i18n
+          )
+        );
       }
 
       if (pastList.length) {
-        lists.push(buildMessageForSplit('Past', pastList));
+        lists.push(
+          buildMessageForSplit(
+            pastList,
+            i18n.t('telegramBot./birthdays.pastListTitle'),
+            i18n
+          )
+        );
       }
 
       messages.push(lists.join('\n\n'));
@@ -163,7 +198,9 @@ export const getBirthdayList = async (chatId: number) => {
 export const getMe = async (chatId: number) => {
   const { profiles } = await getConnectedProfiles(chatId);
 
-  const messages: string[] = ['Аккаунты подключенные к этому боту:'];
+  const i18n = await useI18n(profiles[0]?.locale);
+
+  const messages: string[] = [i18n.t('telegramBot./me.title')];
 
   for (const profile of profiles) {
     if (profile) {
@@ -186,8 +223,12 @@ export const getNotifications = async (
     profiles.map(async (profile) => {
       if (!profile) return;
 
+      const i18n = await useI18n(profile.locale);
+
       const lists: string[] = [
-        `Upcoming notifications for ${profile.displayName}\n`
+        i18n.t('telegramBot./notifications.title', {
+          name: profile.displayName
+        }) + '\n'
       ];
 
       const where: WhereClause<NotificationChannelDocumentField>[] = [
@@ -229,9 +270,18 @@ export const getNotifications = async (
         );
 
         lists.push(
-          `${n.notifyAt} - ${birthday?.buddyName ?? 'Unknown buddy'} - ${
-            channel?.type ?? 'Unknown channel type'
-          }`
+          i18n.t('telegramBot./notifications.item', {
+            notifyAt: i18n.format.dateToDayMonthTime(
+              new Date(n.notifyAt),
+              birthday?.notificationSettings?.timeZone
+            ),
+            buddyName: birthday?.buddyName ?? '-',
+            channel: i18n.t(
+              `notificationChannel.labels.${channel?.type}` as any,
+              {},
+              channel?.type ?? '-'
+            )
+          })
         );
       });
 

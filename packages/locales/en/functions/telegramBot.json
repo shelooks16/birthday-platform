@@ -1,3 +1,33 @@
 {
-  "hello": "hi"
+  "errorMessage": "Error: {{ message }}",
+  "commandList": {
+    "title": "Command list",
+    "command": {
+      "me": "Accounts connected to this bot",
+      "birthdays": "List of your birthdays",
+      "notifications": "List of upcoming notifications",
+      "tnotifications": "List of upcoming telegram notifications"
+    }
+  },
+  "connectProfile": {
+    "noPayloadMessage": "Hi!",
+    "profileNotFound": "Account not found. Try again.",
+    "alreadyConnected": "{{ name }}, your account already connected to this bot. Data was updated.",
+    "newConnected": "Hi, {{ name }}!\nYour account is now connected to this bot.\nYou can return to the main website.\nThis bot will send you birthday reminders once you setup notifications on the website.\nApart from notifications, there a few supported commands."
+  },
+  "/birthdays": {
+    "title": "Birthdays for {{ name }}",
+    "todayListTitle": "Today",
+    "futureListTitle": "Upcoming",
+    "pastListTitle": "Past",
+    "item": "{{ buddyName }} - {{ birthday }}"
+  },
+  "/me": {
+    "title": "Accounts connected to this bot"
+  },
+  "/notifications": {
+    "title": "Upcoming notifications for {{ name }}",
+    "item": "{{ notifyAt }} - {{ buddyName }} - {{ channel }}"
+  },
+  "notificationMessage": "Hellooo! {{ buddyName }} will soon celebrate his birthday on {{ birthday }}"
 }

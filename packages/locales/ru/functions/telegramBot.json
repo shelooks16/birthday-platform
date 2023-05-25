@@ -1,3 +1,33 @@
 {
-  "hello": "hi"
+  "errorMessage": "Ошибка: {{ message }}",
+  "commandList": {
+    "title": "Список команд",
+    "command": {
+      "me": "Аккаунты подключенные к этому боту",
+      "birthdays": "Список твоих днюх",
+      "notifications": "Список ближайших уведомлений",
+      "tnotifications": "Список ближайших телеграм уведомлений"
+    }
+  },
+  "connectProfile": {
+    "noPayloadMessage": "Привет!",
+    "profileNotFound": "Акканут не найден. Попробуй заново.",
+    "alreadyConnected": "{{ name }}, твой аккаунт уже подключен к этому боту. Данные были обновлены.",
+    "newConnected": "Привет, {{ name }}!\nТвой аккаунт теперь подключен к этому боту.\nТы можешь вернуться на веб-страничку.\nЭтот бот будет отправлять тебе уведомления о днюхах если ты их настроил.\nПомимо нотификаций, бот так же поддерживает парочку комманд."
+  },
+  "/birthdays": {
+    "title": "Днюхи для {{ name }}",
+    "todayListTitle": "Сегодня",
+    "futureListTitle": "Наступающие",
+    "pastListTitle": "Прошедшие",
+    "item": "{{ buddyName }} - {{ birthday }}"
+  },
+  "/me": {
+    "title": "Аккаунты подключенные к этому боту"
+  },
+  "/notifications": {
+    "title": "Ближайшие уведомление для {{ name }}",
+    "item": "{{ notifyAt }} - {{ buddyName }} - {{ channel }}"
+  },
+  "notificationMessage": "Привееет! {{ buddyName }} скоро будет отмечать свою днюху на {{ birthday }}"
 }

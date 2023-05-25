@@ -6,9 +6,12 @@ import { logger } from '../utils/logger';
 import { createOnUpdateFunction } from '../utils/createFunction';
 import { sendEmail } from '../email/sendEmail';
 import { mailTemplate } from '../email/templates';
-import { createTelegramBot } from '../telegram/createTelegramBot';
+import { sendTelegramMessage } from '../telegram/sendMessage';
 import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
 import { notificationRepo } from './notification.repository';
+import { birthdayRepo } from '../birthday/birthday.repository';
+import { profileRepo } from '../profile/profile.repository';
+import { useI18n } from '../i18n.context';
 
 export const sendNotification = createOnUpdateFunction(
   FireCollection.notifications.docMatch,
@@ -41,6 +44,33 @@ export const sendNotification = createOnUpdateFunction(
       return;
     }
 
+    const birthday = await birthdayRepo().findById(
+      notificationAfter.sourceBirthdayId
+    );
+
+    if (!birthday) {
+      logger.info('Exiting. Birthday does not exist', {
+        birthdayId: notificationAfter.sourceBirthdayId
+      });
+      return;
+    }
+
+    const profile = await profileRepo().findById(birthday.profileId);
+
+    if (!profile) {
+      logger.info('Exiting. Profile does not exist', {
+        profileId: birthday.profileId
+      });
+      return;
+    }
+
+    const i18n = await useI18n(profile.locale);
+    const birthdayDate = new Date(
+      new Date().getFullYear(),
+      birthday.birth.month,
+      birthday.birth.day
+    );
+
     try {
       switch (channel.type) {
         case ChannelType.email: {
@@ -52,11 +82,12 @@ export const sendNotification = createOnUpdateFunction(
           break;
         }
         case ChannelType.telegram: {
-          const bot = await createTelegramBot();
-
-          await bot.telegram.sendMessage(
+          await sendTelegramMessage(
             channel.value,
-            `Днюха уже очень скоро ${notificationAfter.sourceBirthdayId}`
+            i18n.t('telegramBot.notificationMessage', {
+              buddyName: birthday.buddyName,
+              birthday: i18n.format.dateToDayMonth(birthdayDate)
+            })
           );
 
           break;

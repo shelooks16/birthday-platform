@@ -1,3 +1,33 @@
 {
-  "hello": "hi"
+  "errorMessage": "Помилка: {{ message }}",
+  "commandList": {
+    "title": "Список команд",
+    "command": {
+      "me": "Акаунти підключені до цього бота",
+      "birthdays": "Список твоїх днюх",
+      "notifications": "Список найближчих повідомлень",
+      "tnotifications": "Список найближчих телеграм повідомлень"
+    }
+  },
+  "connectProfile": {
+    "noPayloadMessage": "Привіт!",
+    "profileNotFound": "Акаунт не знайдено. Спробуй ще раз.",
+    "alreadyConnected": "{{ name }}, твій акаунт вжі підключений до цього бота. Дані було поновлено.",
+    "newConnected": "Привіт, {{ name }}!\nТвій акаунт теперь підключений до цього бота.\nТи можеш повернутися до веб-додатку.\nЦей бот буде надсилати тобі повідомлення про днюхи якщо ти їх налаштував.\nОкрім повідомлень, бот також підтримує декілька команд."
+  },
+  "/birthdays": {
+    "title": "Днюхи для {{ name }}",
+    "todayListTitle": "Сьогодні",
+    "futureListTitle": "Скоро",
+    "pastListTitle": "Минулі",
+    "item": "{{ buddyName }} - {{ birthday }}"
+  },
+  "/me": {
+    "title": "Акаунти підключені до цього бота"
+  },
+  "/notifications": {
+    "title": "Найближчі повідомлення для {{ name }}",
+    "item": "{{ notifyAt }} - {{ buddyName }} - {{ channel }}"
+  },
+  "notificationMessage": "Привіт! {{ buddyName }} скоро буде відмічати свою днюху на {{ birthday }}"
 }
