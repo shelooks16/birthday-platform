@@ -18,7 +18,7 @@ const getCommandListMsg = async (locale?: string) => {
   const { t } = await useI18n(locale);
 
   return (
-    `${t('telegramBot.commandList.title')}:\n` +
+    `${t('telegramBot.commandList.title')}:\n\n` +
     `/me - ${t('telegramBot.commandList.command.me')}\n` +
     `/birthdays - ${t('telegramBot.commandList.command.birthdays')}\n` +
     `/notifications - ${t('telegramBot.commandList.command.notifications')}\n` +

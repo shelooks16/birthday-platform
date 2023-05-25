@@ -20,14 +20,14 @@
     "todayListTitle": "Сегодня",
     "futureListTitle": "Наступающие",
     "pastListTitle": "Прошедшие",
-    "item": "{{ buddyName }} - {{ birthday }}"
+    "item": "{{ buddyName }} | {{ birthday }}"
   },
   "/me": {
-    "title": "Аккаунты подключенные к этому боту"
+    "item": "{{ name }} подключен на языке: {{ language }}"
   },
   "/notifications": {
-    "title": "Ближайшие уведомление для {{ name }}",
-    "item": "{{ notifyAt }} - {{ buddyName }} - {{ channel }}"
+    "title": "Ближайшие уведомления для {{ name }}",
+    "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}"
   },
   "notificationMessage": "Привееет! {{ buddyName }} скоро будет отмечать свою днюху на {{ birthday }}"
 }

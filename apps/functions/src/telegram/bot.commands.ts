@@ -195,13 +195,26 @@ export const getBirthdayList = async (chatId: number) => {
 export const getMe = async (chatId: number) => {
   const { profiles } = await getConnectedProfiles(chatId);
 
-  const i18n = await useI18n(profiles[0]?.locale);
-
-  const messages: string[] = [i18n.t('telegramBot./me.title')];
+  const messages: string[] = [];
 
   for (const profile of profiles) {
     if (profile) {
-      messages.push(`- ${profile.displayName}`);
+      const i18n = await useI18n(profile.locale);
+
+      const locale = appConfig.isLanguageSupported(profile.locale)
+        ? profile.locale
+        : appConfig.defaultLocale;
+      const languageLabel = appConfig.languages.find(
+        (lang) => lang.locale === locale
+      )?.label;
+
+      messages.push(
+        '- ' +
+          i18n.t('telegramBot./me.item', {
+            name: profile.displayName,
+            language: languageLabel
+          })
+      );
     }
   }
 
@@ -273,11 +286,12 @@ export const getNotifications = async (
               birthday?.notificationSettings?.timeZone
             ),
             buddyName: birthday?.buddyName ?? '-',
-            channel: i18n.t(
+            channelType: i18n.t(
               `notificationChannel.labels.${channel?.type}` as any,
               {},
               channel?.type ?? '-'
-            )
+            ),
+            channel: channel?.displayName ?? '-'
           })
         );
       });

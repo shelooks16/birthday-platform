@@ -20,14 +20,14 @@
     "todayListTitle": "Today",
     "futureListTitle": "Upcoming",
     "pastListTitle": "Past",
-    "item": "{{ buddyName }} - {{ birthday }}"
+    "item": "{{ buddyName }} | {{ birthday }}"
   },
   "/me": {
-    "title": "Accounts connected to this bot"
+    "item": "{{ name }} is connected with language: {{ language }}"
   },
   "/notifications": {
     "title": "Upcoming notifications for {{ name }}",
-    "item": "{{ notifyAt }} - {{ buddyName }} - {{ channel }}"
+    "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}"
   },
   "notificationMessage": "Hellooo! {{ buddyName }} will soon celebrate his birthday on {{ birthday }}"
 }
