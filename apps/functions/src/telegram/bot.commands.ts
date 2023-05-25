@@ -210,11 +210,11 @@ export const getMe = async (chatId: number) => {
 
   for (const profile of profiles) {
     if (profile) {
-      const i18n = await useI18n(profile.locale);
-
       const locale = appConfig.isLanguageSupported(profile.locale)
         ? profile.locale
         : appConfig.defaultLocale;
+
+      const i18n = await useI18n(locale);
       const languageLabel = appConfig.languages.find(
         (lang) => lang.locale === locale
       )?.label;
