@@ -139,17 +139,17 @@ export const confirmEmailOtp = createCallableFunction(
 
     if (!verification) {
       throw new functions.https.HttpsError(
-        'aborted',
+        'failed-precondition',
         'Email verification does not exist'
       );
     }
 
     if (verification.otp !== data.otpGuess) {
-      throw new functions.https.HttpsError('aborted', 'Wrong OTP');
+      throw new functions.https.HttpsError('invalid-argument', 'Wrong OTP');
     }
 
     if (getTimestamp() > verification.expiresAt) {
-      throw new functions.https.HttpsError('aborted', 'Expired');
+      throw new functions.https.HttpsError('invalid-argument', 'Expired');
     }
 
     const batch = notificationChannelRepo().batch();

@@ -38,7 +38,7 @@ const generateRandomWish = async (
 
     return completionResult[0].text || '';
   } catch (err) {
-    throw new functions.https.HttpsError('unknown', err.message);
+    throw new functions.https.HttpsError('failed-precondition', err.message);
   }
 };
 

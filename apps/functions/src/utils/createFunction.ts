@@ -196,7 +196,9 @@ export const createCallableFunction = (
 ) => {
   return functions.region(REGION).https.onCall(async (data, ctx) => {
     try {
-      return handler(data, ctx);
+      const responseBody = await handler(data, ctx);
+
+      return responseBody;
     } catch (err) {
       throw new functions.https.HttpsError('internal', err.message);
     }
@@ -211,7 +213,9 @@ export const createOnRequestFunction = (
 ) => {
   return functions.region(REGION).https.onRequest(async (req, res) => {
     try {
-      return handler(req, res);
+      const responseBody = await handler(req, res);
+
+      return responseBody;
     } catch (err) {
       throw new functions.https.HttpsError('internal', err.message);
     }
