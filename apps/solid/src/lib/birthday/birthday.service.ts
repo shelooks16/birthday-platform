@@ -53,7 +53,7 @@ export const birthdayService = {
 
     return sendGenerateBirthdayWish({
       ...payload,
-      language: resolveCurrentLocale()
+      locale: resolveCurrentLocale()
     }).then((result) => result.data);
   },
   async exportBirthdays() {

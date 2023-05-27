@@ -24,6 +24,7 @@ export type EmailVerificationDocumentField =
 
 export interface SendEmailVerificationPayload {
   email: string;
+  locale?: string;
 }
 
 export interface SendEmailVerificationResult {
@@ -34,6 +35,7 @@ export interface SendEmailVerificationResult {
 export interface ConfirmEmailOtpPayload {
   email: string;
   otpGuess: string;
+  locale?: string;
 }
 
 export interface ConfirmEmailOtpResult {

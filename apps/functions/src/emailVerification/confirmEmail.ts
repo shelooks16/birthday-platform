@@ -35,26 +35,27 @@ function generateOTP(length = 6, allowedChars = '0123456789') {
   return otp;
 }
 
-async function throwIfAlreadyVerified(profileId: string, email: string) {
-  const existingChannel =
-    await notificationChannelRepo().findChannelByProfileId(
-      profileId,
-      ChannelType.email,
-      email
-    );
-
-  if (existingChannel) {
-    throw new functions.https.HttpsError(
-      'failed-precondition',
-      `${existingChannel.value} already verified`
-    );
-  }
-}
-
 export const sendEmailVerification = createCallableFunction(
   async (data: SendEmailVerificationPayload, ctx) => {
-    requireAuth(ctx);
-    await throwIfAlreadyVerified(ctx.auth!.uid, data.email);
+    const i18n = await useI18n(data.locale);
+
+    requireAuth(ctx, i18n);
+
+    const existingEmailChannel =
+      await notificationChannelRepo().findChannelByProfileId(
+        ctx.auth!.uid,
+        ChannelType.email,
+        data.email
+      );
+
+    if (existingEmailChannel) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        i18n.t('errors.emailVerification.confirmEmail.alreadyVerified', {
+          email: existingEmailChannel.value
+        })
+      );
+    }
 
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 30);
@@ -122,7 +123,9 @@ export const processEmailForVerification = createOnCreateFunction(
 
 export const confirmEmailOtp = createCallableFunction(
   async (data: ConfirmEmailOtpPayload, ctx) => {
-    requireAuth(ctx);
+    const i18n = await useI18n(data.locale);
+
+    requireAuth(ctx, i18n);
 
     const verification = await emailVerificationRepo()
       .findMany({
@@ -140,16 +143,22 @@ export const confirmEmailOtp = createCallableFunction(
     if (!verification) {
       throw new functions.https.HttpsError(
         'failed-precondition',
-        'Email verification does not exist'
+        i18n.t('errors.emailVerification.notFound')
       );
     }
 
     if (verification.otp !== data.otpGuess) {
-      throw new functions.https.HttpsError('invalid-argument', 'Wrong OTP');
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        i18n.t('errors.emailVerification.confirmEmail.otpWrong')
+      );
     }
 
     if (getTimestamp() > verification.expiresAt) {
-      throw new functions.https.HttpsError('invalid-argument', 'Expired');
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        i18n.t('errors.emailVerification.confirmEmail.otpExpired')
+      );
     }
 
     const batch = notificationChannelRepo().batch();

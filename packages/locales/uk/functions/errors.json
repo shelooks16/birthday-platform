@@ -1,0 +1,19 @@
+{
+  "authRequired": "Неавтентифікований виклик",
+  "birthday": {
+    "notFound": "Днюхи не існує"
+  },
+  "birthdayWish": {
+    "generateWish": {
+      "limitReached": "Ви можете створити щонайбільше {{ limit }} бажань"
+    }
+  },
+  "emailVerification": {
+    "notFound": "Підтвердження електронної пошти не існує",
+    "confirmEmail": {
+      "alreadyVerified": "{{ email }} уже підтверджено",
+      "otpWrong": "Невірний одноразовий код",
+      "otpExpired": "Термін одноразового кода минув. Відправ підтвердження електронної пошти поновнє"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "authRequired": "Unauthenticated call",
+  "birthday": {
+    "notFound": "Birthday does not exist"
+  },
+  "birthdayWish": {
+    "generateWish": {
+      "limitReached": "You can generate at most {{ limit }} wishes"
+    }
+  },
+  "emailVerification": {
+    "notFound": "Email verification does not exist",
+    "confirmEmail": {
+      "alreadyVerified": "{{ email }} is already verified",
+      "otpWrong": "Wrong OTP",
+      "otpExpired": "OTP has expired. Resend email verification"
+    }
+  }
+}

@@ -13,15 +13,11 @@ import { birthdayRepo } from '../birthday/birthday.repository';
 import { createCompletion } from '../openai/completion';
 import { birthdayWishRepo } from './birthdayWish.repository';
 import { appConfig } from '../appConfig';
-
-const langMap = {
-  en: 'english',
-  ru: 'russian'
-};
+import { useI18n } from '../i18n.context';
 
 const generateRandomWish = async (
   birthday: BirthdayDocument,
-  language?: string
+  locale?: string
 ): Promise<string> => {
   if (appConfig.isDevEnv) {
     const gebrish = (Math.random() + 1).toString(36).substring(7);
@@ -29,9 +25,15 @@ const generateRandomWish = async (
     return `${gebrish} - random wish from dev env. Real wish generated in live env.`;
   }
 
-  const prompt = `Write birthday congratulations for ${birthday.buddyName} in ${
-    langMap[language ?? 'en']
-  }`;
+  locale = appConfig.isLanguageSupported(locale)
+    ? locale
+    : appConfig.defaultLocale;
+  const localeLabel =
+    appConfig.languages.find((l) => l.locale === locale)?.label ?? 'English';
+
+  const desc = birthday.buddyDescription ?? '';
+
+  const prompt = `Write birthday wish for person ${birthday.buddyName} in language ${localeLabel}. Description of person: ${desc}`;
 
   try {
     const completionResult = await createCompletion(prompt);
@@ -44,7 +46,9 @@ const generateRandomWish = async (
 
 export const generateBirthdayWish = createCallableFunction(
   async (data: GenerateBirthdayWishPayload, ctx) => {
-    requireAuth(ctx);
+    const i18n = await useI18n(data.locale);
+
+    requireAuth(ctx, i18n);
 
     const birthday = await birthdayRepo()
       .findMany({
@@ -59,7 +63,7 @@ export const generateBirthdayWish = createCallableFunction(
     if (!birthday) {
       throw new functions.https.HttpsError(
         'failed-precondition',
-        'Birthday does not exist'
+        i18n.t('errors.birthday.notFound')
       );
     }
 
@@ -91,11 +95,13 @@ export const generateBirthdayWish = createCallableFunction(
     if (limitReached) {
       throw new functions.https.HttpsError(
         'failed-precondition',
-        `You can generate ${appConfig.birthdayWishLimitPerGenerate} at most`
+        i18n.t('errors.birthdayWish.generateWish.limitReached', {
+          limit: appConfig.birthdayWishLimitPerGenerate
+        })
       );
     }
 
-    const wish = await generateRandomWish(birthday, data.language);
+    const wish = await generateRandomWish(birthday, data.locale);
 
     const newWishDoc: BirthdayWishDocument = {
       id: birthdayWishRepo().getRandomDocId(),

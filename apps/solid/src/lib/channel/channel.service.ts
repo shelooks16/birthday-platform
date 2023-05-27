@@ -4,10 +4,13 @@ import {
   SendEmailVerificationPayload,
   SendEmailVerificationResult
 } from '@shared/types';
+import { resolveCurrentLocale } from '../../i18n.context';
 import { asyncLoadFunctions } from '../firebase/loaders';
 
 export const channelService = {
-  async sendEmailVerification(payload: SendEmailVerificationPayload) {
+  async sendEmailVerification(
+    payload: Omit<SendEmailVerificationPayload, 'locale'>
+  ) {
     const { functions, httpsCallable } = await asyncLoadFunctions();
 
     const sendVerification = httpsCallable<
@@ -15,9 +18,12 @@ export const channelService = {
       SendEmailVerificationResult
     >(functions, 'sendEmailVerification');
 
-    return sendVerification(payload).then((result) => result.data);
+    return sendVerification({
+      ...payload,
+      locale: resolveCurrentLocale()
+    }).then((result) => result.data);
   },
-  async confirmEmailOtp(payload: ConfirmEmailOtpPayload) {
+  async confirmEmailOtp(payload: Omit<ConfirmEmailOtpPayload, 'locale'>) {
     const { functions, httpsCallable } = await asyncLoadFunctions();
 
     const sendGuess = httpsCallable<
@@ -25,6 +31,8 @@ export const channelService = {
       ConfirmEmailOtpResult
     >(functions, 'confirmEmailOtp');
 
-    return sendGuess(payload).then((result) => result.data);
+    return sendGuess({ ...payload, locale: resolveCurrentLocale() }).then(
+      (result) => result.data
+    );
   }
 };
