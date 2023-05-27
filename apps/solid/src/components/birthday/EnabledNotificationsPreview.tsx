@@ -21,7 +21,7 @@ const EnabledNotificationsPreview: Component<
   const getPresetLabel = (preset: NotifyBeforePreset) => {
     const { value: unitValue, humanUnit } = parseNotifyBeforePreset(preset);
 
-    return i18n().t('notification.notifyBeforePresetLabel', {
+    return i18n().t('common.notification.notifyBeforePresetLabel', {
       value: i18n().format.toPlainTime(unitValue, humanUnit)
     });
   };

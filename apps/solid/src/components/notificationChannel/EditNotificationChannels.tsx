@@ -192,7 +192,7 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
                   mr="$2"
                 />
                 {i18n().t(
-                  `notificationChannel.labels.${channelType}` as any,
+                  `common.notificationChannel.labels.${channelType}` as any,
                   {},
                   channelType
                 )}

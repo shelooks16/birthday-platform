@@ -4,7 +4,7 @@ import validation from './validation.json';
 import common from '../common';
 
 const langs = () => ({
-  ...common(),
+  common: common(),
   home,
   dashboard,
   validation

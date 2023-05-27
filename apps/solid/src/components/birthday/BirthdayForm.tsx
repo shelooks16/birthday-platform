@@ -183,7 +183,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
 
       return {
         value: preset,
-        label: i18n().t('notification.notifyBeforePresetLabel', {
+        label: i18n().t('common.notification.notifyBeforePresetLabel', {
           value: i18n().format.toPlainTime(unitValue, humanUnit)
         })
       };
@@ -376,7 +376,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
                 <SelectOptGroup>
                   <SelectLabel>
                     {i18n().t(
-                      `notificationChannel.labels.${channelType}` as any,
+                      `common.notificationChannel.labels.${channelType}` as any,
                       {},
                       channelType
                     )}

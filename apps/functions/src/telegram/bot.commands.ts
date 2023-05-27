@@ -310,7 +310,7 @@ export const getNotifications = async (
             ),
             buddyName: birthday?.buddyName ?? '-',
             channelType: i18n.t(
-              `notificationChannel.labels.${channel?.type}` as any,
+              `common.notificationChannel.labels.${channel?.type}` as any,
               {},
               channel?.type ?? '-'
             ),

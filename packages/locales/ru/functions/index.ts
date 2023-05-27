@@ -3,7 +3,7 @@ import telegramBot from './telegramBot.json';
 import email from './email.json';
 
 const langs = () => ({
-  ...common(),
+  common: common(),
   telegramBot,
   email
 });

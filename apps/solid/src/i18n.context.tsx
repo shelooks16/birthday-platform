@@ -126,7 +126,7 @@ export const I18nProvider: ParentComponent = (props) => {
         localeToDialect(l as SupportedLocale),
         dictionary,
         {
-          zodiacSignList: dictionary.zodiacSign
+          zodiacSignList: dictionary.common.zodiacSign
         },
         console.log
       )

@@ -19,7 +19,7 @@ const loadI18n = async (locale: SupportedLocale) => {
     localeToDialect(locale),
     dictionary,
     {
-      zodiacSignList: dictionary.zodiacSign
+      zodiacSignList: dictionary.common.zodiacSign
     },
     logger.warn
   );
