@@ -1,4 +1,4 @@
-import { Component, ParentComponent } from 'solid-js';
+import { Component, ParentComponent, Show } from 'solid-js';
 import {
   Box,
   Button,
@@ -12,6 +12,8 @@ import EditNotificationChannels from '../../components/notificationChannel/EditN
 import ExportBirthdaysBtn from '../../components/importExport/ExportBirthdaysBtn';
 import ImportBirthdaysBtn from '../../components/importExport/ImportBirthdaysBtn';
 import ProfileForm from '../../components/profile/ProfileForm';
+import BuyMeACoffeeBtn from '../../lib/BuyMeACoffeeBtn';
+import { appConfig } from '../../appConfig';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
   return (
@@ -67,6 +69,18 @@ const DashProfile: Component = () => {
         >
           Sign out
         </Button>
+
+        <Show when={appConfig.developerInfo.buyMeACoffe?.id}>
+          <Box mt="$10">
+            <Box mt="$3">
+              <Box mb="$2">
+                Support developers &copy; {new Date().getFullYear()}{' '}
+                {appConfig.developerInfo.name}
+              </Box>
+              <BuyMeACoffeeBtn />
+            </Box>
+          </Box>
+        </Show>
       </Box>
     </div>
   );
