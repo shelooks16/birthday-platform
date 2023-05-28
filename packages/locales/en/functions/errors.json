@@ -1,5 +1,7 @@
 {
-  "authRequired": "Unauthenticated call",
+  "profile": {
+    "notFound": "User profile does not exist"
+  },
   "birthday": {
     "notFound": "Birthday does not exist"
   },

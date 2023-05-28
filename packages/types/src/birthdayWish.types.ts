@@ -27,7 +27,6 @@ export interface GenerateBirthdayWishPayload {
    * @default false
    * */
   clampToLimit?: boolean;
-  locale?: string;
 }
 
 export interface GenerateBirthdayWishResult {

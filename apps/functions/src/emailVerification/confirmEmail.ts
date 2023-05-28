@@ -37,9 +37,17 @@ function generateOTP(length = 6, allowedChars = '0123456789') {
 
 export const sendEmailVerification = createCallableFunction(
   async (data: SendEmailVerificationPayload, ctx) => {
-    const i18n = await useI18n(data.locale);
+    requireAuth(ctx);
 
-    requireAuth(ctx, i18n);
+    const profile = await profileRepo().findById(ctx.auth!.uid);
+    const i18n = await useI18n(profile?.locale);
+
+    if (!profile) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        i18n.t('errors.profile.notFound')
+      );
+    }
 
     const existingEmailChannel =
       await notificationChannelRepo().findChannelByProfileId(
@@ -123,9 +131,17 @@ export const processEmailForVerification = createOnCreateFunction(
 
 export const confirmEmailOtp = createCallableFunction(
   async (data: ConfirmEmailOtpPayload, ctx) => {
-    const i18n = await useI18n(data.locale);
+    requireAuth(ctx);
 
-    requireAuth(ctx, i18n);
+    const profile = await profileRepo().findById(ctx.auth!.uid);
+    const i18n = await useI18n(profile?.locale);
+
+    if (!profile) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        i18n.t('errors.profile.notFound')
+      );
+    }
 
     const verification = await emailVerificationRepo()
       .findMany({

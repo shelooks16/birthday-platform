@@ -5,7 +5,6 @@ import {
   GenerateBirthdayWishPayload,
   GenerateBirthdayWishResult
 } from '@shared/types';
-import { resolveCurrentLocale } from '../../i18n.context';
 import { asyncLoadAuth, asyncLoadFunctions } from '../firebase/loaders';
 import { downloadIntoFile } from './downloadFile';
 
@@ -51,10 +50,7 @@ export const birthdayService = {
       GenerateBirthdayWishResult
     >(functions, 'generateBirthdayWish');
 
-    return sendGenerateBirthdayWish({
-      ...payload,
-      locale: resolveCurrentLocale()
-    }).then((result) => result.data);
+    return sendGenerateBirthdayWish(payload).then((result) => result.data);
   },
   async exportBirthdays() {
     const { auth } = await asyncLoadAuth();

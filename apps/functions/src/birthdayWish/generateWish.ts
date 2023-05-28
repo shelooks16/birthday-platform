@@ -14,6 +14,7 @@ import { createCompletion } from '../openai/completion';
 import { birthdayWishRepo } from './birthdayWish.repository';
 import { appConfig } from '../appConfig';
 import { useI18n } from '../i18n.context';
+import { profileRepo } from '../profile/profile.repository';
 
 const generateRandomWish = async (
   birthday: BirthdayDocument,
@@ -46,9 +47,17 @@ const generateRandomWish = async (
 
 export const generateBirthdayWish = createCallableFunction(
   async (data: GenerateBirthdayWishPayload, ctx) => {
-    const i18n = await useI18n(data.locale);
+    requireAuth(ctx);
 
-    requireAuth(ctx, i18n);
+    const profile = await profileRepo().findById(ctx.auth!.uid);
+    const i18n = await useI18n(profile?.locale);
+
+    if (!profile) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        i18n.t('errors.profile.notFound')
+      );
+    }
 
     const birthday = await birthdayRepo()
       .findMany({
@@ -101,7 +110,7 @@ export const generateBirthdayWish = createCallableFunction(
       );
     }
 
-    const wish = await generateRandomWish(birthday, data.locale);
+    const wish = await generateRandomWish(birthday, profile.locale);
 
     const newWishDoc: BirthdayWishDocument = {
       id: birthdayWishRepo().getRandomDocId(),
