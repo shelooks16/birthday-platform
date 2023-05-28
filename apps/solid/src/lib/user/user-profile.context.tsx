@@ -80,22 +80,26 @@ export function UserProfileContextProvider(props: ParentProps) {
 
     async function waitForProfile() {
       if (userctx.user) {
-        unsub = await profileService.$getMyProfile(
-          (profile) => {
-            if (profile) {
-              unsub();
-              notificationService.hide('new-profile');
-              if (appConfig.isLanguageSupported(profile.locale)) {
-                locale(profile.locale);
+        try {
+          unsub = await profileService.$getMyProfile(
+            (profile) => {
+              if (profile) {
+                unsub();
+                notificationService.hide('new-profile');
+                if (appConfig.isLanguageSupported(profile.locale)) {
+                  locale(profile.locale);
+                }
               }
-            }
 
-            setProfile(profile);
-          },
-          (err) => {
-            setProfile(null, err);
-          }
-        );
+              setProfile(profile);
+            },
+            (err) => {
+              setProfile(null, err);
+            }
+          );
+        } catch (err) {
+          setProfile(null, err);
+        }
       }
     }
 

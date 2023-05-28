@@ -14,7 +14,8 @@ import {
   Skeleton,
   notificationService,
   IconButton,
-  Button
+  Button,
+  Alert
 } from '@hope-ui/solid';
 import { IconArrowLeft, IconTimes } from '../Icons';
 import { fadeInCss } from '../../lib/stitches.utils';
@@ -200,7 +201,7 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
 
               <Switch fallback={<ChannelListSkeleton />}>
                 <Match when={channelsCtx.error}>
-                  <Box>{channelsCtx.error.message}</Box>
+                  <Alert status="danger">{channelsCtx.error.message}</Alert>
                 </Match>
                 <Match when={channelsCtx.latest}>
                   <Show
@@ -213,34 +214,34 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
                       </For>
                     </VStack>
                   </Show>
+
+                  <Box mt="$4">
+                    <Switch>
+                      <Match when={channelType === ChannelType.email}>
+                        {props.isInModal ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentScreen(ChannelType.email)}
+                          >
+                            Add email channel
+                          </Button>
+                        ) : (
+                          <AddEmailChannelBtn variant="outline" size="sm">
+                            Add email channel
+                          </AddEmailChannelBtn>
+                        )}
+                      </Match>
+                      <Match when={channelType === ChannelType.telegram}>
+                        <ConnectTelegramBotBtn variant="outline" size="sm">
+                          Connect telegram bot
+                        </ConnectTelegramBotBtn>
+                      </Match>
+                    </Switch>
+                  </Box>
                 </Match>
               </Switch>
-
-              <Box mt="$4">
-                <Switch>
-                  <Match when={channelType === ChannelType.email}>
-                    {props.isInModal ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentScreen(ChannelType.email)}
-                      >
-                        Add email channel
-                      </Button>
-                    ) : (
-                      <AddEmailChannelBtn variant="outline" size="sm">
-                        Add email channel
-                      </AddEmailChannelBtn>
-                    )}
-                  </Match>
-                  <Match when={channelType === ChannelType.telegram}>
-                    <ConnectTelegramBotBtn variant="outline" size="sm">
-                      Connect telegram bot
-                    </ConnectTelegramBotBtn>
-                  </Match>
-                </Switch>
-              </Box>
             </Box>
           )}
         </For>

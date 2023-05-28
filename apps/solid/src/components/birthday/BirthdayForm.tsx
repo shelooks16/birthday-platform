@@ -20,6 +20,7 @@ import {
   FormLabel,
   Heading,
   Input,
+  notificationService,
   SelectLabel,
   SelectOptGroup,
   SelectOption,
@@ -157,23 +158,30 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
         ...(values.description ? { buddyDescription: values.description } : {})
       };
 
-      const createdOrUpdated = props.birthdayId
-        ? await birthdayService.updateBirthday(props.birthdayId, data)
-        : await birthdayService.addBirthday(data);
+      try {
+        const createdOrUpdated = props.birthdayId
+          ? await birthdayService.updateBirthday(props.birthdayId, data)
+          : await birthdayService.addBirthday(data);
 
-      if (props.birthdayId) {
-        mutateBirthdays((list) =>
-          list
-            ? list.map((item) =>
-                item.id === createdOrUpdated.id ? createdOrUpdated : item
-              )
-            : list
-        );
-      } else {
-        mutateBirthdays((val) => (val ? val.concat(createdOrUpdated) : val));
+        if (props.birthdayId) {
+          mutateBirthdays((list) =>
+            list
+              ? list.map((item) =>
+                  item.id === createdOrUpdated.id ? createdOrUpdated : item
+                )
+              : list
+          );
+        } else {
+          mutateBirthdays((val) => (val ? val.concat(createdOrUpdated) : val));
+        }
+
+        props.onAfterSubmit?.(createdOrUpdated);
+      } catch (err) {
+        notificationService.show({
+          status: 'danger',
+          title: err.message
+        });
       }
-
-      props.onAfterSubmit?.(createdOrUpdated);
     }
   });
 

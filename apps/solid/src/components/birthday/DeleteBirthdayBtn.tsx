@@ -1,4 +1,4 @@
-import { Button } from '@hope-ui/solid';
+import { Button, notificationService } from '@hope-ui/solid';
 import { BirthdayDocument } from '@shared/types';
 import { Component, createSignal } from 'solid-js';
 import { birthdayService } from '../../lib/birthday/birthday.service';
@@ -6,7 +6,6 @@ import { birthdayService } from '../../lib/birthday/birthday.service';
 type DeleteBirthdayBtnProps = {
   birthday: BirthdayDocument;
   onAfterDeleted?: (deleted: BirthdayDocument) => any;
-  onError?: <T = Error>(error: T) => any;
 };
 
 const DeleteBirthdayBtn: Component<DeleteBirthdayBtnProps> = (props) => {
@@ -17,13 +16,13 @@ const DeleteBirthdayBtn: Component<DeleteBirthdayBtnProps> = (props) => {
 
     try {
       await birthdayService.deleteById(props.birthday.id);
+
       props.onAfterDeleted?.(props.birthday);
     } catch (err) {
-      if (props.onError) {
-        props.onError(err);
-      } else {
-        throw err;
-      }
+      notificationService.show({
+        status: 'danger',
+        title: err.message
+      });
     }
 
     setIsDeleting(false);

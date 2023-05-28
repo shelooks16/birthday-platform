@@ -15,20 +15,20 @@ const App: Component = () => {
   return (
     <ExceptionCatcher>
       <MetaProvider>
-        <I18nProvider>
-          <PageTitle />
-          <Router>
-            <Suspense>
-              <ThemeProvider>
+        <ThemeProvider>
+          <I18nProvider>
+            <PageTitle />
+            <Router>
+              <Suspense>
                 <UserContextProvider>
                   <UserProfileContextProvider>
                     <Routes />
                   </UserProfileContextProvider>
                 </UserContextProvider>
-              </ThemeProvider>
-            </Suspense>
-          </Router>
-        </I18nProvider>
+              </Suspense>
+            </Router>
+          </I18nProvider>
+        </ThemeProvider>
       </MetaProvider>
     </ExceptionCatcher>
   );

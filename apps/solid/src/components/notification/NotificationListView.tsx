@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Heading,
   HStack,
@@ -97,7 +98,7 @@ const NotificationListView: Component = () => {
 
       <Switch>
         <Match when={listResource.error}>
-          <Box>{listResource.error.message}</Box>
+          <Alert status="danger">{listResource.error.message}</Alert>
         </Match>
         <Match when={list()}>
           <Box css={fadeInCss()}>

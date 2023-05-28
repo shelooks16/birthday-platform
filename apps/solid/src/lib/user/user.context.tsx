@@ -10,6 +10,7 @@ import {
 import { userService } from './user.service';
 import { useNavigate } from '@solidjs/router';
 import { ROUTE_PATH } from '../../routes';
+import { notificationService } from '@hope-ui/solid';
 
 type UserState = {
   user: User | null;
@@ -67,10 +68,18 @@ export function UserContextProvider(props: ParentProps) {
         },
         (err) => {
           setUser(null, err);
+          notificationService.show({
+            status: 'danger',
+            title: err.message
+          });
         }
       );
     } catch (err) {
       setUser(null, err);
+      notificationService.show({
+        status: 'danger',
+        title: err.message
+      });
     }
   });
 

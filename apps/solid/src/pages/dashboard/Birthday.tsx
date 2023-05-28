@@ -1,4 +1,4 @@
-import { Box, Button } from '@hope-ui/solid';
+import { Alert, Box, Button } from '@hope-ui/solid';
 import { Component, Show, Match, Switch, lazy, Suspense } from 'solid-js';
 import { A } from '@solidjs/router';
 import { useCheatCodes } from '../../lib/useCheatCodes';
@@ -38,7 +38,7 @@ const DashBirthday: Component = () => {
       <Suspense>
         <Switch>
           <Match when={birthdayList.error}>
-            <Box>{birthdayList.error.message}</Box>
+            <Alert status="danger">{birthdayList.error.message}</Alert>
           </Match>
           <Match when={birthdayList.latest}>
             <Switch>

@@ -6,7 +6,8 @@ import {
   Button,
   FormErrorMessage,
   VStack,
-  Input
+  Input,
+  notificationService
 } from '@hope-ui/solid';
 import { createForm } from '@felte/solid';
 import { validator } from '@felte/validator-yup';
@@ -42,12 +43,19 @@ const ProfileForm = (props: ProfileFormProps) => {
     },
     extend: validator({ schema: schema() as any }),
     onSubmit: async (values) => {
-      await profileService.updateMyProfile(values);
+      try {
+        await profileService.updateMyProfile(values);
 
-      locale(values.locale);
-      setProfile({ ...profilectx.profile!, ...values });
+        locale(values.locale);
+        setProfile({ ...profilectx.profile!, ...values });
 
-      await props.onAfterSubmit?.(values);
+        await props.onAfterSubmit?.(values);
+      } catch (err) {
+        notificationService.show({
+          status: 'danger',
+          title: err.message
+        });
+      }
     }
   });
 

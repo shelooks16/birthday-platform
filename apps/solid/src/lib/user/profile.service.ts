@@ -8,12 +8,6 @@ export const profileService = {
   isProfileCompleted(profile: ProfileDocument) {
     return profile.timeZone && profile.locale;
   },
-  async getMyProfile() {
-    const { auth } = await asyncLoadAuth();
-    const db = await this.db();
-
-    return db.findById(auth.currentUser!.uid);
-  },
   async $getMyProfile(
     listener: (data: ProfileDocument | null) => void,
     onError?: (error: Error) => void

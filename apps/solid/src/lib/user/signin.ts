@@ -33,8 +33,15 @@ export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
   };
 
   onMount(async () => {
-    const result = await userService.getRedirectResult();
-    updateStateAndRedirect(result);
+    try {
+      const result = await userService.getRedirectResult();
+      await updateStateAndRedirect(result);
+    } catch (err) {
+      notificationService.show({
+        status: 'danger',
+        title: `Sign in error: ${err.message}`
+      });
+    }
   });
 
   return {

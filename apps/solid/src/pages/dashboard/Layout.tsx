@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -112,7 +113,9 @@ export default function DashboardLayout() {
           <div>...</div>
         </Match>
         <Match when={profileCtx.error}>
-          <div>{profileCtx.error!.message}</div>
+          <Alert status="danger" mt="$2">
+            {profileCtx.error!.message}
+          </Alert>
         </Match>
         <Match when={profileCtx.profile}>
           <Box mb="$6">

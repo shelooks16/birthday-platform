@@ -40,35 +40,41 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
   const handleClick = async () => {
     disposeListeners();
 
-    unsubFromLatestAdded =
-      await notificationChannelService.$findLatestUpdatedChannelForMyProfile(
-        ChannelType.telegram,
-        (channel) => {
-          mutate((chs) =>
-            chs && !chs.some((c) => c.id === channel.id)
-              ? chs.concat(channel)
-              : chs
-          );
-          unsubFromLatestAdded();
-          setShowSnack(true);
+    try {
+      unsubFromLatestAdded =
+        await notificationChannelService.$findLatestUpdatedChannelForMyProfile(
+          ChannelType.telegram,
+          (channel) => {
+            mutate((chs) =>
+              chs && !chs.some((c) => c.id === channel.id)
+                ? chs.concat(channel)
+                : chs
+            );
+            unsubFromLatestAdded();
+            setShowSnack(true);
+          }
+        );
+
+      const listener = () => {
+        if (document.hidden) return;
+
+        if (showSnack()) {
+          notificationService.show({
+            status: 'success',
+            title: 'Connected to telegram bot'
+          });
+          disposeListeners();
         }
-      );
+      };
 
-    const listener = () => {
-      if (document.hidden) return;
-
-      if (showSnack()) {
-        notificationService.show({
-          status: 'success',
-          title: 'Connected to telegram bot'
-        });
-        disposeListeners();
+      if (!MemoryCache.has(SNACK_CACHE_KEY)) {
+        document.addEventListener('visibilitychange', listener);
+        MemoryCache.set(SNACK_CACHE_KEY, () => listener);
       }
-    };
-
-    if (!MemoryCache.has(SNACK_CACHE_KEY)) {
-      document.addEventListener('visibilitychange', listener);
-      MemoryCache.set(SNACK_CACHE_KEY, () => listener);
+    } catch (err) {
+      notificationService.show({
+        title: err.message
+      });
     }
   };
 

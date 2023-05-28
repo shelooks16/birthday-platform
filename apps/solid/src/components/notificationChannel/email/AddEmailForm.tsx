@@ -31,6 +31,8 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
   const [verificationInfo, setVerificationInfo] =
     createSignal<SendEmailVerificationResult | null>(null);
 
+  const [sendVerificationError, setSendVerificationError] =
+    createSignal<Error | null>(null);
   const [submitError, setSubmitError] = createSignal<Error | null>(null);
 
   const [lastVerification, setLastVerification, lastVerificationAction] =
@@ -55,11 +57,17 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
       email: ''
     },
     onSubmit: async (values) => {
-      const result = await channelService.sendEmailVerification({
-        email: values.email
-      });
-      setVerificationInfo(result);
-      setLastVerification('result', result);
+      setSendVerificationError(null);
+
+      try {
+        const result = await channelService.sendEmailVerification({
+          email: values.email
+        });
+        setVerificationInfo(result);
+        setLastVerification('result', result);
+      } catch (err) {
+        setSendVerificationError(err);
+      }
     }
   });
 
@@ -82,7 +90,6 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
         props.onAfterSubmit?.(result);
       } catch (err) {
         setSubmitError(err);
-        return;
       }
     }
   });
@@ -112,6 +119,11 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
                   {emailForm.errors('email')?.[0]}
                 </FormErrorMessage>
               </FormControl>
+              <Show when={sendVerificationError()}>
+                <Alert status="danger" mt="$2" variant="left-accent">
+                  {sendVerificationError()?.message}
+                </Alert>
+              </Show>
               <Button
                 type="submit"
                 width="100%"

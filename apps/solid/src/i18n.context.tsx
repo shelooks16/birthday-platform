@@ -23,6 +23,7 @@ import { appConfig } from './appConfig';
 import { I18n, initI18n } from '@shared/i18n';
 import { MemoryCache } from '@shared/memory-cache';
 import { setLocale as setYupLocale } from 'yup';
+import { Alert, Container } from '@hope-ui/solid';
 
 const localeToDictLoader = appConfig.languages.reduce<{
   [lang: string]: () => Promise<any>;
@@ -153,7 +154,9 @@ export const I18nProvider: ParentComponent = (props) => {
       <Meta name="lang" content={locale()} />
       <Switch>
         <Match when={i18nResource.error}>
-          <div>{i18nResource.error.message}</div>
+          <Container p="$3" maxWidth={{ '@lg': 750 }}>
+            <Alert status="danger">{i18nResource.error.message}</Alert>
+          </Container>
         </Match>
         <Match when={i18n()}>{props.children}</Match>
       </Switch>
