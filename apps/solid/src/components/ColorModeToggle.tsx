@@ -18,7 +18,7 @@ const ColorModeToggle: Component<ColorModeToggleProps> = (props) => {
       colorScheme="neutral"
       size="sm"
       fontSize="$lg"
-      icon={colorModeButtonIcon}
+      icon={colorModeButtonIcon as any}
       onClick={toggleColorMode}
     />
   );
