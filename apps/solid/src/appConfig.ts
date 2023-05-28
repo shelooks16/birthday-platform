@@ -25,5 +25,11 @@ export const appConfig = {
       dsn: import.meta.env.VITE_SENTRY_DSN,
       environment: import.meta.env.VITE_SENTRY_ENVIRONMENT
     }
+  },
+  developerInfo: {
+    name: 'Andrii Hulenko',
+    buyMeACoffe: {
+      id: 'shelooks16'
+    }
   }
 };
