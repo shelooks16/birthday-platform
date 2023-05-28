@@ -14,6 +14,7 @@ import ImportBirthdaysBtn from '../../components/importExport/ImportBirthdaysBtn
 import ProfileForm from '../../components/profile/ProfileForm';
 import BuyMeACoffeeBtn from '../../lib/BuyMeACoffeeBtn';
 import { appConfig } from '../../appConfig';
+import DeleteMyProfileBtn from '../../components/DeleteMyProfileBtn';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
   return (
@@ -53,10 +54,20 @@ const DashProfile: Component = () => {
       </Section>
 
       <Section title="Import/Export">
-        <Stack justifyContent="start">
-          <ExportBirthdaysBtn />
-          <ImportBirthdaysBtn />
+        <Stack
+          direction={{ '@initial': 'column', '@sm': 'row' }}
+          spacing="$2"
+          width="100%"
+        >
+          <ExportBirthdaysBtn variant="outline" flex={{ '@sm': 1 }} />
+          <ImportBirthdaysBtn variant="outline" flex={{ '@sm': 1 }} />
         </Stack>
+      </Section>
+
+      <Section title="Danger zone">
+        <DeleteMyProfileBtn w="100%" colorScheme="danger" variant="outline">
+          Delete my account
+        </DeleteMyProfileBtn>
       </Section>
 
       <Box textAlign="center" mt="$24">

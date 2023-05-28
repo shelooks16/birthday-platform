@@ -73,7 +73,7 @@ service cloud.firestore {
         return isValidString(val, 1, 30);
       }
 
-      allow read: if id == request.auth.uid;
+      allow read, delete: if id == request.auth.uid;
       allow update: if id == request.auth.uid 
         && updatingOnlyFields(['displayName', 'timeZone', 'locale'])
         && validateDisplayName(newData().displayName)

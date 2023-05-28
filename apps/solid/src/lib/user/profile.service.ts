@@ -27,5 +27,11 @@ export const profileService = {
       ...data,
       id: auth.currentUser!.uid
     });
+  },
+  async deleteMyProfile() {
+    const { auth } = await asyncLoadAuth();
+    const db = await this.db();
+
+    await db.deleteById(auth.currentUser!.uid);
   }
 };

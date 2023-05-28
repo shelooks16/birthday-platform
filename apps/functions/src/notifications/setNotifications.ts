@@ -258,25 +258,21 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
 const onDelete: OnDeleteHandler = async (docSnap) => {
   const { id } = firestoreSnapshotToData<BirthdayDocument>(docSnap)!;
 
-  logger.info('Deleting pending notifications for birthday', { id });
+  logger.info('Deleting notifications for birthday', { id });
 
-  const pendingNotifications = await notificationRepo().findMany({
-    where: [
-      ['sourceBirthdayId', '==', id],
-      ['isScheduled', '==', false],
-      ['isSent', '==', false]
-    ]
+  const notifications = await notificationRepo().findMany({
+    where: [['sourceBirthdayId', '==', id]]
   });
 
   const batch = notificationRepo().batch();
 
-  notificationRepo().atomicDeleteMany(batch, pendingNotifications);
+  notificationRepo().atomicDeleteMany(batch, notifications);
 
   await batch.commit();
 
-  logger.info('Pending notifications deleted for birthday', {
+  logger.info('Deleted notifications for birthday', {
     id,
-    deleteCount: pendingNotifications.length
+    deleteCount: notifications.length
   });
 };
 
