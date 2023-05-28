@@ -60,10 +60,11 @@ export function UserContextProvider(props: ParentProps) {
   };
 
   onMount(async () => {
+    let unsub: () => void;
     try {
-      const unsub = await userService.onAuthStateChanged(
+      unsub = await userService.onAuthStateChanged(
         (authUser) => {
-          unsub();
+          unsub && unsub();
           setUser(authUser);
         },
         (err) => {

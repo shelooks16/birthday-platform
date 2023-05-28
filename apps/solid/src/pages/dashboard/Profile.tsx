@@ -70,17 +70,18 @@ const DashProfile: Component = () => {
           Sign out
         </Button>
 
-        <Show when={appConfig.developerInfo.buyMeACoffe?.id}>
-          <Box mt="$10">
-            <Box mt="$3">
-              <Box mb="$2">
-                Support developers &copy; {new Date().getFullYear()}{' '}
-                {appConfig.developerInfo.name}
-              </Box>
-              <BuyMeACoffeeBtn />
+        <Box mt="$10">
+          <Box mt="$3">
+            <Box>
+              &copy; {new Date().getFullYear()} {appConfig.developerInfo.name}
             </Box>
+            <Show when={appConfig.developerInfo.buyMeACoffe?.id}>
+              <Box mt="$2">
+                <BuyMeACoffeeBtn />
+              </Box>
+            </Show>
           </Box>
-        </Show>
+        </Box>
       </Box>
     </div>
   );
