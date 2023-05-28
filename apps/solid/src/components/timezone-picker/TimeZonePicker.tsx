@@ -4,7 +4,6 @@ import {
   For,
   untrack,
   createMemo,
-  createDeferred,
   createResource
 } from 'solid-js';
 import {
@@ -54,8 +53,6 @@ const TimeZonePicker = (props: SimpleSelectProps) => {
     return [createOption(detectedTz)];
   });
 
-  const optionsAsync = createDeferred(options);
-
   const updateValue = (v: string) => {
     if (v !== detectedTz) {
       setLastSelected(v);
@@ -77,7 +74,7 @@ const TimeZonePicker = (props: SimpleSelectProps) => {
   return (
     <Box>
       <SimpleSelect {...props} value={value()} onChange={updateValue}>
-        <For each={optionsAsync()}>
+        <For each={options()}>
           {(item) => (
             <SimpleOption fontSize="$sm" value={item.value}>
               {item.label}
