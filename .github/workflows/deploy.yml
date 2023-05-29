@@ -1,0 +1,50 @@
+name: Deploy platform
+
+on:
+  workflow_dispatch:
+    inputs:
+      target-env:
+        type: choice
+        description: Target environment
+        default: stage
+        options:
+          - stage
+          - prod
+      deploy-hosting:
+        type: boolean
+        description: Deploy Web hosting
+        default: false
+      deploy-firestore:
+        type: boolean
+        description: Deploy Firestore rules & indexes
+        default: false
+      deploy-functions:
+        type: boolean
+        description: Deploy Functions
+        default: false
+
+env:
+  FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
+  PROJECT_ID: ${{ fromJSON(format('{{ "stage":"{0}","prod":"{1}" }}', secrets.FIREBASE_PROJECT_ID_STAGE, secrets.FIREBASE_PROJECT_ID_PROD))[github.event.inputs.target-env] }}
+  ONLY_HOSTING: ${{ github.event.inputs.deploy-hosting == 'true' && 'hosting' || '' }}
+  ONLY_FIRESTORE: ${{ github.event.inputs.deploy-firestore == 'true' && 'firestore' || '' }}
+  ONLY_FUNCTIONS: ${{ github.event.inputs.deploy-functions == 'true' && 'functions' || '' }}
+
+jobs:
+  deploy:
+    name: Deploy to Firebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.15.0
+
+      - name: Install Firebase CLI
+        run: npm i -g firebase-tools@11.21.0
+
+      - name: Deploy platform
+        run: firebase deploy -P $PROJECT_ID --only $ONLY_HOSTING,$ONLY_FIRESTORE,$ONLY_FUNCTIONS --token $FIREBASE_CI_TOKEN
