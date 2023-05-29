@@ -2,7 +2,7 @@ import { ParentComponent } from 'solid-js';
 import { Box, Container } from '@hope-ui/solid';
 import ColorModeToggle from './ColorModeToggle';
 
-const GlobalContainer: ParentComponent = (props) => {
+const GlobalLayout: ParentComponent = (props) => {
   return (
     <Container
       px="$3"
@@ -21,4 +21,4 @@ const GlobalContainer: ParentComponent = (props) => {
   );
 };
 
-export default GlobalContainer;
+export default GlobalLayout;
