@@ -8,6 +8,7 @@ import { UserProfileContextProvider } from './lib/user/user-profile.context';
 import { I18nProvider } from './i18n.context';
 import PageTitle from './components/PageTitle';
 import ExceptionCatcher from './components/ExceptionCatcher';
+import GlobalContainer from './components/GlobalContainer';
 
 const App: Component = () => {
   const Routes = useRoutes(routes);
@@ -22,7 +23,9 @@ const App: Component = () => {
               <Suspense>
                 <UserContextProvider>
                   <UserProfileContextProvider>
-                    <Routes />
+                    <GlobalContainer>
+                      <Routes />
+                    </GlobalContainer>
                   </UserProfileContextProvider>
                 </UserContextProvider>
               </Suspense>

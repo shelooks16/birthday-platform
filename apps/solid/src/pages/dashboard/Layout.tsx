@@ -2,7 +2,6 @@ import {
   Alert,
   Box,
   Button,
-  Container,
   Divider,
   Heading,
   HStack,
@@ -102,35 +101,28 @@ export default function DashboardLayout() {
   const [profileCtx] = useRedirectIfOnboardingNotFinished();
 
   return (
-    <Container
-      px="$3"
-      pt="$3"
-      pb={{ '@initial': '$10', '@md': '$20' }}
-      maxWidth={{ '@lg': 750 }}
-    >
-      <Switch>
-        <Match when={profileCtx.isLoading}>
-          <div>...</div>
-        </Match>
-        <Match when={profileCtx.error}>
-          <Alert status="danger" mt="$2">
-            {profileCtx.error!.message}
-          </Alert>
-        </Match>
-        <Match when={profileCtx.profile}>
-          <Box mb="$6">
-            <Header />
-          </Box>
-          <Navs />
-          <Divider my="$4" />
+    <Switch>
+      <Match when={profileCtx.isLoading}>
+        <div>...</div>
+      </Match>
+      <Match when={profileCtx.error}>
+        <Alert status="danger" mt="$2">
+          {profileCtx.error!.message}
+        </Alert>
+      </Match>
+      <Match when={profileCtx.profile}>
+        <Box mb="$6">
+          <Header />
+        </Box>
+        <Navs />
+        <Divider my="$4" />
 
-          <BirthdaysProvider>
-            <NotificationChannelsProvider>
-              <Outlet />
-            </NotificationChannelsProvider>
-          </BirthdaysProvider>
-        </Match>
-      </Switch>
-    </Container>
+        <BirthdaysProvider>
+          <NotificationChannelsProvider>
+            <Outlet />
+          </NotificationChannelsProvider>
+        </BirthdaysProvider>
+      </Match>
+    </Switch>
   );
 }
