@@ -1,8 +1,8 @@
 import { Component, createSignal } from 'solid-js';
 import { Button, ButtonProps, notificationService } from '@hope-ui/solid';
-import { profileService } from '../lib/user/profile.service';
-import { useUserCtx } from '../lib/user/user.context';
-import { userService } from '../lib/user/user.service';
+import { profileService } from '../../lib/user/profile.service';
+import { useUserCtx } from '../../lib/user/user.context';
+import { userService } from '../../lib/user/user.service';
 
 type DeleteMyProfileBtnProps = Omit<
   ButtonProps<'button'>,

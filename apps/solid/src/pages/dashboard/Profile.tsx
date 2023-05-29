@@ -7,7 +7,7 @@ import ImportBirthdaysBtn from '../../components/importExport/ImportBirthdaysBtn
 import ProfileForm from '../../components/profile/ProfileForm';
 import BuyMeACoffeeBtn from '../../lib/BuyMeACoffeeBtn';
 import { appConfig } from '../../appConfig';
-import DeleteMyProfileBtn from '../../components/DeleteMyProfileBtn';
+import DeleteMyProfileBtn from '../../components/profile/DeleteMyProfileBtn';
 import SignOutBtn from '../../components/signin/SignOutBtn';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
