@@ -25,7 +25,8 @@ on:
 
 env:
   FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
-  PROJECT_ID: ${{ fromJSON(format('{{ "stage":"{0}","prod":"{1}" }}', secrets.FIREBASE_PROJECT_ID_STAGE, secrets.FIREBASE_PROJECT_ID_PROD))[github.event.inputs.target-env] }}
+  WEB_ENV_FILE: ${{ fromJSON(format('{{ "stage":"{0}","prod":"{1}" }}', vars.WEB_ENV_FILE_STAGE, vars.WEB_ENV_FILE_PROD))[github.event.inputs.target-env] }}
+  PROJECT_ID: ${{ fromJSON(format('{{ "stage":"{0}","prod":"{1}" }}', vars.FIREBASE_PROJECT_ID_STAGE, vars.FIREBASE_PROJECT_ID_PROD))[github.event.inputs.target-env] }}
   ONLY_HOSTING: ${{ github.event.inputs.deploy-hosting == 'true' && 'hosting' || '' }}
   ONLY_FIRESTORE: ${{ github.event.inputs.deploy-firestore == 'true' && 'firestore' || '' }}
   ONLY_FUNCTIONS: ${{ github.event.inputs.deploy-functions == 'true' && 'functions' || '' }}
@@ -42,9 +43,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.15.0
+          cache: 'npm'
 
       - name: Install Firebase CLI
         run: npm i -g firebase-tools@11.21.0
+
+      - name: Install monorepo dependencies
+        if: ${{ env.ONLY_HOSTING != '' || env.ONLY_FUNCTIONS != '' }}
+        run: |
+          npm install -D --arch=x64 --platform=linux turbo && npm install -D --arch=arm64 --platform=darwin turbo && npm ci
+
+      - name: Setup env for Web build
+        if: ${{ env.ONLY_HOSTING != '' }}
+        run: echo $WEB_ENV_FILE >> .env
+        working-directory: ./apps/solid
 
       - name: Deploy platform
         run: firebase deploy -P $PROJECT_ID --only $ONLY_HOSTING,$ONLY_FIRESTORE,$ONLY_FUNCTIONS --token $FIREBASE_CI_TOKEN
