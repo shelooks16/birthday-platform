@@ -2,6 +2,7 @@ import {
   Alert,
   Box,
   Button,
+  Center,
   Divider,
   Heading,
   HStack,
@@ -19,6 +20,7 @@ import { useRedirectIfSignedOut } from '../../lib/user/user.context';
 import { useI18n } from '../../i18n.context';
 import { BirthdaysProvider } from '../../lib/birthday/birthdays.context';
 import { NotificationChannelsProvider } from '../../lib/notificationChannel/notificationChannels.context';
+import LogoLoader from '../../components/LogoLoader';
 
 const Header = () => {
   const [profilectx] = useUserProfileCtx();
@@ -98,7 +100,9 @@ export default function DashboardLayout() {
   return (
     <Switch>
       <Match when={profileCtx.isLoading}>
-        <div>...</div>
+        <Center pt="20%">
+          <LogoLoader />
+        </Center>
       </Match>
       <Match when={profileCtx.error}>
         <Alert status="danger" mt="$2">
