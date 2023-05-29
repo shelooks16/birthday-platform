@@ -6,8 +6,8 @@
     "lint": "eslint --ext .ts .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "cross-env FUNCTIONS_BUILD_MODE=production vite build",
-    "dev": "concurrently \"vite build --watch\" \"node initTelegramBotWebhook.mjs\"",
+    "build": "vite build",
+    "dev": "concurrently \"vite build --mode development --watch\" \"node initTelegramBotWebhook.mjs\"",
     "logs": "firebase functions:log"
   },
   "engines": {
@@ -33,7 +33,6 @@
   "devDependencies": {
     "@types/nodemailer": "^6.4.7",
     "concurrently": "^8.0.1",
-    "cross-env": "^7.0.3",
     "eslint": "^8.9.0",
     "eslint-config-base": "*",
     "got": "^12.6.0",

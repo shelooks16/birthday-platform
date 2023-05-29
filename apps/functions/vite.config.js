@@ -27,38 +27,40 @@ Object.keys(pckJson.dependencies).forEach((packageName) => {
   }
 });
 
-const isProd = process.env.FUNCTIONS_BUILD_MODE === 'production';
-const isDev = !isProd;
+export default defineConfig(({ mode }) => {
+  const isProd = mode === 'production';
+  const isDev = !isProd;
 
-export default defineConfig({
-  publicDir: 'env',
-  build: {
-    lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'functions',
-      fileName: 'index',
-      formats: ['cjs']
-    },
-    outDir: 'build',
-    copyPublicDir: isDev,
+  return {
+    publicDir: 'env',
+    build: {
+      lib: {
+        entry: resolve(__dirname, 'src/index.ts'),
+        name: 'functions',
+        fileName: 'index',
+        formats: ['cjs']
+      },
+      outDir: 'build',
+      copyPublicDir: isDev,
 
-    rollupOptions: {
-      external: externalDepsList,
-      plugins: [
-        generatePackageJson({
-          baseContents: {
-            name: pckJson.name,
-            version: pckJson.version,
-            engines: pckJson.engines,
-            main: './index.js'
-          },
-          additionalDependencies
-        })
-      ],
-      output: {
-        preserveModules: isProd,
-        inlineDynamicImports: isDev
+      rollupOptions: {
+        external: externalDepsList,
+        plugins: [
+          generatePackageJson({
+            baseContents: {
+              name: pckJson.name,
+              version: pckJson.version,
+              engines: pckJson.engines,
+              main: './index.js'
+            },
+            additionalDependencies
+          })
+        ],
+        output: {
+          preserveModules: isProd,
+          inlineDynamicImports: isDev
+        }
       }
     }
-  }
+  };
 });
