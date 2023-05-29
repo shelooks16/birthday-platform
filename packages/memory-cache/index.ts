@@ -10,7 +10,7 @@ export const MemoryCache = {
 
     if (val instanceof Promise) {
       return val.then((v) => {
-        cache.set(cacheKey, val);
+        cache.set(cacheKey, v);
         return v;
       }) as any;
     }
