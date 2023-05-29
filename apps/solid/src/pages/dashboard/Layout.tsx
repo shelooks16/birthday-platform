@@ -17,7 +17,6 @@ import { fadeInCss } from '../../lib/stitches.utils';
 import { ROUTE_PATH } from '../../routes';
 import { useRedirectIfSignedOut } from '../../lib/user/user.context';
 import { useI18n } from '../../i18n.context';
-import ColorModeToggle from '../../components/ColorModeToggle';
 import { BirthdaysProvider } from '../../lib/birthday/birthdays.context';
 import { NotificationChannelsProvider } from '../../lib/notificationChannel/notificationChannels.context';
 
@@ -36,10 +35,6 @@ const Header = () => {
           {profilectx?.profile?.displayName ?? 'Loading'}
         </Heading>
       </Skeleton>
-
-      <Box position="absolute" right={0} top={0}>
-        <ColorModeToggle id="color-toggle" />
-      </Box>
     </Box>
   );
 };
