@@ -1,12 +1,10 @@
-import { Button } from '@hope-ui/solid';
 import { Component, Match, Switch } from 'solid-js';
-import { useGoogleSignin, useSignOut } from '../lib/user/signin';
+import GoogleSignInBtn from '../components/signin/GoogleSignInBtn';
+import SignOutBtn from '../components/signin/SignOutBtn';
 import { useUserCtx } from '../lib/user/user.context';
 
 const Home: Component = () => {
   const [usrCtx] = useUserCtx();
-  const { signInWithGoogle } = useGoogleSignin();
-  const { signOut } = useSignOut();
 
   return (
     <div>
@@ -21,8 +19,8 @@ const Home: Component = () => {
           <div>Logged in {usrCtx.user?.uid}</div>
         </Match>
       </Switch>
-      <Button onClick={signInWithGoogle}>Login google</Button>
-      <Button onClick={signOut}>Sign out</Button>
+      <GoogleSignInBtn />
+      <SignOutBtn />
     </div>
   );
 };

@@ -1,12 +1,5 @@
 import { Component, ParentComponent, Show } from 'solid-js';
-import {
-  Box,
-  Button,
-  Heading,
-  notificationService,
-  Stack
-} from '@hope-ui/solid';
-import { useSignOut } from '../../lib/user/signin';
+import { Box, Heading, notificationService, Stack } from '@hope-ui/solid';
 import PageTitle from '../../components/PageTitle';
 import EditNotificationChannels from '../../components/notificationChannel/EditNotificationChannels';
 import ExportBirthdaysBtn from '../../components/importExport/ExportBirthdaysBtn';
@@ -15,6 +8,7 @@ import ProfileForm from '../../components/profile/ProfileForm';
 import BuyMeACoffeeBtn from '../../lib/BuyMeACoffeeBtn';
 import { appConfig } from '../../appConfig';
 import DeleteMyProfileBtn from '../../components/DeleteMyProfileBtn';
+import SignOutBtn from '../../components/signin/SignOutBtn';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
   return (
@@ -32,8 +26,6 @@ const Section: ParentComponent<{ title: string }> = (props) => {
 };
 
 const DashProfile: Component = () => {
-  const { signOut, isSigningOut } = useSignOut();
-
   const onProfileSaved = () => {
     notificationService.show({
       status: 'success',
@@ -71,15 +63,7 @@ const DashProfile: Component = () => {
       </Section>
 
       <Box textAlign="center" mt="$24">
-        <Button
-          onClick={signOut}
-          loading={isSigningOut()}
-          type="button"
-          colorScheme="danger"
-          variant="ghost"
-        >
-          Sign out
-        </Button>
+        <SignOutBtn colorScheme="danger" variant="ghost" />
 
         <Box mt="$10">
           <Box mt="$3">
