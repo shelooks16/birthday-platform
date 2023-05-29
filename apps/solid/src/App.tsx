@@ -1,4 +1,4 @@
-import { Component, Suspense } from 'solid-js';
+import { Component } from 'solid-js';
 import { Router, useRoutes } from '@solidjs/router';
 import { MetaProvider } from '@solidjs/meta';
 import { ThemeProvider } from './theme';
@@ -20,15 +20,13 @@ const App: Component = () => {
           <I18nProvider>
             <PageTitle />
             <Router>
-              <Suspense>
-                <UserContextProvider>
-                  <UserProfileContextProvider>
-                    <GlobalContainer>
-                      <Routes />
-                    </GlobalContainer>
-                  </UserProfileContextProvider>
-                </UserContextProvider>
-              </Suspense>
+              <UserContextProvider>
+                <UserProfileContextProvider>
+                  <GlobalContainer>
+                    <Routes />
+                  </GlobalContainer>
+                </UserProfileContextProvider>
+              </UserContextProvider>
             </Router>
           </I18nProvider>
         </ThemeProvider>

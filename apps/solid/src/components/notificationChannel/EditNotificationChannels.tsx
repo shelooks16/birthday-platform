@@ -112,7 +112,10 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
 
 export const ChannelListSkeleton: Component = () => {
   return (
-    <VStack alignItems="stretch" spacing="$2">
+    <VStack alignItems="stretch" spacing="$1" width="250px" maxW="100%">
+      <Skeleton>
+        <Box>Loading</Box>
+      </Skeleton>
       <Skeleton>
         <Box>Loading</Box>
       </Skeleton>
