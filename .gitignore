@@ -41,6 +41,7 @@ firebase-debug.*.log*
 # Firebase cache
 .firebase/
 .emulatordb
+.firebaserc
 
 # Google credentials
 service-account*.json
