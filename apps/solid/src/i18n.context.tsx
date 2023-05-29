@@ -54,7 +54,7 @@ export const resolveCurrentLocale = () =>
   localStorage.getItem('locale') || appConfig.defaultLocale;
 
 export const resolveCurrentI18nInstance = () =>
-  MemoryCache.get<I18nWeb>('i18n' + resolveCurrentLocale());
+  MemoryCache.get<I18nWeb | undefined>('i18n' + resolveCurrentLocale());
 
 const useTranslateValidationSchema = (i18n: Accessor<I18nWeb>) => {
   createEffect(() => {

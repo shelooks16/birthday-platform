@@ -1,0 +1,6 @@
+{
+  "globalException": {
+    "title": "Oops, page crash",
+    "description": "Error was recorded. Try refreshing the page."
+  }
+}
