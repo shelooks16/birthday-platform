@@ -1,5 +1,5 @@
 import { Button, VStack } from '@hope-ui/solid';
-import { Component, For, createSignal, Show } from 'solid-js';
+import { Component, Index, createSignal, Show } from 'solid-js';
 import { BirthdayDocument } from '@shared/types';
 import { IconBell } from '../../Icons';
 import BirthdayInfoBtn from './BirthdayInfoBtn';
@@ -30,10 +30,10 @@ const BirthdayInfoBtnList: Component<BirthdayInfoBtnListProps> = (props) => {
   return (
     <>
       <VStack alignItems="stretch" spacing="$2">
-        <For each={visibleItems()}>
+        <Index each={visibleItems()}>
           {(item) => (
             <BirthdayInfoBtn
-              birthday={item}
+              birthday={item()}
               currentYear={props.currentYear}
               showGenerateWish={props.showGenerateWish}
               isPastBirthday={props.isInPast}
@@ -51,13 +51,13 @@ const BirthdayInfoBtnList: Component<BirthdayInfoBtnListProps> = (props) => {
                 overflow: 'hidden'
               }}
               rightIcon={
-                item.notificationSettings?.notifyAtBefore?.length ? (
+                item().notificationSettings?.notifyAtBefore?.length ? (
                   <IconBell boxSize={11} />
                 ) : undefined
               }
             />
           )}
-        </For>
+        </Index>
       </VStack>
       <Show when={isShowMoreVisible()}>
         <Button
