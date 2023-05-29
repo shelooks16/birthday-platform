@@ -31,6 +31,9 @@ const DeleteMyProfileBtn: Component<DeleteMyProfileBtnProps> = (props) => {
         status: 'success',
         title: 'Your account was deleted'
       });
+
+      await userService.signOut();
+      setUser();
     } catch (err) {
       notificationService.show({
         status: 'danger',
@@ -39,13 +42,6 @@ const DeleteMyProfileBtn: Component<DeleteMyProfileBtnProps> = (props) => {
     }
 
     setIsLoading(false);
-    setUser();
-
-    try {
-      await userService.signOut();
-    } catch (err) {
-      //
-    }
   };
 
   return (

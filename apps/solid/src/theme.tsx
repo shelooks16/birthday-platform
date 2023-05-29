@@ -21,8 +21,8 @@ const globalStyles = globalCss({
     //   background: '#555'
     // },
     // scroll always
-    // overflowY: 'scroll',
-    // overscrollBehavior: 'contain'
+    overflowY: 'scroll',
+    overscrollBehavior: 'contain'
   }
 });
 

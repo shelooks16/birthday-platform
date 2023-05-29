@@ -9,7 +9,7 @@ const GlobalLayout: ParentComponent = (props) => {
       pt="$3"
       pb={{ '@initial': '$10', '@md': '$20' }}
       maxWidth={{ '@lg': 750 }}
-      minHeight="850px"
+      minHeight="100vh"
     >
       <Box position="relative" zIndex={'$docked'}>
         <Box position="absolute" right={0} top={0}>

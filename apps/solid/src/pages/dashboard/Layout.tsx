@@ -5,8 +5,7 @@ import {
   Center,
   Divider,
   Heading,
-  HStack,
-  Skeleton
+  HStack
 } from '@hope-ui/solid';
 import { For, createSignal, createEffect, on, Switch, Match } from 'solid-js';
 import { A, Outlet, useLocation } from '@solidjs/router';
@@ -27,16 +26,9 @@ const Header = () => {
 
   return (
     <Box textAlign="center" position="relative">
-      <Skeleton
-        width="175px"
-        maxWidth="100%"
-        margin="auto"
-        loaded={!!profilectx.profile}
-      >
-        <Heading my="0" size="lg" level="1" css={fadeInCss()}>
-          {profilectx?.profile?.displayName ?? 'Loading'}
-        </Heading>
-      </Skeleton>
+      <Heading my="0" size="lg" level="1" px="$10" css={fadeInCss()}>
+        {profilectx?.profile?.displayName ?? 'Loading'}
+      </Heading>
     </Box>
   );
 };
