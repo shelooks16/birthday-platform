@@ -49,10 +49,13 @@ const ProfileForm = (props: ProfileFormProps) => {
         locale(values.locale);
         setProfile({ ...profilectx.profile!, ...values });
 
-        notificationService.show({
-          status: 'success',
-          title: i18n().t('profile.form.success')
-        });
+        // wait for locale change
+        setTimeout(() => {
+          notificationService.show({
+            status: 'success',
+            title: i18n().t('profile.form.success')
+          });
+        }, 50);
 
         await props.onAfterSubmit?.(values);
       } catch (err) {
