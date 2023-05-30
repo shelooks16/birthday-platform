@@ -17,6 +17,7 @@ import { waitForDrawerAnimation } from '../../lib/stitches.utils';
 import { IconEdit } from '../Icons';
 import BirthdayForm from './BirthdayForm';
 import DeleteBirthdayBtn from './DeleteBirthdayBtn';
+import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 
 type EditBirthdayBtnProps = Omit<
   IconButtonProps<'button'>,
@@ -28,6 +29,7 @@ type EditBirthdayBtnProps = Omit<
 };
 
 const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
+  const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
   const [localProps, btnProps] = splitProps(props, [
     'birthday',
     'onBeforeOpen',
@@ -58,6 +60,9 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
   const handleOnAfterDeleted = async (deletedBirthday: BirthdayDocument) => {
     await handleClose(true);
 
+    mutateBirthdays((val) =>
+      val ? val.filter((b) => b.id !== deletedBirthday.id) : val
+    );
     notificationService.show({
       status: 'success',
       title: `${deletedBirthday.buddyName} was removed`
