@@ -24,7 +24,18 @@
       }
     ],
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "predeploy": ["npm run build -- --scope solid"]
+    "predeploy": ["npm run build -- --scope solid"],
+    "headers": [
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|ico|webp|json|js|css|txt)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=1209600, s-maxage=2419200"
+          }
+        ]
+      }
+    ]
   },
   "emulators": {
     "ui": {
