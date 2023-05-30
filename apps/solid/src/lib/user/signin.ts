@@ -51,7 +51,7 @@ export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
       setIsLoading(true);
 
       try {
-        const credential = await userService.signinWithGoogle();
+        const credential = await userService.signinWithGoogle(i18n().locale);
         await updateStateAndRedirect(credential);
       } catch (err) {
         notificationService.show({

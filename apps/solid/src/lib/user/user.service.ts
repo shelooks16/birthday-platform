@@ -10,11 +10,17 @@ import { asyncLoadAuth } from '../firebase/loaders';
 import { previewModeProxy } from '../previewMode/preview-mode.context';
 
 export const userService = previewModeProxy({
-  async signinWithGoogle() {
+  async signinWithGoogle(defaultLanguage?: string) {
     const { auth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } =
       await asyncLoadAuth();
 
     const login = isMobileView() ? signInWithRedirect : signInWithPopup;
+
+    const provider = new GoogleAuthProvider();
+
+    if (defaultLanguage) {
+      provider.setDefaultLanguage(defaultLanguage.slice(0, 2));
+    }
 
     return login(auth, new GoogleAuthProvider());
   },
