@@ -1,6 +1,7 @@
 import { Box, Button, Divider, Heading, Text, VStack } from '@hope-ui/solid';
 import { A, useNavigate } from '@solidjs/router';
 import { Component, Match, Show, Switch } from 'solid-js';
+import { appConfig } from '../appConfig';
 import ExitPreviewModeBtn from '../components/ExitPreviewModeBtn';
 import GoogleSignInBtn from '../components/signin/GoogleSignInBtn';
 import SignOutBtn from '../components/signin/SignOutBtn';
@@ -21,7 +22,7 @@ const Home: Component = () => {
     <Box>
       <Box textAlign="center" pt="12%">
         <Heading as="h1" size="4xl" mb="$1" color="$neutral12">
-          Buddy Birthday
+          {appConfig.platformName}
         </Heading>
         <Text color="$neutral11">Never skip birthdays of your buddies</Text>
       </Box>

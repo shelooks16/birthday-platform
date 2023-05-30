@@ -1,12 +1,13 @@
 import { Title } from '@solidjs/meta';
 import { ParentComponent } from 'solid-js';
-
-const staticText = 'Buddy Birthday';
+import { appConfig } from '../appConfig';
 
 const PageTitle: ParentComponent = (props) => {
   return (
     <Title>
-      {props.children ? props.children + ' | ' + staticText : staticText}
+      {props.children
+        ? props.children + ' | ' + appConfig.platformName
+        : appConfig.platformName}
     </Title>
   );
 };
