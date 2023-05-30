@@ -5,12 +5,15 @@ import {
   onMount,
   ParentProps,
   useContext,
-  createEffect
+  createEffect,
+  on
 } from 'solid-js';
 import { userService } from './user.service';
 import { useNavigate } from '@solidjs/router';
 import { ROUTE_PATH } from '../../routes';
 import { notificationService } from '@hope-ui/solid';
+import { previewData } from '../previewMode/fakeData';
+import { usePreviewModeCtx } from '../previewMode/preview-mode.context';
 
 type UserState = {
   user: User | null;
@@ -40,6 +43,7 @@ export const useRedirectIfSignedOut = () => {
 };
 
 export function UserContextProvider(props: ParentProps) {
+  const [isPreviewMode] = usePreviewModeCtx();
   const [state, setState] = createStore<UserState>({
     user: null,
     isLoading: true,
@@ -59,7 +63,26 @@ export function UserContextProvider(props: ParentProps) {
     );
   };
 
+  createEffect(
+    on(
+      isPreviewMode,
+      (isPreview) => {
+        if (isPreview) {
+          setUser(previewData.user());
+        } else {
+          setUser();
+        }
+      },
+      { defer: true }
+    )
+  );
+
   onMount(async () => {
+    if (isPreviewMode()) {
+      setUser(previewData.user());
+      return;
+    }
+
     let unsub: () => void;
     try {
       unsub = await userService.onAuthStateChanged(

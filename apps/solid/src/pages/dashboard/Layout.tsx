@@ -7,7 +7,15 @@ import {
   Heading,
   HStack
 } from '@hope-ui/solid';
-import { For, createSignal, createEffect, on, Switch, Match } from 'solid-js';
+import {
+  For,
+  createSignal,
+  createEffect,
+  on,
+  Switch,
+  Match,
+  Show
+} from 'solid-js';
 import { A, Outlet, useLocation } from '@solidjs/router';
 import {
   useRedirectIfOnboardingNotFinished,
@@ -20,6 +28,7 @@ import { useI18n } from '../../i18n.context';
 import { BirthdaysProvider } from '../../lib/birthday/birthdays.context';
 import { NotificationChannelsProvider } from '../../lib/notificationChannel/notificationChannels.context';
 import LogoLoader from '../../components/LogoLoader';
+import { usePreviewModeCtx } from '../../lib/previewMode/preview-mode.context';
 
 const Header = () => {
   const [profilectx] = useUserProfileCtx();
@@ -86,6 +95,7 @@ const Navs = () => {
 };
 
 export default function DashboardLayout() {
+  const [isPreviewMode, { disablePreviewMode }] = usePreviewModeCtx();
   useRedirectIfSignedOut();
   const [profileCtx] = useRedirectIfOnboardingNotFinished();
 
@@ -104,6 +114,17 @@ export default function DashboardLayout() {
       <Match when={profileCtx.profile}>
         <Box mb="$6">
           <Header />
+          <Show when={isPreviewMode()}>
+            <Box textAlign="center" mt="$2">
+              <Button
+                colorScheme="danger"
+                variant="ghost"
+                onClick={disablePreviewMode}
+              >
+                Click to exit demo
+              </Button>
+            </Box>
+          </Show>
         </Box>
         <Navs />
         <Divider my="$4" />

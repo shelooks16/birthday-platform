@@ -6,6 +6,8 @@ import {
 import { createResource, Accessor, createMemo } from 'solid-js';
 import { useBirthdaysCtx } from '../birthday/birthdays.context';
 import { useNotificationChannelsCtx } from '../notificationChannel/notificationChannels.context';
+import { previewData } from '../previewMode/fakeData';
+import { usePreviewModeCtx } from '../previewMode/preview-mode.context';
 import { useUserCtx } from '../user/user.context';
 import { notificationDataService } from './notification.service';
 
@@ -19,6 +21,7 @@ export type NotificationDocumentWithRelations = NotificationDocument & {
 };
 
 export const useNotificationList = (filter?: Accessor<NotificationsFilter>) => {
+  const [isPreviewMode] = usePreviewModeCtx();
   const [userCtx] = useUserCtx();
   const [birthdays] = useBirthdaysCtx();
   const [channels] = useNotificationChannelsCtx();
@@ -33,7 +36,12 @@ export const useNotificationList = (filter?: Accessor<NotificationsFilter>) => {
       };
     },
     ({ profileId, filter = {} }) =>
-      notificationDataService.findForProfile(profileId, filter.orderByNotifyAt)
+      isPreviewMode()
+        ? previewData.notifications()
+        : notificationDataService.findForProfile(
+            profileId,
+            filter.orderByNotifyAt
+          )
   );
 
   const notificationListWithRelations = createMemo<

@@ -6,6 +6,8 @@ import {
   ResourceReturn,
   useContext
 } from 'solid-js';
+import { previewData } from '../previewMode/fakeData';
+import { usePreviewModeCtx } from '../previewMode/preview-mode.context';
 import { useUserCtx } from '../user/user.context';
 import { birthdayService } from './birthday.service';
 
@@ -14,10 +16,14 @@ const BirthdaysContext =
 export const useBirthdaysCtx = () => useContext(BirthdaysContext)!;
 
 export const BirthdaysProvider: ParentComponent = (props) => {
+  const [isPreviewMode] = usePreviewModeCtx();
   const [userCtx] = useUserCtx();
   const resourceReturn = createResource(
     () => userCtx.user?.uid,
-    (profileId) => birthdayService.findForProfile(profileId)
+    (profileId) =>
+      isPreviewMode()
+        ? previewData.birthdays()
+        : birthdayService.findForProfile(profileId)
   );
 
   return (

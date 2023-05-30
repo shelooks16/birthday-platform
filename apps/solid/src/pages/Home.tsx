@@ -1,8 +1,9 @@
 import { Box, Button, Divider, Heading, Text, VStack } from '@hope-ui/solid';
-import { A } from '@solidjs/router';
+import { A, useNavigate } from '@solidjs/router';
 import { Component, Match, Switch } from 'solid-js';
 import GoogleSignInBtn from '../components/signin/GoogleSignInBtn';
 import SignOutBtn from '../components/signin/SignOutBtn';
+import { usePreviewModeCtx } from '../lib/previewMode/preview-mode.context';
 import { fadeInCss } from '../lib/stitches.utils';
 import { useUserProfileCtx } from '../lib/user/user-profile.context';
 import { useUserCtx } from '../lib/user/user.context';
@@ -11,6 +12,8 @@ import { ROUTE_PATH } from '../routes';
 const Home: Component = () => {
   const [usrCtx] = useUserCtx();
   const [profileCtx] = useUserProfileCtx();
+  const [, { enablePreviewMode }] = usePreviewModeCtx();
+  const navigate = useNavigate();
 
   return (
     <Box>
@@ -55,6 +58,30 @@ const Home: Component = () => {
           </Match>
         </Switch>
       </VStack>
+
+      <Box
+        position="fixed"
+        bottom="0"
+        left="0"
+        width="100%"
+        textAlign="center"
+        p="$8"
+        bg="$background"
+      >
+        <Box mb="$2" fontSize="$sm" color="$neutral12">
+          Do not want to register?
+        </Box>
+        <Button
+          variant="ghost"
+          colorScheme="primary"
+          onClick={() => {
+            enablePreviewMode();
+            navigate(ROUTE_PATH.birthday);
+          }}
+        >
+          Click to see demo with fake data
+        </Button>
+      </Box>
     </Box>
   );
 };

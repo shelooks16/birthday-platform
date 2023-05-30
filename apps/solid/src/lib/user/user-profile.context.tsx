@@ -15,6 +15,8 @@ import { useNavigate } from '@solidjs/router';
 import { ROUTE_PATH } from '../../routes';
 import { useI18n } from '../../i18n.context';
 import { appConfig } from '../../appConfig';
+import { previewData } from '../previewMode/fakeData';
+import { usePreviewModeCtx } from '../previewMode/preview-mode.context';
 
 type ProfileState = {
   profile: ProfileDocument | null;
@@ -52,8 +54,9 @@ export const useRedirectIfOnboardingNotFinished = () => {
 };
 
 export function UserProfileContextProvider(props: ParentProps) {
+  const [isPreviewMode] = usePreviewModeCtx();
   const [userctx] = useUserCtx();
-  const [, { locale }] = useI18n();
+  const [i18n, { locale }] = useI18n();
   const [state, setState] = createStore<ProfileState>({
     profile: null,
     isLoading: false,
@@ -76,6 +79,11 @@ export function UserProfileContextProvider(props: ParentProps) {
   };
 
   createEffect(() => {
+    if (isPreviewMode()) {
+      setProfile(previewData.profile(locale(), i18n().format.timeZone));
+      return;
+    }
+
     setState('isLoading', true);
 
     async function waitForProfile() {
