@@ -1,7 +1,7 @@
 import { Component } from 'solid-js';
 import { Button, ButtonProps } from '@hope-ui/solid';
-import { usePreviewModeCtx } from '../lib/previewMode/preview-mode.context';
-import { useI18n } from '../i18n.context';
+import { usePreviewModeCtx } from '../../lib/previewMode/preview-mode.context';
+import { useI18n } from '../../i18n.context';
 
 type ExitPreviewModeBtnProps = Omit<
   ButtonProps<'button'>,

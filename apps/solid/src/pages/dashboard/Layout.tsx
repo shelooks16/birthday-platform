@@ -29,7 +29,7 @@ import { BirthdaysProvider } from '../../lib/birthday/birthdays.context';
 import { NotificationChannelsProvider } from '../../lib/notificationChannel/notificationChannels.context';
 import LogoLoader from '../../components/LogoLoader';
 import { usePreviewModeCtx } from '../../lib/previewMode/preview-mode.context';
-import ExitPreviewModeBtn from '../../components/ExitPreviewModeBtn';
+import ExitPreviewModeBtn from '../../components/previewMode/ExitPreviewModeBtn';
 
 const Header = () => {
   const [profilectx] = useUserProfileCtx();

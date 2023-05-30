@@ -1,8 +1,9 @@
 import { Box, Button, Divider, Heading, Text, VStack } from '@hope-ui/solid';
-import { A, useNavigate } from '@solidjs/router';
+import { A } from '@solidjs/router';
 import { Component, Match, Show, Switch } from 'solid-js';
 import { appConfig } from '../appConfig';
-import ExitPreviewModeBtn from '../components/ExitPreviewModeBtn';
+import EnterPreviewModeFloatingBar from '../components/previewMode/EnterPreviewModeFloatingBar';
+import ExitPreviewModeBtn from '../components/previewMode/ExitPreviewModeBtn';
 import GoogleSignInBtn from '../components/signin/GoogleSignInBtn';
 import SignOutBtn from '../components/signin/SignOutBtn';
 import { useI18n } from '../i18n.context';
@@ -12,40 +13,6 @@ import { useUserProfileCtx } from '../lib/user/user-profile.context';
 import { useUserCtx } from '../lib/user/user.context';
 import { ROUTE_PATH } from '../routes';
 
-const PreviewModeFloating = () => {
-  const [i18n] = useI18n();
-  const [, { enablePreviewMode }] = usePreviewModeCtx();
-  const navigate = useNavigate();
-
-  return (
-    <Box
-      position="fixed"
-      bottom="0"
-      left="0"
-      width="100%"
-      textAlign="center"
-      py="$8"
-      px="$3"
-      bg="$background"
-    >
-      <Box mb="$2" fontSize="$sm" color="$neutral12">
-        {i18n().t('previewMode.enterPreview.title')}
-      </Box>
-      <Button
-        maxW="100%"
-        variant="ghost"
-        colorScheme="primary"
-        onClick={() => {
-          enablePreviewMode();
-          navigate(ROUTE_PATH.birthday);
-        }}
-      >
-        {i18n().t('previewMode.enterPreview.btn')}
-      </Button>
-    </Box>
-  );
-};
-
 const Home: Component = () => {
   const [i18n] = useI18n();
   const [isPreviewMode] = usePreviewModeCtx();
@@ -54,7 +21,7 @@ const Home: Component = () => {
 
   return (
     <Box>
-      <PreviewModeFloating />
+      <EnterPreviewModeFloatingBar />
 
       <Box textAlign="center" pt="12%">
         <Heading as="h1" size="4xl" mb="$1" color="$neutral12">
