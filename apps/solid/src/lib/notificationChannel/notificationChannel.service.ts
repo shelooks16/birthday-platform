@@ -1,7 +1,15 @@
-import { ChannelType, NotificationChannelDocument } from '@shared/types';
-import { asyncLoadAuth } from '../firebase/loaders';
+import {
+  ChannelType,
+  ConfirmEmailOtpPayload,
+  ConfirmEmailOtpResult,
+  NotificationChannelDocument,
+  SendEmailVerificationPayload,
+  SendEmailVerificationResult
+} from '@shared/types';
+import { asyncLoadAuth, asyncLoadFunctions } from '../firebase/loaders';
+import { previewModeProxy } from '../previewMode/preview-mode.context';
 
-export const notificationChannelService = {
+export const notificationChannelService = previewModeProxy({
   async db() {
     return import('./notificationChannel.repository').then(
       (mod) => mod.notificationChannelRepo
@@ -46,5 +54,25 @@ export const notificationChannelService = {
       },
       onError
     );
+  },
+  async sendEmailVerification(payload: SendEmailVerificationPayload) {
+    const { functions, httpsCallable } = await asyncLoadFunctions();
+
+    const sendVerification = httpsCallable<
+      SendEmailVerificationPayload,
+      SendEmailVerificationResult
+    >(functions, 'sendEmailVerification');
+
+    return sendVerification(payload).then((result) => result.data);
+  },
+  async confirmEmailOtp(payload: ConfirmEmailOtpPayload) {
+    const { functions, httpsCallable } = await asyncLoadFunctions();
+
+    const sendGuess = httpsCallable<
+      ConfirmEmailOtpPayload,
+      ConfirmEmailOtpResult
+    >(functions, 'confirmEmailOtp');
+
+    return sendGuess(payload).then((result) => result.data);
   }
-};
+});

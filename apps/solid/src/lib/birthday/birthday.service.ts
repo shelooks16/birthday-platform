@@ -7,11 +7,12 @@ import {
 } from '@shared/types';
 import { asyncLoadAuth, asyncLoadFunctions } from '../firebase/loaders';
 import { downloadIntoFile } from './downloadFile';
+import { previewModeProxy } from '../previewMode/preview-mode.context';
 
 import type { NewBirthdayData } from './birthday.repository';
 export type { NewBirthdayData } from './birthday.repository';
 
-export const birthdayService = {
+export const birthdayService = previewModeProxy({
   async db() {
     return import('./birthday.repository').then((mod) => mod.birthdayRepo);
   },
@@ -99,4 +100,4 @@ export const birthdayService = {
 
     return birthdays;
   }
-};
+});

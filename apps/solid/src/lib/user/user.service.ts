@@ -7,8 +7,9 @@ import type {
 } from 'firebase/auth';
 import { isMobileView } from '../browser';
 import { asyncLoadAuth } from '../firebase/loaders';
+import { previewModeProxy } from '../previewMode/preview-mode.context';
 
-export const userService = {
+export const userService = previewModeProxy({
   async signinWithGoogle() {
     const { auth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } =
       await asyncLoadAuth();
@@ -41,4 +42,4 @@ export const userService = {
 
     return getAdditionalUserInfo(credential);
   }
-};
+});

@@ -18,14 +18,40 @@ export const PreviewModeCtx = createContext<IPreviewModeCtx>();
 export const usePreviewModeCtx = () =>
   useContext(PreviewModeCtx) as IPreviewModeCtx;
 
-const resolveIsPreviewMode = () =>
-  sessionStorage.getItem('previewMode') === 'true' || false;
-
-export const throwIfPreviewMode = () => {
-  if (resolveIsPreviewMode()) {
-    throw new Error('You are looking at demo');
+const resolveIsPreviewMode = () => {
+  try {
+    return sessionStorage.getItem('previewMode') === 'true' || false;
+  } catch (err) {
+    return false;
   }
 };
+
+/** Intercept method calls. If preview mode is enabled, throw an error */
+export function previewModeProxy<T extends Record<string | symbol, any>>(
+  obj: T,
+  ignoreKeys?: string[]
+) {
+  return new Proxy(obj, {
+    get(target, prop) {
+      if (typeof target[prop] === 'function') {
+        return new Proxy(target[prop], {
+          apply: (target, thisArg, argumentsList) => {
+            if (
+              !ignoreKeys?.includes(prop as string) &&
+              resolveIsPreviewMode()
+            ) {
+              throw new Error('You are looking at demo');
+            }
+
+            return Reflect.apply(target, thisArg, argumentsList);
+          }
+        });
+      } else {
+        return Reflect.get(target, prop);
+      }
+    }
+  });
+}
 
 export function PreviewModeContextProvider(props: ParentProps) {
   const [settings, setSettings, settingsAction] = createSessionStorage({});

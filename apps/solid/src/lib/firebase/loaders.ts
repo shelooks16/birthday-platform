@@ -1,5 +1,4 @@
 import { appConfig } from '../../appConfig';
-import { throwIfPreviewMode } from '../previewMode/preview-mode.context';
 
 declare global {
   interface Window {
@@ -10,8 +9,6 @@ declare global {
 }
 
 export const asyncLoadAuth = async () => {
-  throwIfPreviewMode();
-
   const mod = await import('./auth');
 
   if (appConfig.isDevEnv && !window.__authEmulator__) {
@@ -25,8 +22,6 @@ export const asyncLoadAuth = async () => {
 };
 
 export const asyncLoadFunctions = async () => {
-  throwIfPreviewMode();
-
   const mod = await import('./functions');
 
   if (appConfig.isDevEnv && !window.__functionsEmulator__) {
@@ -38,8 +33,6 @@ export const asyncLoadFunctions = async () => {
 };
 
 export const asyncLoadFirestore = async () => {
-  throwIfPreviewMode();
-
   const mod = await import('./firestore');
 
   if (appConfig.isDevEnv && !window.__firestoreEmulator__) {

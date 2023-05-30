@@ -16,10 +16,10 @@ import {
 } from '@shared/types';
 import { createForm } from '@felte/solid';
 import { getTimestamp } from '@shared/firestore-utils';
-import { channelService } from '../../../lib/channel/channel.service';
+import { notificationChannelService } from '../../../lib/notificationChannel/notificationChannel.service';
+import { useNotificationChannelsCtx } from '../../../lib/notificationChannel/notificationChannels.context';
 import { fadeInCss } from '../../../lib/stitches.utils';
 import { IconArrowLeft } from '../../Icons';
-import { useNotificationChannelsCtx } from '../../../lib/notificationChannel/notificationChannels.context';
 
 type AddEmailFormProps = {
   onAfterSubmit?: (data: ConfirmEmailOtpResult) => any;
@@ -60,7 +60,7 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
       setSendVerificationError(null);
 
       try {
-        const result = await channelService.sendEmailVerification({
+        const result = await notificationChannelService.sendEmailVerification({
           email: values.email
         });
         setVerificationInfo(result);
@@ -79,7 +79,7 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
       setSubmitError(null);
 
       try {
-        const result = await channelService.confirmEmailOtp({
+        const result = await notificationChannelService.confirmEmailOtp({
           email: verificationInfo()!.email,
           otpGuess: values.otp
         });
