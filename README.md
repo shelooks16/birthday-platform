@@ -1,73 +1,82 @@
-# Turborepo starter
+# Buddy Birthday
 
-This is an official npm starter turborepo.
+<p align="center"><img src="apps/solid/public/icon.svg" height="70"></p>
 
-## What's inside?
+> Workspace for Buddy Birthday platform.
+> Monorepo is powered by [Turborepo](https://turbo.build/)
 
-This turborepo uses [npm](https://www.npmjs.com/) as a package manager. It includes the following packages/apps:
+## Local development
 
-### Apps and Packages
+### Requirements:
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `ui`: a stub React component library shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+- Node.js ^16.15.0
+- [Firebase project setup](https://console.firebase.google.com/) - web app, auth google login, firestore, functions
+- [Telegram bot token](https://core.telegram.org/bots/tutorial#obtain-your-bot-token)
+- (Optional) [OpenAI API key](https://platform.openai.com/account/api-keys) - birthday wish generation
+- (Optional) [Sentry.io account](https://sentry.io/) - unexpected errors catching
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### First time setup after cloning
 
-### Utilities
+1. Create `.firebaserc` in root folder next to `.firebaserc.example`. Fill all fields with Firebase project ids. If you have created only one project - fill all fields with the same project id.
+2. Install Firebase CLI: `npm install -g firebase-tools`
+3. Run to init Firebase CLI: `firebase login` then `firebase use dev`
+4. From root folder install dependencies: `npm install`
+5. Setup local env files: `npm run setup-env`
+6. Fill in created:
+   - `apps/solid/.env`
+   - `apps/functions/env/service-account.json` - download firebase-adminsdk from Google Cloud Console
+   - `apps/functions/env/.runtimeconfig`
 
-This turborepo has some additional tools already setup for you:
+### Develop locally
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-npm run build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
+Run in two separate terminal instances:
 
 ```
-cd my-turborepo
 npm run dev
+npm run emulators
 ```
 
-### Remote Caching
+- `localhost:3000` - Solid.js web app
+- `localhost:4000` - Firebase local emulator suite
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## Deployment
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+All supported environments can be categorized as:
 
-```
-cd my-turborepo
-npx turbo login
-```
+- `dev` - local development
+- `stage` - live stage
+- `prod` - live production
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Deployment takes place through Github Actions.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your turborepo:
+Required Github action secrets:
 
-```
-npx turbo link
-```
+- `FIREBASE_CI_TOKEN` - obtained from running `firebase login:ci`
 
-## Useful Links
+Required Github action variables:
 
-Learn more about the power of Turborepo:
+- `FIREBASE_PROJECT_ID_PROD` - production firebase project id
+- `FIREBASE_PROJECT_ID_STAGE` - staging firebase project id
+- `WEB_ENV_FILE_PROD` - production `.env` file for web app. See `apps/solid/.env.example`
+- `WEB_ENV_FILE_STAGE` - staging `.env` file for web app. See `apps/solid/.env.example`
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+## Future considerations
+
+- Discord bot integration
+- Move firebase functions to 2nd gen
+
+## Contribution
+
+Main development branch is `main`.
+
+Workflow:
+
+1. Checkout to `main` branch
+2. Create feature branch `git checkout -b some-branch-name`
+3. Push feature branch: `git push origin some-branch-name`
+4. Open a new PR to merge `some-branch-name` into `main`
+5. Wait for review and collaborate
+
+## Contact
+
+- Andrew - blauyedz@zoho.eu, @shelooks16
