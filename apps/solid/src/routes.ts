@@ -35,5 +35,9 @@ export const routes: RouteDefinition[] = [
         component: lazy(() => import('./pages/dashboard/Profile'))
       }
     ]
+  },
+  {
+    path: '/*all',
+    component: lazy(() => import('./pages/404'))
   }
 ];

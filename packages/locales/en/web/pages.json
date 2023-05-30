@@ -13,5 +13,8 @@
   },
   "onboarding": {
     "title": "Finish your profile"
+  },
+  "404": {
+    "title": "Not found"
   }
 }

@@ -29,7 +29,7 @@ const Onboarding: Component = () => {
   };
 
   return (
-    <Container px="$3" py="$10" maxWidth={{ '@lg': 750 }}>
+    <Container py="$10">
       <Heading textAlign="center" size="xl" mb="$8">
         Finish your profile before we can start
       </Heading>
