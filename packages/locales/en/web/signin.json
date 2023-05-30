@@ -1,0 +1,11 @@
+{
+  "googleLogin": {
+    "btn": "Continue with Google",
+    "error": "Failed to sign in with Google: {{ message }}"
+  },
+  "signout": {
+    "btn": "Sign out",
+    "success": "Signed out",
+    "error": "Failed to sign out: {{ message }}"
+  }
+}

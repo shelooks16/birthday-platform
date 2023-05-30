@@ -1,6 +1,7 @@
 import { Component } from 'solid-js';
 import { Button, ButtonProps } from '@hope-ui/solid';
 import { useSignOut } from '../../lib/user/signin';
+import { useI18n } from '../../i18n.context';
 
 type SignOutBtnProps = Omit<
   ButtonProps<'button'>,
@@ -8,11 +9,12 @@ type SignOutBtnProps = Omit<
 >;
 
 const SignOutBtn: Component<SignOutBtnProps> = (props) => {
+  const [i18n] = useI18n();
   const { signOut, isSigningOut } = useSignOut();
 
   return (
     <Button {...props} loading={isSigningOut()} onClick={signOut}>
-      Sign out
+      {i18n().t('signin.signout.btn')}
     </Button>
   );
 };

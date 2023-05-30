@@ -4,6 +4,7 @@ import dashboard from './dashboard.json';
 import validation from './validation.json';
 import errors from './errors.json';
 import pages from './pages.json';
+import signin from './signin.json';
 
 const langs = () => ({
   common: common(),
@@ -11,7 +12,8 @@ const langs = () => ({
   dashboard,
   validation,
   errors,
-  pages
+  pages,
+  signin
 });
 
 export default langs;

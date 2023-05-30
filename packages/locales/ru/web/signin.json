@@ -1,0 +1,11 @@
+{
+  "googleLogin": {
+    "btn": "Залогиниться с Google",
+    "error": "Ошибка входа с Google: {{ message }}"
+  },
+  "signout": {
+    "btn": "Выйти с аккаунта",
+    "success": "Успешный выход",
+    "error": "Ошибка выхода с аккаунта: {{ message }}"
+  }
+}

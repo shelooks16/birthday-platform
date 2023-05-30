@@ -5,8 +5,10 @@ import { useUserCtx } from './user.context';
 import { ROUTE_PATH } from '../../routes';
 import type { UserCredential } from 'firebase/auth';
 import { notificationService } from '@hope-ui/solid';
+import { useI18n } from '../../i18n.context';
 
 export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
+  const [i18n] = useI18n();
   const [isLoading, setIsLoading] = createSignal(false);
   const [, { setUser }] = useUserCtx();
   const navigate = useNavigate();
@@ -39,7 +41,7 @@ export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
     } catch (err) {
       notificationService.show({
         status: 'danger',
-        title: `Sign in error: ${err.message}`
+        title: i18n().t('signin.googleLogin.error', { message: err.message })
       });
     }
   });
@@ -54,7 +56,7 @@ export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
       } catch (err) {
         notificationService.show({
           status: 'danger',
-          title: `Sign in error: ${err.message}`
+          title: i18n().t('signin.googleLogin.error', { message: err.message })
         });
       }
 
@@ -65,6 +67,7 @@ export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
 };
 
 export const useSignOut = (redirectLocation = ROUTE_PATH.index) => {
+  const [i18n] = useI18n();
   const [isLoading, setIsLoading] = createSignal(false);
   const [, { setUser }] = useUserCtx();
   const navigate = useNavigate();
@@ -80,12 +83,12 @@ export const useSignOut = (redirectLocation = ROUTE_PATH.index) => {
 
         notificationService.show({
           status: 'success',
-          title: 'Signed out'
+          title: i18n().t('signin.signout.success')
         });
       } catch (err) {
         notificationService.show({
           status: 'danger',
-          title: `Failed to sign out: ${err.message}`
+          title: i18n().t('signin.signout.error', { message: err.message })
         });
       }
 

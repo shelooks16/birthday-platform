@@ -5,35 +5,64 @@ import { appConfig } from '../appConfig';
 import ExitPreviewModeBtn from '../components/ExitPreviewModeBtn';
 import GoogleSignInBtn from '../components/signin/GoogleSignInBtn';
 import SignOutBtn from '../components/signin/SignOutBtn';
+import { useI18n } from '../i18n.context';
 import { usePreviewModeCtx } from '../lib/previewMode/preview-mode.context';
 import { fadeInCss } from '../lib/stitches.utils';
 import { useUserProfileCtx } from '../lib/user/user-profile.context';
 import { useUserCtx } from '../lib/user/user.context';
 import { ROUTE_PATH } from '../routes';
 
-const Home: Component = () => {
-  const [isPreviewMode] = usePreviewModeCtx();
-  const [usrCtx] = useUserCtx();
-  const [profileCtx] = useUserProfileCtx();
+const PreviewModeFloating = () => {
   const [, { enablePreviewMode }] = usePreviewModeCtx();
   const navigate = useNavigate();
 
   return (
+    <Box
+      position="fixed"
+      bottom="0"
+      left="0"
+      width="100%"
+      textAlign="center"
+      p="$8"
+      bg="$background"
+    >
+      <Box mb="$2" fontSize="$sm" color="$neutral12">
+        Do not want to register?
+      </Box>
+      <Button
+        variant="ghost"
+        colorScheme="primary"
+        onClick={() => {
+          enablePreviewMode();
+          navigate(ROUTE_PATH.birthday);
+        }}
+      >
+        Click to see demo with fake data
+      </Button>
+    </Box>
+  );
+};
+
+const Home: Component = () => {
+  const [i18n] = useI18n();
+  const [isPreviewMode] = usePreviewModeCtx();
+  const [usrCtx] = useUserCtx();
+  const [profileCtx] = useUserProfileCtx();
+
+  return (
     <Box>
+      <PreviewModeFloating />
+
       <Box textAlign="center" pt="12%">
         <Heading as="h1" size="4xl" mb="$1" color="$neutral12">
           {appConfig.platformName}
         </Heading>
-        <Text color="$neutral11">Never skip birthdays of your buddies</Text>
+        <Text color="$neutral11">{i18n().t('home.motto')}</Text>
       </Box>
 
       <Divider mt="$8" mb="$4" />
 
-      <Box mb="$8">
-        This platform is all-in-one tool to manage birthdays. View birthdays on
-        calendar and canvas, receive birthday reminders through email and
-        telegram, create unique birthday wishes using OpenAI.
-      </Box>
+      <Box mb="$6">{i18n().t('home.textAbout')}</Box>
 
       <VStack
         w="400px"
@@ -68,30 +97,6 @@ const Home: Component = () => {
           </Match>
         </Switch>
       </VStack>
-
-      <Box
-        position="fixed"
-        bottom="0"
-        left="0"
-        width="100%"
-        textAlign="center"
-        p="$8"
-        bg="$background"
-      >
-        <Box mb="$2" fontSize="$sm" color="$neutral12">
-          Do not want to register?
-        </Box>
-        <Button
-          variant="ghost"
-          colorScheme="primary"
-          onClick={() => {
-            enablePreviewMode();
-            navigate(ROUTE_PATH.birthday);
-          }}
-        >
-          Click to see demo with fake data
-        </Button>
-      </Box>
     </Box>
   );
 };

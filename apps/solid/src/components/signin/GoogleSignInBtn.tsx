@@ -2,6 +2,7 @@ import { Component } from 'solid-js';
 import { Button, ButtonProps } from '@hope-ui/solid';
 import { IconGoogle } from '../Icons';
 import { useGoogleSignin } from '../../lib/user/signin';
+import { useI18n } from '../../i18n.context';
 
 type GoogleSignInBtnProps = Omit<
   ButtonProps<'button'>,
@@ -9,6 +10,7 @@ type GoogleSignInBtnProps = Omit<
 >;
 
 const GoogleSignInBtn: Component<GoogleSignInBtnProps> = (props) => {
+  const [i18n] = useI18n();
   const { signInWithGoogle, isSigningInWithGoogle } = useGoogleSignin();
 
   return (
@@ -18,7 +20,7 @@ const GoogleSignInBtn: Component<GoogleSignInBtnProps> = (props) => {
       loading={isSigningInWithGoogle()}
       onClick={signInWithGoogle}
     >
-      Continue with Google
+      {i18n().t('signin.googleLogin.btn')}
     </Button>
   );
 };
