@@ -1,0 +1,35 @@
+name: Create and tag a new release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    if: github.ref == 'refs/heads/main'
+
+    name: Create a new release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install semantic release
+        run: |
+          npm install -g \
+            @semantic-release/changelog \
+            @semantic-release/git \
+            semantic-release@^19.0.0
+
+      - name: Rollup new release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          semantic-release
