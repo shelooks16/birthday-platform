@@ -5,9 +5,12 @@ import { Component } from 'solid-js';
 import BirthdayForm from '../../components/birthday/BirthdayForm';
 import { IconArrowLeft } from '../../components/Icons';
 import PageTitle from '../../components/PageTitle';
+import { useI18n } from '../../i18n.context';
 import { ROUTE_PATH } from '../../routes';
 
 const DashAddBirthday: Component = () => {
+  const [i18n] = useI18n();
+
   const handleOnAfterAdded = (createdBirthday: BirthdayDocument) => {
     notificationService.show({
       status: 'success',
@@ -17,7 +20,7 @@ const DashAddBirthday: Component = () => {
 
   return (
     <div>
-      <PageTitle>Add new birthday</PageTitle>
+      <PageTitle>{i18n().t('pages.addBirthday.title')}</PageTitle>
       <Box textAlign="center" mb="$2">
         <IconButton
           aria-label="dsa"

@@ -7,6 +7,7 @@ import ViewPicker, { useView } from '../../components/ViewPicker';
 import { ROUTE_PATH } from '../../routes';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 import NoBirthdaysText from '../../components/birthday/NoBirthdaysText';
+import { useI18n } from '../../i18n.context';
 
 const BirthdayCalendar = lazy(
   () => import('../../components/birthday/calendar/BirthdayCalendar')
@@ -19,6 +20,7 @@ const NotificationListView = lazy(
 );
 
 const DashBirthday: Component = () => {
+  const [i18n] = useI18n();
   useCheatCodes();
 
   const [birthdayList] = useBirthdaysCtx();
@@ -26,7 +28,7 @@ const DashBirthday: Component = () => {
 
   return (
     <div>
-      <PageTitle>Birthday List</PageTitle>
+      <PageTitle>{i18n().t('pages.birthday.title')}</PageTitle>
 
       <Box display="flex" justifyContent="space-between" mb="$10">
         <Button as={A} variant="ghost" href={ROUTE_PATH.addBirthday}>

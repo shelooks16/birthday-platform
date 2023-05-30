@@ -1,0 +1,17 @@
+{
+  "home": {
+    "title": ""
+  },
+  "birthday": {
+    "title": "Днюхи"
+  },
+  "addBirthday": {
+    "title": "Добавить днюху"
+  },
+  "profile": {
+    "title": "Профиль"
+  },
+  "onboarding": {
+    "title": "Новый профиль"
+  }
+}

@@ -1,7 +1,7 @@
 import { Title } from '@solidjs/meta';
 import { ParentComponent } from 'solid-js';
 
-const staticText = 'Buddy birth';
+const staticText = 'Buddy Birthday';
 
 const PageTitle: ParentComponent = (props) => {
   return (

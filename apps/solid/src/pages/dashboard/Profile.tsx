@@ -9,6 +9,7 @@ import BuyMeACoffeeBtn from '../../lib/BuyMeACoffeeBtn';
 import { appConfig } from '../../appConfig';
 import DeleteMyProfileBtn from '../../components/profile/DeleteMyProfileBtn';
 import SignOutBtn from '../../components/signin/SignOutBtn';
+import { useI18n } from '../../i18n.context';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
   return (
@@ -26,6 +27,8 @@ const Section: ParentComponent<{ title: string }> = (props) => {
 };
 
 const DashProfile: Component = () => {
+  const [i18n] = useI18n();
+
   const onProfileSaved = () => {
     notificationService.show({
       status: 'success',
@@ -35,7 +38,7 @@ const DashProfile: Component = () => {
 
   return (
     <div>
-      <PageTitle>My profile</PageTitle>
+      <PageTitle>{i18n().t('pages.profile.title')}</PageTitle>
 
       <Section title="Notification channels">
         <EditNotificationChannels />

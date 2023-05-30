@@ -1,0 +1,17 @@
+{
+  "home": {
+    "title": ""
+  },
+  "birthday": {
+    "title": "Birthdays"
+  },
+  "addBirthday": {
+    "title": "Add birthday"
+  },
+  "profile": {
+    "title": "Profile"
+  },
+  "onboarding": {
+    "title": "Finish your profile"
+  }
+}
