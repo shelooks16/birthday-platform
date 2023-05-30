@@ -60,8 +60,8 @@ export function PreviewModeContextProvider(props: ParentProps) {
   );
 
   const disablePreviewMode = () => {
-    setIsPreviewMode(false);
     settingsAction.remove('previewMode');
+    setIsPreviewMode(false);
     notificationService.show({
       status: 'info',
       title: 'Exited demo'
@@ -69,8 +69,8 @@ export function PreviewModeContextProvider(props: ParentProps) {
   };
 
   const enablePreviewMode = () => {
-    setIsPreviewMode(true);
     setSettings('previewMode', 'true');
+    setIsPreviewMode(true);
   };
 
   const ctx: IPreviewModeCtx = [

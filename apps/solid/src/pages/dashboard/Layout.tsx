@@ -29,6 +29,7 @@ import { BirthdaysProvider } from '../../lib/birthday/birthdays.context';
 import { NotificationChannelsProvider } from '../../lib/notificationChannel/notificationChannels.context';
 import LogoLoader from '../../components/LogoLoader';
 import { usePreviewModeCtx } from '../../lib/previewMode/preview-mode.context';
+import ExitPreviewModeBtn from '../../components/ExitPreviewModeBtn';
 
 const Header = () => {
   const [profilectx] = useUserProfileCtx();
@@ -95,7 +96,7 @@ const Navs = () => {
 };
 
 export default function DashboardLayout() {
-  const [isPreviewMode, { disablePreviewMode }] = usePreviewModeCtx();
+  const [isPreviewMode] = usePreviewModeCtx();
   useRedirectIfSignedOut();
   const [profileCtx] = useRedirectIfOnboardingNotFinished();
 
@@ -116,13 +117,7 @@ export default function DashboardLayout() {
           <Header />
           <Show when={isPreviewMode()}>
             <Box textAlign="center" mt="$2">
-              <Button
-                colorScheme="danger"
-                variant="ghost"
-                onClick={disablePreviewMode}
-              >
-                Click to exit demo
-              </Button>
+              <ExitPreviewModeBtn colorScheme="danger" variant="ghost" />
             </Box>
           </Show>
         </Box>

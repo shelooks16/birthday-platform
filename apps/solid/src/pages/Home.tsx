@@ -1,6 +1,7 @@
 import { Box, Button, Divider, Heading, Text, VStack } from '@hope-ui/solid';
 import { A, useNavigate } from '@solidjs/router';
-import { Component, Match, Switch } from 'solid-js';
+import { Component, Match, Show, Switch } from 'solid-js';
+import ExitPreviewModeBtn from '../components/ExitPreviewModeBtn';
 import GoogleSignInBtn from '../components/signin/GoogleSignInBtn';
 import SignOutBtn from '../components/signin/SignOutBtn';
 import { usePreviewModeCtx } from '../lib/previewMode/preview-mode.context';
@@ -10,6 +11,7 @@ import { useUserCtx } from '../lib/user/user.context';
 import { ROUTE_PATH } from '../routes';
 
 const Home: Component = () => {
+  const [isPreviewMode] = usePreviewModeCtx();
   const [usrCtx] = useUserCtx();
   const [profileCtx] = useUserProfileCtx();
   const [, { enablePreviewMode }] = usePreviewModeCtx();
@@ -54,7 +56,14 @@ const Home: Component = () => {
               Continue as{' '}
               {!profileCtx.error ? profileCtx.profile?.displayName : '-'}
             </Button>
-            <SignOutBtn colorScheme="danger" variant="ghost" />
+            <Show
+              when={!isPreviewMode()}
+              fallback={
+                <ExitPreviewModeBtn colorScheme="danger" variant="ghost" />
+              }
+            >
+              <SignOutBtn colorScheme="danger" variant="ghost" />
+            </Show>
           </Match>
         </Switch>
       </VStack>
