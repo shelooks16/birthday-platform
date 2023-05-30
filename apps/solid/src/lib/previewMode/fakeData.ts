@@ -8,6 +8,7 @@ import {
 } from '@shared/types';
 import type { User } from 'firebase/auth';
 import { appConfig } from '../../appConfig';
+import { resolveCurrentI18nInstance } from '../../i18n.context';
 
 const user = (): User =>
   ({
@@ -21,7 +22,9 @@ const profile = (
   id: 'preview-mode',
   botPairingCode: 'preview-mode',
   createdAt: getTimestamp(),
-  displayName: 'You are looking at demo',
+  displayName:
+    resolveCurrentI18nInstance()?.t?.('previewMode.previewTitle') ||
+    'You are looking at demo',
   locale,
   timeZone
 });

@@ -13,6 +13,7 @@ import { useUserCtx } from '../lib/user/user.context';
 import { ROUTE_PATH } from '../routes';
 
 const PreviewModeFloating = () => {
+  const [i18n] = useI18n();
   const [, { enablePreviewMode }] = usePreviewModeCtx();
   const navigate = useNavigate();
 
@@ -23,13 +24,15 @@ const PreviewModeFloating = () => {
       left="0"
       width="100%"
       textAlign="center"
-      p="$8"
+      py="$8"
+      px="$3"
       bg="$background"
     >
       <Box mb="$2" fontSize="$sm" color="$neutral12">
-        Do not want to register?
+        {i18n().t('previewMode.enterPreview.title')}
       </Box>
       <Button
+        maxW="100%"
         variant="ghost"
         colorScheme="primary"
         onClick={() => {
@@ -37,7 +40,7 @@ const PreviewModeFloating = () => {
           navigate(ROUTE_PATH.birthday);
         }}
       >
-        Click to see demo with fake data
+        {i18n().t('previewMode.enterPreview.btn')}
       </Button>
     </Box>
   );

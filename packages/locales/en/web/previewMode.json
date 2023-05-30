@@ -1,0 +1,11 @@
+{
+  "previewTitle": "You are looking at demo",
+  "enterPreview": {
+    "title": "Do not want to register?",
+    "btn": "Click to see demo"
+  },
+  "exitPreview": {
+    "btn": "Click to exit demo account",
+    "success": "Exited demo"
+  }
+}

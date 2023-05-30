@@ -5,6 +5,7 @@ import validation from './validation.json';
 import errors from './errors.json';
 import pages from './pages.json';
 import signin from './signin.json';
+import previewMode from './previewMode.json';
 
 const langs = () => ({
   common: common(),
@@ -13,7 +14,8 @@ const langs = () => ({
   validation,
   errors,
   pages,
-  signin
+  signin,
+  previewMode
 });
 
 export default langs;

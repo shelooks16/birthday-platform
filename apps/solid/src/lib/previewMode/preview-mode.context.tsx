@@ -7,6 +7,7 @@ import {
   createSignal,
   Accessor
 } from 'solid-js';
+import { resolveCurrentI18nInstance, useI18n } from '../../i18n.context';
 
 type PreviewModeActions = {
   disablePreviewMode: () => void;
@@ -40,7 +41,11 @@ export function previewModeProxy<T extends Record<string | symbol, any>>(
               !ignoreKeys?.includes(prop as string) &&
               resolveIsPreviewMode()
             ) {
-              throw new Error('You are looking at demo');
+              const msg =
+                resolveCurrentI18nInstance()?.t?.('previewMode.previewTitle') ||
+                'You are looking at demo';
+
+              throw new Error(msg);
             }
 
             return Reflect.apply(target, thisArg, argumentsList);
@@ -54,6 +59,7 @@ export function previewModeProxy<T extends Record<string | symbol, any>>(
 }
 
 export function PreviewModeContextProvider(props: ParentProps) {
+  const [i18n] = useI18n();
   const [settings, setSettings, settingsAction] = createSessionStorage({});
   const [isPreviewMode, setIsPreviewMode] = createSignal(
     settings.previewMode === 'true' || false
@@ -64,7 +70,7 @@ export function PreviewModeContextProvider(props: ParentProps) {
     setIsPreviewMode(false);
     notificationService.show({
       status: 'info',
-      title: 'Exited demo'
+      title: i18n().t('previewMode.exitPreview.success')
     });
   };
 
