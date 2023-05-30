@@ -24,7 +24,8 @@
     "noItems": "Nothing found"
   },
   "/me": {
-    "item": "{{ name }} is connected with language: {{ language }}"
+    "item": "{{ name }} is connected with language: {{ language }}",
+    "noItems": "No connected accounts found.\nVisit {{ website }}"
   },
   "/notifications": {
     "title": "Upcoming notifications for {{ name }}",

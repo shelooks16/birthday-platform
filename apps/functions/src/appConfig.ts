@@ -2,6 +2,9 @@ import { fallbackLocale, localeList } from '@shared/locales';
 import * as functions from 'firebase-functions';
 
 interface Secrets {
+  platform: {
+    website: string;
+  };
   mailclient: {
     sender: string;
     password: string;

@@ -230,7 +230,13 @@ export const getMe = async (chatId: number) => {
   }
 
   if (messages.length === 0) {
-    messages.push('-');
+    const i18n = await useI18n();
+
+    messages.push(
+      i18n.t('telegramBot./me.noItems', {
+        website: appConfig.env().platform.website
+      })
+    );
   }
 
   return messages.join('\n');
