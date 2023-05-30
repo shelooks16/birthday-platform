@@ -30,6 +30,7 @@ import { NotificationChannelsProvider } from '../../lib/notificationChannel/noti
 import LogoLoader from '../../components/LogoLoader';
 import { usePreviewModeCtx } from '../../lib/previewMode/preview-mode.context';
 import ExitPreviewModeBtn from '../../components/previewMode/ExitPreviewModeBtn';
+import { TranslationKeyWeb } from '@shared/locales';
 
 const Header = () => {
   const [profilectx] = useUserProfileCtx();
@@ -37,40 +38,47 @@ const Header = () => {
   return (
     <Box textAlign="center" position="relative">
       <Heading my="0" size="lg" level="1" px="$10" css={fadeInCss()}>
-        {profilectx?.profile?.displayName ?? 'Loading'}
+        {profilectx?.profile?.displayName ?? '-'}
       </Heading>
     </Box>
   );
 };
 
-const navsList = [ROUTE_PATH.birthday, ROUTE_PATH.profile];
-
 const Navs = () => {
   const location = useLocation();
   const [i18n] = useI18n();
 
+  const navsList: { href: string; i18nKey: TranslationKeyWeb }[] = [
+    {
+      href: ROUTE_PATH.birthday,
+      i18nKey: 'dashboard.navs.birthday'
+    },
+    {
+      href: ROUTE_PATH.profile,
+      i18nKey: 'dashboard.navs.profile'
+    }
+  ];
+
   const [activeHref, setActiveHref] = createSignal<string | undefined>(
-    navsList.find((href) => href === location.pathname)
+    navsList.find((nav) => nav.href === location.pathname)?.href
   );
 
   const isActive = (href: string) => activeHref() === href;
-  const getKeyOfHref = (href: string) =>
-    Object.keys(ROUTE_PATH).find((key) => (ROUTE_PATH as any)[key] === href);
 
   createEffect(on(() => location.pathname, setActiveHref));
 
   return (
     <HStack gap="$1" justifyContent="center">
       <For each={navsList}>
-        {(href) => (
+        {(nav) => (
           <Button
             as={A}
-            href={href}
+            href={nav.href}
             fontWeight="$normal"
-            variant={isActive(href) ? 'subtle' : 'ghost'}
+            variant={isActive(nav.href) ? 'subtle' : 'ghost'}
             px={{ '@initial': '$2', '@sm': '$4' }}
             css={
-              !isActive(href)
+              !isActive(nav.href)
                 ? {
                     color: '$neutral11',
                     _hover: {
@@ -85,9 +93,7 @@ const Navs = () => {
                   }
             }
           >
-            {i18n()
-              .t<{ hrefKey: string; label: string }[]>('dashboard.navs', {}, [])
-              .find((tt) => getKeyOfHref(href) === tt.hrefKey)?.label ?? href}
+            {i18n().t(nav.i18nKey)}
           </Button>
         )}
       </For>

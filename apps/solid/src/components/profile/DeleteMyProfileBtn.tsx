@@ -3,22 +3,20 @@ import { Button, ButtonProps, notificationService } from '@hope-ui/solid';
 import { profileService } from '../../lib/user/profile.service';
 import { useUserCtx } from '../../lib/user/user.context';
 import { userService } from '../../lib/user/user.service';
+import { useI18n } from '../../i18n.context';
 
 type DeleteMyProfileBtnProps = Omit<
   ButtonProps<'button'>,
-  'onClick' | 'loading'
+  'onClick' | 'loading' | 'children'
 >;
 
 const DeleteMyProfileBtn: Component<DeleteMyProfileBtnProps> = (props) => {
+  const [i18n] = useI18n();
   const [, { setUser }] = useUserCtx();
   const [isLoading, setIsLoading] = createSignal(false);
 
   const handleDelete = async () => {
-    if (
-      !window.confirm(
-        'Your account and all data on the account will be deleted. You will be logged out. Proceed?'
-      )
-    ) {
+    if (!window.confirm(i18n().t('profile.deleteProfile.confirmation'))) {
       return;
     }
 
@@ -29,7 +27,7 @@ const DeleteMyProfileBtn: Component<DeleteMyProfileBtnProps> = (props) => {
 
       notificationService.show({
         status: 'success',
-        title: 'Your account was deleted'
+        title: i18n().t('profile.deleteProfile.success')
       });
 
       await userService.signOut();
@@ -46,7 +44,7 @@ const DeleteMyProfileBtn: Component<DeleteMyProfileBtnProps> = (props) => {
 
   return (
     <Button {...props} loading={isLoading()} onClick={handleDelete}>
-      {props.children ?? 'Export all my birthdays'}
+      {i18n().t('profile.deleteProfile.btn')}
     </Button>
   );
 };

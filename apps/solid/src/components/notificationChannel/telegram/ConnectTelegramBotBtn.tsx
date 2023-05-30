@@ -12,7 +12,7 @@ const SNACK_CACHE_KEY = 'telegram_bot_connected_snack';
 
 type ConnectTelegramBotBtnProps = Omit<
   ButtonProps<'a'>,
-  'as' | 'target' | 'href'
+  'as' | 'target' | 'href' | 'children'
 >;
 
 const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
@@ -20,7 +20,7 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
 ) => {
   const [showSnack, setShowSnack] = createSignal(false);
   const [profileCtx] = useUserProfileCtx();
-  const [, { locale }] = useI18n();
+  const [i18n, { locale }] = useI18n();
   const [, { mutate }] = useNotificationChannelsCtx();
 
   let unsubFromLatestAdded: () => void;
@@ -61,7 +61,7 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
         if (showSnack()) {
           notificationService.show({
             status: 'success',
-            title: 'Connected to telegram bot'
+            title: i18n().t('notificationChannel.telegram.connectBot.success')
           });
           disposeListeners();
         }
@@ -73,7 +73,9 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
       }
     } catch (err) {
       notificationService.show({
-        title: err.message
+        title: i18n().t('notificationChannel.telegram.connectBot.error', {
+          message: err.message
+        })
       });
     }
   };
@@ -96,7 +98,7 @@ const ConnectTelegramBotBtn: Component<ConnectTelegramBotBtnProps> = (
           : ''
       }
     >
-      Connect telegram bot
+      {i18n().t('notificationChannel.telegram.connectBot.btn')}
     </Button>
   );
 };

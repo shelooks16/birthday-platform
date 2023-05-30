@@ -24,7 +24,7 @@ export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
         notificationService.show({
           id: 'new-profile',
           status: 'info',
-          title: 'Creating user profile...',
+          title: i18n().t('profile.creatingProfile'),
           loading: true,
           persistent: true
         });

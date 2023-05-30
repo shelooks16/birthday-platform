@@ -53,8 +53,9 @@ const Home: Component = () => {
               href={ROUTE_PATH.birthday}
               loading={!profileCtx.error && !profileCtx.profile}
             >
-              Continue as{' '}
-              {!profileCtx.error ? profileCtx.profile?.displayName : '-'}
+              {i18n().t('signin.alreadyLoggedInBtn', {
+                name: !profileCtx.error ? profileCtx.profile?.displayName : '-'
+              })}
             </Button>
             <Show
               when={!isPreviewMode()}

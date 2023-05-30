@@ -15,8 +15,9 @@ import {
   ModalHeader,
   notificationService
 } from '@hope-ui/solid';
-import { GenerateBirthdayWishResult } from '@shared/types';
+import { BirthdayDocument, GenerateBirthdayWishResult } from '@shared/types';
 import { createSignal, ParentComponent, splitProps, Show } from 'solid-js';
+import { useI18n } from '../../i18n.context';
 import { birthdayService } from '../../lib/birthday/birthday.service';
 import { useCopyToClipboard } from '../../lib/clipboard/useCopyToClipboard';
 import { waitForModalAnimation } from '../../lib/stitches.utils';
@@ -24,7 +25,7 @@ import { IconArrowLeft, IconArrowRight } from '../Icons';
 import { Modal, ModalOverlay } from '../Modal';
 
 type GenerateBirthdayWishBtnProps = {
-  birthdayId: string;
+  birthday: Pick<BirthdayDocument, 'id' | 'buddyName'>;
   onBeforeOpen?: () => any;
   onAfterClose?: () => any;
 } & ButtonProps;
@@ -32,8 +33,9 @@ type GenerateBirthdayWishBtnProps = {
 const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
   props
 ) => {
+  const [i18n] = useI18n();
   const [localProps, btnProps] = splitProps(props, [
-    'birthdayId',
+    'birthday',
     'onBeforeOpen',
     'onAfterClose'
   ]);
@@ -62,7 +64,7 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
 
     try {
       const result = await birthdayService.generateBirthdayWish({
-        birthdayId: localProps.birthdayId,
+        birthdayId: localProps.birthday.id,
         clampToLimit
       });
 
@@ -106,7 +108,9 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
   return (
     <>
       <Button {...btnProps} onClick={generateOnOpen} loading={isLoading()}>
-        Поздравить {props.children}
+        {i18n().t('birthday.generateWish.greetBuddyBtn', {
+          buddyName: localProps.birthday.buddyName
+        })}
       </Button>
 
       <Modal
@@ -119,7 +123,11 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
-          <ModalHeader>Special birthday wish</ModalHeader>
+          <ModalHeader>
+            {i18n().t('birthday.generateWish.title', {
+              buddyName: localProps.birthday.buddyName
+            })}
+          </ModalHeader>
           <Divider />
           <ModalBody my="$2">
             <Show when={regenerateError()}>
@@ -130,7 +138,10 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
             <Show when={result()}>
               <HStack mb="$2" justifyContent="space-between">
                 <Box fontSize="$sm" color="$neutral10">
-                  Attempt {visibleAttempt() + 1}/{result()!.generateMaxCount}
+                  {i18n().t('birthday.generateWish.attempt', {
+                    currentAttempt: visibleAttempt() + 1,
+                    totalAttempts: result()!.generateMaxCount
+                  })}
                 </Box>
                 <ButtonGroup attached size="sm" variant="outline">
                   <IconButton
@@ -151,7 +162,9 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
 
               <HStack justifyContent="space-between" mt="$4" gap="$4">
                 <Button size="sm" onClick={copyToClipboard}>
-                  {hasCopied() ? 'Текст скопирован' : 'Скопировать'}
+                  {hasCopied()
+                    ? i18n().t('birthday.generateWish.copyBtn.copied')
+                    : i18n().t('birthday.generateWish.copyBtn.clickToCopy')}
                 </Button>
                 <Show
                   when={result()!.generatedCount !== result()!.generateMaxCount}
@@ -162,7 +175,7 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
                     loading={isLoading()}
                     variant="ghost"
                   >
-                    Переделать
+                    {i18n().t('birthday.generateWish.regenerateBtn')}
                   </Button>
                 </Show>
               </HStack>

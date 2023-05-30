@@ -1,0 +1,40 @@
+{
+  "title": "Настроить каналы уведомлений",
+  "backToAllBtn": "Назад к списку",
+  "noItemsAdded": "Ничего не добавлено",
+  "email": {
+    "addNew": {
+      "btn": "Добавить почту",
+      "success": "Почта {{ email }} успешно добавлена",
+      "sendVerificationForm": {
+        "submitBtn": "Отправить подтверждение на почту",
+        "email": {
+          "label": "Почта",
+          "placeholder": "Например, exampleinbox@gmail.com"
+        }
+      },
+      "otpForm": {
+        "submitBtn": "Подтвердить код",
+        "goBack": "Сменить почту",
+        "otp": {
+          "label": "Введи код отправленный на {{ email }}",
+          "placeholder": "Код из почты",
+          "helperText": "Отправленный код истекает {{ expiresAt }}"
+        }
+      }
+    }
+  },
+  "telegram": {
+    "connectBot": {
+      "btn": "Подключить телеграм бота",
+      "success": "Телеграм бот был подключен",
+      "error": "Ошибка подключения телеграм бота: {{ message }}"
+    }
+  },
+  "remove": {
+    "btn": "Удалить канал связи {{ channel }}",
+    "confirmation": "Все уведомления которые должны быть доставлены до {{ channel }} будут отменены. Продолжить?",
+    "success": "{{ channel }} был удален",
+    "error": "Ошибка удаления канала связи: {{ message }}"
+  }
+}

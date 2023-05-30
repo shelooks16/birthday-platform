@@ -65,11 +65,17 @@ const BirthdayList: Component<BirthdayListProps> = (props) => {
     <Box>
       <BirthdaySublistGrid
         list={list().todayList}
-        title={i18n().format.dateToDaysDiff(new Date()).phrase}
+        title={i18n().t('birthday.list.todayTitle')}
         isToday
       />
-      <BirthdaySublistGrid list={list().upcomingList} title="Upcoming" />
-      <BirthdaySublistGrid list={list().pastList} title="Past birthdays" />
+      <BirthdaySublistGrid
+        list={list().upcomingList}
+        title={i18n().t('birthday.list.futureTitle')}
+      />
+      <BirthdaySublistGrid
+        list={list().pastList}
+        title={i18n().t('birthday.list.pastTitle')}
+      />
     </Box>
   );
 };

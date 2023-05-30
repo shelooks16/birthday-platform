@@ -1,0 +1,40 @@
+{
+  "title": "Setup notification channels",
+  "backToAllBtn": "Back to list",
+  "noItemsAdded": "Nothing added",
+  "email": {
+    "addNew": {
+      "btn": "Add email channel",
+      "success": "Email {{ email }} was verified and added",
+      "sendVerificationForm": {
+        "submitBtn": "Send email verification",
+        "email": {
+          "label": "Email to add",
+          "placeholder": "E.g. example@gmail.com"
+        }
+      },
+      "otpForm": {
+        "submitBtn": "Confirm code",
+        "goBack": "Change email",
+        "otp": {
+          "label": "Enter code sent to {{ email }}",
+          "placeholder": "Code from email",
+          "helperText": "Sent code expires on {{ expiresAt }}"
+        }
+      }
+    }
+  },
+  "telegram": {
+    "connectBot": {
+      "btn": "Connect telegram bot",
+      "success": "Telegram bot was connected",
+      "error": "Failed to connect telegram bot: {{ message }}"
+    }
+  },
+  "remove": {
+    "btn": "Remove channel {{ channel }}",
+    "confirmation": "All notifications which must be delivered to {{ channel }} will be cancelled. Continue?",
+    "success": "Removed {{ channel }}",
+    "error": "Failed to remove channel: {{ message }}"
+  }
+}

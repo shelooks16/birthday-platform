@@ -67,7 +67,8 @@ const useTranslateValidationSchema = (i18n: Accessor<I18nWeb>) => {
     setYupLocale({
       string: {
         min: ({ min }) => t('validation.string.minLength', { min }),
-        max: ({ max }) => t('validation.string.maxLength', { max })
+        max: ({ max }) => t('validation.string.maxLength', { max }),
+        trim: t('validation.string.trim')
       },
       number: {
         min: ({ min }) => t('validation.number.minLength', { min }),

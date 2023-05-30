@@ -1,0 +1,34 @@
+{
+  "creatingProfile": "Creating user profile...",
+  "settingsZone": {
+    "title": "Settings"
+  },
+  "dangerZone": {
+    "title": "Danger zone"
+  },
+  "deleteProfile": {
+    "btn": "Delete my account",
+    "confirmation": "Your account and all data on the account will be deleted. You will be logged out. Continue?",
+    "success": "Your account was deleted"
+  },
+  "onboarding": {
+    "title": "Finish your profile before we can start"
+  },
+  "form": {
+    "submitBtn": "Save",
+    "success": "Information saved",
+    "error": "Failed to update profile: {{ message }}",
+    "displayName": {
+      "label": "Display name",
+      "placeholder": "Your name or nickname"
+    },
+    "language": {
+      "label": "Language preference",
+      "helperText": "Selected language will be used for this website and notifications"
+    },
+    "timeZone": {
+      "label": "Default time zone",
+      "helperText": "Selected time zone will be preselected in birthday notifications settings"
+    }
+  }
+}

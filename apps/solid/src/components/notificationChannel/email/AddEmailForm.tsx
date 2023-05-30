@@ -20,12 +20,14 @@ import { notificationChannelService } from '../../../lib/notificationChannel/not
 import { useNotificationChannelsCtx } from '../../../lib/notificationChannel/notificationChannels.context';
 import { fadeInCss } from '../../../lib/stitches.utils';
 import { IconArrowLeft } from '../../Icons';
+import { useI18n } from '../../../i18n.context';
 
 type AddEmailFormProps = {
   onAfterSubmit?: (data: ConfirmEmailOtpResult) => any;
 };
 
 const AddEmailForm: Component<AddEmailFormProps> = (props) => {
+  const [i18n] = useI18n();
   const [, { mutate }] = useNotificationChannelsCtx();
 
   const [verificationInfo, setVerificationInfo] =
@@ -107,13 +109,19 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
           <Box>
             <form ref={emailForm.form}>
               <FormControl required invalid={!!emailForm.errors('email')}>
-                <FormLabel for="email">Email to add</FormLabel>
+                <FormLabel for="email">
+                  {i18n().t(
+                    'notificationChannel.email.addNew.sendVerificationForm.email.label'
+                  )}
+                </FormLabel>
                 <Input
                   type="email"
                   id="email"
                   name="email"
                   autocomplete="off"
-                  placeholder="Enter email here"
+                  placeholder={i18n().t(
+                    'notificationChannel.email.addNew.sendVerificationForm.email.placeholder'
+                  )}
                 />
                 <FormErrorMessage>
                   {emailForm.errors('email')?.[0]}
@@ -130,7 +138,9 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
                 mt="$2"
                 loading={emailForm.isSubmitting()}
               >
-                Send email verification
+                {i18n().t(
+                  'notificationChannel.email.addNew.sendVerificationForm.submitBtn'
+                )}
               </Button>
             </form>
           </Box>
@@ -144,25 +154,36 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
           colorScheme="neutral"
           mb="$4"
         >
-          Change email
+          {i18n().t('notificationChannel.email.addNew.otpForm.goBack')}
         </Button>
         <Box css={fadeInCss()}>
           <form ref={otpForm.form}>
             <FormControl invalid={!!otpForm.errors('otp')}>
               <FormLabel for="otp">
-                Enter code sent to {verificationInfo()?.email}
+                {i18n().t(
+                  'notificationChannel.email.addNew.otpForm.otp.label',
+                  { email: verificationInfo()?.email }
+                )}
               </FormLabel>
               <Input
                 type="text"
-                placeholder="Code from email"
+                placeholder={i18n().t(
+                  'notificationChannel.email.addNew.otpForm.otp.placeholder'
+                )}
                 id="otp"
                 name="otp"
                 autocomplete="off"
               />
               <FormErrorMessage>{otpForm.errors('otp')?.[0]}</FormErrorMessage>
               <FormHelperText>
-                The code expires on{' '}
-                {new Date(verificationInfo()!.expiresAt).toLocaleTimeString()}
+                {i18n().t(
+                  'notificationChannel.email.addNew.otpForm.otp.helperText',
+                  {
+                    expiresAt: i18n().format.dateToDayMonthTime(
+                      new Date(verificationInfo()!.expiresAt)
+                    )
+                  }
+                )}
               </FormHelperText>
             </FormControl>
             <Show when={submitError()}>
@@ -176,7 +197,7 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
               mt="$2"
               loading={otpForm.isSubmitting()}
             >
-              Confirm code
+              {i18n().t('notificationChannel.email.addNew.otpForm.submitBtn')}
             </Button>
           </form>
         </Box>

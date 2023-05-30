@@ -201,10 +201,6 @@ const DayCell: Component<DayCellProps> = (props) => {
 
     return {
       opacity,
-      // animation: `${keyframes({
-      //   '0%': { opacity: 0 },
-      //   '100%': { opacity: isDateInVisibleMonth() ? 1 : 0.3 }
-      // })} 0.2s ease-in forwards`,
       background: backgroundMobile,
       position: 'relative',
       width: '50px',
@@ -411,25 +407,27 @@ const Table: ParentComponent = (props) => {
 };
 
 const Legend = () => {
+  const [i18n] = useI18n();
+
   const legendItems = [
     {
       background: dayWithBirthday.future.background,
       border: dayWithBirthday.future.border,
-      label: 'Clickable day with future birthdays',
+      label: i18n().t('birthday.calendar.legend.mobile.futureBirthdays'),
       onMobile: true,
       onDesktop: false
     },
     {
       background: dayWithBirthday.past.background,
       border: dayWithBirthday.past.border,
-      label: 'Clickable day with past birthdays',
+      label: i18n().t('birthday.calendar.legend.mobile.pastBirthdays'),
       onMobile: true,
       onDesktop: false
     },
     {
       background: dayWithBirthday.past.color,
       border: 'none',
-      label: 'Clickable past birthdays',
+      label: i18n().t('birthday.calendar.legend.pastBirthdays'),
       size: 20,
       borderRadius: '$sm',
       onMobile: false,
@@ -438,7 +436,7 @@ const Legend = () => {
     {
       background: dayWithBirthday.future.color,
       border: 'none',
-      label: 'Clickable upcoming birthdays',
+      label: i18n().t('birthday.calendar.legend.futureBirthdays'),
       size: 20,
       borderRadius: '$sm',
       onMobile: false,

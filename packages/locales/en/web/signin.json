@@ -7,5 +7,6 @@
     "btn": "Sign out",
     "success": "Signed out",
     "error": "Failed to sign out: {{ message }}"
-  }
+  },
+  "alreadyLoggedInBtn": "Continue as {{ name }}"
 }

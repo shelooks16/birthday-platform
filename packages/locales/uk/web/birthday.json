@@ -1,0 +1,146 @@
+{
+  "addBirthday": {
+    "btn": "Додати днюху",
+    "success": "{{ buddyName }} успішно додано",
+    "error": "Помилка додання днюхи: {{ message }}"
+  },
+  "noBirthdaysFound": {
+    "title": "У тебе немає доданих днюх",
+    "addFirstBirthdayBtn": "Додати першу днюху"
+  },
+  "editBirthday": {
+    "title": "Редагувати {{ buddyName }}",
+    "remove": {
+      "btn": "Видалити {{ buddyName }}",
+      "success": "{{ buddyName }} було видалено",
+      "error": "Помилка видалення днюхи: {{ message }}"
+    },
+    "update": {
+      "success": "{{ buddyName }} оновлено"
+    }
+  },
+  "views": {
+    "calendar": "Календарный вигляд",
+    "list": "Вид списком",
+    "notifications": "Повідомлення"
+  },
+  "calendar": {
+    "legend": {
+      "pastBirthdays": "Клікабельні минулі днюхи",
+      "futureBirthdays": "Клікабельні наступаючі днюхи",
+      "mobile": {
+        "pastBirthdays": "Клікабельний день з минулими днюхами",
+        "futureBirthdays": "Клікабельний день з наступаючими днюхами"
+      }
+    },
+    "dayCell": {
+      "showMore": "Показати +{{ amount }}",
+      "showLess": "Закрити"
+    }
+  },
+  "list": {
+    "todayTitle": "Сьогодні",
+    "futureTitle": "Наступаючі",
+    "pastTitle": "Минулі"
+  },
+  "notifications": {
+    "title": "Найближчі повідомлення",
+    "createdAtSort": {
+      "asc": "Спочатку найближчі",
+      "desc": "Спочатку пізніші"
+    },
+    "noNotificationsFound": "Ти не налаштував повідомлення для днюх"
+  },
+  "form": {
+    "submitBtn": {
+      "update": "Зберегти",
+      "addNew": "Додати днюху"
+    },
+    "mainInfo": {
+      "title": "Основна інформація",
+      "name": {
+        "label": "Ім'я або нікнейм",
+        "placeholder": "Наприклад, ДаркФорсДемон"
+      },
+      "buddyDescription": {
+        "label": "Опис",
+        "placeholder": "Полюбляє грати в ігри та дивитися аніме"
+      },
+      "dob": {
+        "year": {
+          "label": "Рік"
+        },
+        "month": {
+          "label": "Місяць"
+        },
+        "day": {
+          "label": "День",
+          "unavailable": "Спочатку обери рік та місяць"
+        },
+        "selectedLabel": "Вибрано: {{ dob }}"
+      }
+    },
+    "notifications": {
+      "title": "Повідомлення",
+      "description": "Хочеш ніколи не пропускати днюху? Налаштуй повідомлення нижче.",
+      "setupCheckbox": {
+        "unavailable": "Тобі потрібно налаштувати хоча б один канал зв'язку",
+        "label": "Окей, я хочу отримувати повідомлення"
+      },
+      "notifyAtBefore": {
+        "label": "Коли тебе повідомити?"
+      },
+      "channelIds": {
+        "label": "Вибери канал зв'язку"
+      },
+      "timezone": {
+        "label": "Часовий пояс",
+        "helperText": "Підтверди в якому часовому поясі доставляти повідомлення"
+      }
+    }
+  },
+  "generateWish": {
+    "greetBuddyBtn": "Привітати {{ buddyName }}",
+    "title": "Побажання з ДР для {{ buddyName }}",
+    "attempt": "Спроба {{ currentAttempt }}/{{ totalAttempts }}",
+    "copyBtn": {
+      "clickToCopy": "Копіювати побажання",
+      "copied": "Скопійовано"
+    },
+    "regenerateBtn": "Сгенерувати нове"
+  },
+  "enabledNotifications": {
+    "title": "Повідомлення включені ({{ count }})"
+  },
+  "importExportSection": {
+    "title": "Імпорт/Експорт днюх"
+  },
+  "exportBirthdays": {
+    "btn": "Експортувати всі днюхи",
+    "confirmation": "Днюхи будуть експортовані до файлу формату JSON на твій пристрій. Продовжити?",
+    "success": "Експортовано {{ count }} днюх до файлу {{ fileName }}",
+    "error": "Помилка експорту: {{ message }}"
+  },
+  "importBirthdays": {
+    "btn": "Імпортувати днюхи",
+    "success": "{{ count }} днюх імпортовано",
+    "exampleImport": {
+      "show": "Приклад формату файла",
+      "hide": "Сховати приклад",
+      "rules": [
+        "Файл повинен мати формат JSON масиву.",
+        "Поле <b>birth.month</b> має набувати значення від 0 до 11 включно, де 0 це Січень; 11 це Грудень."
+      ]
+    },
+    "form": {
+      "submitBtn": "Імпортувати днюхи",
+      "file": {
+        "label": "Натисни щоб вибрати файл, або перетягни файл сюди"
+      },
+      "toBeImported": {
+        "title": "Буде імпортовано днюх: {{ count }}",
+        "andMore": "та інші"
+      }
+    }
+  }
+}

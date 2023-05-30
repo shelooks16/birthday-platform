@@ -1,0 +1,146 @@
+{
+  "addBirthday": {
+    "btn": "Add birthday",
+    "success": "{{ buddyName }} was added",
+    "error": "Failed to add birthday: {{ message }}"
+  },
+  "noBirthdaysFound": {
+    "title": "You have no birthdays added",
+    "addFirstBirthdayBtn": "Add your first birthday"
+  },
+  "editBirthday": {
+    "title": "Edit {{ buddyName }}",
+    "remove": {
+      "btn": "Remove {{ buddyName }}",
+      "success": "{{ buddyName }} was removed",
+      "error": "Failed to remove birthday: {{ message }}"
+    },
+    "update": {
+      "success": "{{ buddyName }} updated"
+    }
+  },
+  "views": {
+    "calendar": "Calendar view",
+    "list": "List view",
+    "notifications": "Notifications view"
+  },
+  "calendar": {
+    "legend": {
+      "pastBirthdays": "Clickable past birthdays",
+      "futureBirthdays": "Clickable upcoming birthdays",
+      "mobile": {
+        "pastBirthdays": "Clickable day with past birthdays",
+        "futureBirthdays": "Clickable day with upcoming birthdays"
+      }
+    },
+    "dayCell": {
+      "showMore": "Show +{{ amount }}",
+      "showLess": "Show less"
+    }
+  },
+  "list": {
+    "todayTitle": "Today",
+    "futureTitle": "Upcoming",
+    "pastTitle": "Past"
+  },
+  "notifications": {
+    "title": "Upcoming notifications",
+    "createdAtSort": {
+      "asc": "Closest first",
+      "desc": "Later first"
+    },
+    "noNotificationsFound": "You have not setup any notifications for birthdays"
+  },
+  "form": {
+    "submitBtn": {
+      "update": "Save changes",
+      "addNew": "Add birthday"
+    },
+    "mainInfo": {
+      "title": "Main information",
+      "name": {
+        "label": "Name or nickname",
+        "placeholder": "E.g. DarkForceDemon"
+      },
+      "buddyDescription": {
+        "label": "Buddy description",
+        "placeholder": "Loves to play games and watch anime"
+      },
+      "dob": {
+        "year": {
+          "label": "Year"
+        },
+        "month": {
+          "label": "Month"
+        },
+        "day": {
+          "label": "Day",
+          "unavailable": "Select year and month first"
+        },
+        "selectedLabel": "Selected: {{ dob }}"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Want to never miss this birthday? Setup notifications below.",
+      "setupCheckbox": {
+        "unavailable": "You need to setup at least one notification channel",
+        "label": "Okay, I want to receive notifications"
+      },
+      "notifyAtBefore": {
+        "label": "Notification time"
+      },
+      "channelIds": {
+        "label": "Notify me through"
+      },
+      "timezone": {
+        "label": "Timezone",
+        "helperText": "Confirm time zone for notification delivery"
+      }
+    }
+  },
+  "generateWish": {
+    "greetBuddyBtn": "Greet {{ buddyName }}",
+    "title": "Special birthday wishes for {{ buddyName }}",
+    "attempt": "Attempt {{ currentAttempt }}/{{ totalAttempts }}",
+    "copyBtn": {
+      "clickToCopy": "Copy wish",
+      "copied": "Wish copied"
+    },
+    "regenerateBtn": "Generate a new one"
+  },
+  "enabledNotifications": {
+    "title": "Notifications enabled ({{ count }})"
+  },
+  "importExportSection": {
+    "title": "Import/Export birthdays"
+  },
+  "exportBirthdays": {
+    "btn": "Export all birthdays",
+    "confirmation": "Birthdays will be exported into a file on your device in JSON format. Continue?",
+    "success": "Exported {{ count }} birthdays to {{ fileName }}",
+    "error": "Export error: {{ message }}"
+  },
+  "importBirthdays": {
+    "btn": "Import birthdays",
+    "success": "{{ count }} birthdays were imported",
+    "exampleImport": {
+      "show": "See example file format",
+      "hide": "Hide example",
+      "rules": [
+        "File must have valid JSON array format.",
+        "Field <b>birth.month</b> must start from 0 index (January) whilst end at 11 (December)."
+      ]
+    },
+    "form": {
+      "submitBtn": "Import birthdays",
+      "file": {
+        "label": "Click to select file, or drop file here"
+      },
+      "toBeImported": {
+        "title": "Birthdays to be imported: {{ count }}",
+        "andMore": "and more"
+      }
+    }
+  }
+}

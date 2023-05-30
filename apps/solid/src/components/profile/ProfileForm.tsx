@@ -33,7 +33,7 @@ type ProfileFormProps = {
 
 const ProfileForm = (props: ProfileFormProps) => {
   const [profilectx, { setProfile }] = useUserProfileCtx();
-  const [, { locale }] = useI18n();
+  const [i18n, { locale }] = useI18n();
   const { form, errors, data, setFields, isSubmitting } = createForm<ISchema>({
     initialValues: {
       displayName: profilectx.profile?.displayName,
@@ -49,11 +49,16 @@ const ProfileForm = (props: ProfileFormProps) => {
         locale(values.locale);
         setProfile({ ...profilectx.profile!, ...values });
 
+        notificationService.show({
+          status: 'success',
+          title: i18n().t('profile.form.success')
+        });
+
         await props.onAfterSubmit?.(values);
       } catch (err) {
         notificationService.show({
           status: 'danger',
-          title: err.message
+          title: i18n().t('profile.form.error', { message: err.message })
         });
       }
     }
@@ -62,19 +67,19 @@ const ProfileForm = (props: ProfileFormProps) => {
   return (
     <VStack as="form" ref={form} spacing="$4" alignItems="stretch">
       <FormControl required invalid={!!errors('displayName')}>
-        <FormLabel>Display name</FormLabel>
+        <FormLabel>{i18n().t('profile.form.displayName.label')}</FormLabel>
         <Input
           type="text"
           name="displayName"
           autocomplete="off"
-          placeholder="Твое имя"
+          placeholder={i18n().t('profile.form.displayName.placeholder')}
         />
         <FormErrorMessage>{errors('displayName')?.[0]}</FormErrorMessage>
       </FormControl>
 
       <FormControl required invalid={!!errors('locale')}>
         <FormLabel for="locale-picker-trigger">
-          Set language preference
+          {i18n().t('profile.form.language.label')}
         </FormLabel>
         <LanguagePicker
           id="locale-picker"
@@ -85,12 +90,14 @@ const ProfileForm = (props: ProfileFormProps) => {
         <FormErrorMessage display="block">
           {errors('locale')?.[0]}
         </FormErrorMessage>
-        <FormHelperText>yo pls?</FormHelperText>
+        <FormHelperText>
+          {i18n().t('profile.form.language.helperText')}
+        </FormHelperText>
       </FormControl>
 
       <FormControl required invalid={!!errors('timeZone')}>
         <FormLabel for="tz-picker-trigger">
-          Confirm your default timezone
+          {i18n().t('profile.form.timeZone.label')}
         </FormLabel>
         <TimeZonePicker
           id="tz-picker"
@@ -102,12 +109,12 @@ const ProfileForm = (props: ProfileFormProps) => {
           {errors('timeZone')?.[0]}
         </FormErrorMessage>
         <FormHelperText>
-          Default timezone for notifications (can be changed at any time)
+          {i18n().t('profile.form.timeZone.helperText')}
         </FormHelperText>
       </FormControl>
 
       <Button type="submit" width="100%" loading={isSubmitting()}>
-        Save
+        {i18n().t('profile.form.submitBtn')}
       </Button>
     </VStack>
   );

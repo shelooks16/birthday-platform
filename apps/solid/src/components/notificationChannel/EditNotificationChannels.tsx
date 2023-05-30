@@ -37,6 +37,7 @@ import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
   props
 ) => {
+  const [i18n] = useI18n();
   const [, { mutate: mutateChannels }] = useNotificationChannelsCtx();
   const [birthdaysCtx, { refetch: refetchBirthdays }] = useBirthdaysCtx();
   const [isLoading, setIsLoading] = createSignal(false);
@@ -44,7 +45,9 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
   const handleRemoveChannel = async () => {
     if (
       !window.confirm(
-        `All notifications which must be delivered to ${props.channel.displayName} will be cancelled. Are you sure?`
+        i18n().t('notificationChannel.remove.confirmation', {
+          channel: props.channel.displayName
+        })
       )
     ) {
       return;
@@ -59,7 +62,9 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
 
       notificationService.show({
         status: 'success',
-        title: `Removed ${props.channel.displayName}`
+        title: i18n().t('notificationChannel.remove.success', {
+          channel: props.channel.displayName
+        })
       });
 
       mutateChannels((channels) =>
@@ -80,7 +85,9 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
     } catch (err) {
       notificationService.show({
         status: 'danger',
-        title: `Error removing channel. ${err.message}`
+        title: i18n().t('notificationChannel.remove.error', {
+          channel: err.message
+        })
       });
     }
 
@@ -97,8 +104,12 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
       <IconButton
         size="xs"
         mr="$2"
-        aria-label="Remove"
-        title="Remove"
+        aria-label={i18n().t('notificationChannel.remove.btn', {
+          channel: props.channel.displayName
+        })}
+        title={i18n().t('notificationChannel.remove.btn', {
+          channel: props.channel.displayName
+        })}
         colorScheme="neutral"
         variant="ghost"
         icon={<IconTimes fontSize="14px" color="$neutral10" />}
@@ -156,8 +167,9 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
 
     notificationService.show({
       status: 'success',
-      title: 'Email verified',
-      description: `Added ${data.channel.value}`
+      title: i18n().t('notificationChannel.email.addNew.success', {
+        email: data.channel.value
+      })
     });
   };
 
@@ -174,7 +186,7 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
               variant="outline"
               colorScheme="neutral"
             >
-              Back to list
+              {i18n().t('notificationChannel.backToAllBtn')}
             </Button>
           </Box>
           <Switch>
@@ -209,7 +221,9 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
                 <Match when={channelsCtx.latest}>
                   <Show
                     when={channelGroups()[channelType].length > 0}
-                    fallback={<div>Nothing added</div>}
+                    fallback={
+                      <div>{i18n().t('notificationChannel.noItemsAdded')}</div>
+                    }
                   >
                     <VStack alignItems="stretch" spacing="$2" css={fadeInCss()}>
                       <For each={channelGroups()[channelType]}>
@@ -228,18 +242,14 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
                             size="sm"
                             onClick={() => setCurrentScreen(ChannelType.email)}
                           >
-                            Add email channel
+                            {i18n().t('notificationChannel.email.addNew.btn')}
                           </Button>
                         ) : (
-                          <AddEmailChannelBtn variant="outline" size="sm">
-                            Add email channel
-                          </AddEmailChannelBtn>
+                          <AddEmailChannelBtn variant="outline" size="sm" />
                         )}
                       </Match>
                       <Match when={channelType === ChannelType.telegram}>
-                        <ConnectTelegramBotBtn variant="outline" size="sm">
-                          Connect telegram bot
-                        </ConnectTelegramBotBtn>
+                        <ConnectTelegramBotBtn variant="outline" size="sm" />
                       </Match>
                     </Switch>
                   </Box>

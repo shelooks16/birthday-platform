@@ -22,7 +22,7 @@ export const useCheatCodes = () => {
         pressed.length <= maxLength ? pressed : pressed.slice(maxLength * -1);
 
       if (cheatcodes.includes(entered)) {
-        alert('ACRIVATED');
+        alert('CHEATS ACTIVATED');
       }
     };
 

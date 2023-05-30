@@ -1,6 +1,7 @@
 import { Button, notificationService } from '@hope-ui/solid';
 import { BirthdayDocument } from '@shared/types';
 import { Component, createSignal } from 'solid-js';
+import { useI18n } from '../../i18n.context';
 import { birthdayService } from '../../lib/birthday/birthday.service';
 
 type DeleteBirthdayBtnProps = {
@@ -9,6 +10,7 @@ type DeleteBirthdayBtnProps = {
 };
 
 const DeleteBirthdayBtn: Component<DeleteBirthdayBtnProps> = (props) => {
+  const [i18n] = useI18n();
   const [isDeleting, setIsDeleting] = createSignal(false);
 
   const handleOnDelete = async () => {
@@ -21,7 +23,9 @@ const DeleteBirthdayBtn: Component<DeleteBirthdayBtnProps> = (props) => {
     } catch (err) {
       notificationService.show({
         status: 'danger',
-        title: err.message
+        title: i18n().t('birthday.editBirthday.remove.error', {
+          buddyName: props.birthday.buddyName
+        })
       });
     }
 
@@ -36,7 +40,9 @@ const DeleteBirthdayBtn: Component<DeleteBirthdayBtnProps> = (props) => {
       onClick={handleOnDelete}
       loading={isDeleting()}
     >
-      Remove {props.birthday.buddyName}
+      {i18n().t('birthday.editBirthday.remove.btn', {
+        buddyName: props.birthday.buddyName
+      })}
     </Button>
   );
 };

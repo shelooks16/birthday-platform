@@ -18,6 +18,7 @@ import {
   Match,
   Show
 } from 'solid-js';
+import { useI18n } from '../../i18n.context';
 import {
   NotificationsFilter,
   useNotificationList
@@ -26,6 +27,7 @@ import { fadeInCss } from '../../lib/stitches.utils';
 import NotificationList from './NotificationList';
 
 const NotificationListView: Component = () => {
+  const [i18n] = useI18n();
   const [filter, setFilter] = createSignal<NotificationsFilter>({
     orderByNotifyAt: 'asc'
   });
@@ -49,11 +51,11 @@ const NotificationListView: Component = () => {
   const orderDirOptions = [
     {
       value: 'asc',
-      label: 'Сначала ближайшие'
+      label: i18n().t('birthday.notifications.createdAtSort.asc')
     },
     {
       value: 'desc',
-      label: 'Сначала поздние'
+      label: i18n().t('birthday.notifications.createdAtSort.desc')
     }
   ];
 
@@ -69,7 +71,7 @@ const NotificationListView: Component = () => {
       >
         <HStack alignItems="center" spacing="$2" css={{ whiteSpace: 'nowrap' }}>
           <Heading as="h2" size="xl" color="$neutral11">
-            Upcoming notifications
+            {i18n().t('birthday.notifications.title')}
           </Heading>
           <Show when={isApplyingFilter()}>
             <Box>
@@ -105,7 +107,9 @@ const NotificationListView: Component = () => {
             <Show
               when={list()!.length > 0}
               fallback={
-                <Box>You have not setup any notifications for birthdays</Box>
+                <Box>
+                  {i18n().t('birthday.notifications.noNotificationsFound')}
+                </Box>
               }
             >
               <NotificationList notifications={list()!} />

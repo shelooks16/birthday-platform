@@ -1,3 +1,4 @@
+/* eslint-disable solid/no-innerhtml */
 import { Component, createSignal, Show, For } from 'solid-js';
 import {
   Alert,
@@ -12,8 +13,11 @@ import * as yup from 'yup';
 import { birthdayService } from '../../lib/birthday/birthday.service';
 import { birthdayField } from '../../lib/birthday/birthday.validation';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
+import { useI18n } from '../../i18n.context';
 
 const ShowExampleBtn = () => {
+  const [i18n] = useI18n();
+
   const EXAMPLE: BirthdayImportExport[] = [
     {
       buddyName: 'Henry',
@@ -45,19 +49,24 @@ const ShowExampleBtn = () => {
         variant="subtle"
         size="sm"
       >
-        {isExample() ? 'Hide example' : 'See example file format'}
+        {isExample()
+          ? i18n().t('birthday.importBirthdays.exampleImport.hide')
+          : i18n().t('birthday.importBirthdays.exampleImport.show')}
       </Button>
       <Show when={isExample()}>
         <Box mb="$3" mt="$2">
           <UnorderedList pl="$2">
-            <ListItem>File must have valid JSON array format.</ListItem>
-            <ListItem>
-              Field{' '}
-              <Box as="span" color="$primary10">
-                birth.month
-              </Box>{' '}
-              must start from 0 index (January) whilst end at 11 (December).
-            </ListItem>
+            <For
+              each={
+                i18n().t(
+                  'birthday.importBirthdays.exampleImport.rules',
+                  {},
+                  []
+                ) as string[]
+              }
+            >
+              {(item) => <ListItem innerHTML={item} />}
+            </For>
           </UnorderedList>
         </Box>
         <Box padding="$2" bg="$neutral3" borderRadius="$sm">
@@ -116,6 +125,7 @@ type ImportBirthdaysFormProps = {
 };
 
 const ImportBirthdaysForm: Component<ImportBirthdaysFormProps> = (props) => {
+  const [i18n] = useI18n();
   const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
   const [file, setFile] = createSignal<File>();
   const [importedBirthdays, setImportedBirthdays] =
@@ -213,7 +223,7 @@ const ImportBirthdaysForm: Component<ImportBirthdaysFormProps> = (props) => {
             when={file()}
             fallback={
               <Box textAlign="center">
-                Click to select file, or drop file here
+                {i18n().t('birthday.importBirthdays.form.file.label')}
               </Box>
             }
           >
@@ -242,18 +252,28 @@ const ImportBirthdaysForm: Component<ImportBirthdaysFormProps> = (props) => {
 
       <Show when={importedBirthdays()}>
         <Box fontSize="$lg">
-          Birthdays to be imported: {importedBirthdays()!.length}
+          {i18n().t('birthday.importBirthdays.form.toBeImported.title', {
+            count: importedBirthdays()!.length
+          })}
         </Box>
         <Box fontSize="$sm" color="$neutral10">
           {importedBirthdays()!
             .slice(0, 3)
             .map((b) => b.buddyName)
-            .concat(importedBirthdays()!.length >= 3 ? ['and more'] : [])
+            .concat(
+              importedBirthdays()!.length >= 3
+                ? [
+                    i18n().t(
+                      'birthday.importBirthdays.form.toBeImported.andMore'
+                    )
+                  ]
+                : []
+            )
             .join(', ')}
         </Box>
 
         <Button mt="$4" onClick={handleImport} loading={isLoading()}>
-          Import birthdays
+          {i18n().t('birthday.importBirthdays.form.submitBtn')}
         </Button>
       </Show>
     </Box>

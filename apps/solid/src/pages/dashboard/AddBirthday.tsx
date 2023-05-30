@@ -14,7 +14,9 @@ const DashAddBirthday: Component = () => {
   const handleOnAfterAdded = (createdBirthday: BirthdayDocument) => {
     notificationService.show({
       status: 'success',
-      title: `${createdBirthday.buddyName} was created`
+      title: i18n().t('birthday.addBirthday.success', {
+        buddyName: createdBirthday.buddyName
+      })
     });
   };
 

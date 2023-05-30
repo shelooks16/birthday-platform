@@ -1,0 +1,146 @@
+{
+  "addBirthday": {
+    "btn": "Добавить днюху",
+    "success": "{{ buddyName }} успешно добавлен",
+    "error": "Ошибка добавления днюхи: {{ message }}"
+  },
+  "noBirthdaysFound": {
+    "title": "У тебя нет добавленых днюх",
+    "addFirstBirthdayBtn": "Добавить первую днюху"
+  },
+  "editBirthday": {
+    "title": "Изменить {{ buddyName }}",
+    "remove": {
+      "btn": "Удалить {{ buddyName }}",
+      "success": "{{ buddyName }} удален",
+      "error": "Ошибка удаления днюхи: {{ message }}"
+    },
+    "update": {
+      "success": "{{ buddyName }} обновлен"
+    }
+  },
+  "views": {
+    "calendar": "Календарный вид",
+    "list": "Вид списком",
+    "notifications": "Уведомления"
+  },
+  "calendar": {
+    "legend": {
+      "pastBirthdays": "Кликабельные прошедшие днюхи",
+      "futureBirthdays": "Кликабельные наступающие днюхи",
+      "mobile": {
+        "pastBirthdays": "Кликабельный день с прошедшими днюхами",
+        "futureBirthdays": "Кликабельный день с наступающими днюхами"
+      }
+    },
+    "dayCell": {
+      "showMore": "Показать +{{ amount }}",
+      "showLess": "Закрыть"
+    }
+  },
+  "list": {
+    "todayTitle": "Сегодня",
+    "futureTitle": "Наступающие",
+    "pastTitle": "Прошедшие"
+  },
+  "notifications": {
+    "title": "Ближайшие уведомления",
+    "createdAtSort": {
+      "asc": "Сначала ближайшие",
+      "desc": "Сначала поздние"
+    },
+    "noNotificationsFound": "Ты не настроил уведомления для днюх"
+  },
+  "form": {
+    "submitBtn": {
+      "update": "Сохранить",
+      "addNew": "Добавить днюху"
+    },
+    "mainInfo": {
+      "title": "Основная информация",
+      "name": {
+        "label": "Имя или никнейм",
+        "placeholder": "Например, ДаркФорсДемон"
+      },
+      "buddyDescription": {
+        "label": "Описание",
+        "placeholder": "Любит играть в игры и смотреть аниме"
+      },
+      "dob": {
+        "year": {
+          "label": "Год"
+        },
+        "month": {
+          "label": "Месяц"
+        },
+        "day": {
+          "label": "День",
+          "unavailable": "Сначала выбери год и месяц"
+        },
+        "selectedLabel": "Выбрано: {{ dob }}"
+      }
+    },
+    "notifications": {
+      "title": "Уведомления",
+      "description": "Хочешь никогда не пропускать днюху? Настрой уведомления ниже.",
+      "setupCheckbox": {
+        "unavailable": "Тебе нужно настроить хотя бы один канал связи",
+        "label": "Окей, я хочу получать уведомления"
+      },
+      "notifyAtBefore": {
+        "label": "Когда тебя уведомить?"
+      },
+      "channelIds": {
+        "label": "Выбери канал связи"
+      },
+      "timezone": {
+        "label": "Часовой пояс",
+        "helperText": "Подтверди в каком часовом поясу доставлять уведомления"
+      }
+    }
+  },
+  "generateWish": {
+    "greetBuddyBtn": "Поздравить {{ buddyName }}",
+    "title": "Пожелания с ДР для {{ buddyName }}",
+    "attempt": "Попытка {{ currentAttempt }}/{{ totalAttempts }}",
+    "copyBtn": {
+      "clickToCopy": "Копировать поздравление",
+      "copied": "Скопировано"
+    },
+    "regenerateBtn": "Сгенерировать новое"
+  },
+  "enabledNotifications": {
+    "title": "Уведомления включены ({{ count }})"
+  },
+  "importExportSection": {
+    "title": "Импорт/Экспорт днюх"
+  },
+  "exportBirthdays": {
+    "btn": "Экспортировать все днюхи",
+    "confirmation": "Днюхи будут экспортированы в файл формата JSON на твое устройство. Продолжить?",
+    "success": "Экспортировано {{ count }} днюх в файл {{ fileName }}",
+    "error": "Ошибка экспорта: {{ message }}"
+  },
+  "importBirthdays": {
+    "btn": "Импортировать днюхи",
+    "success": "{{ count }} днюх импортировано",
+    "exampleImport": {
+      "show": "Пример формата файла",
+      "hide": "Скрыть пример",
+      "rules": [
+        "Файл должен иметь формат JSON массива.",
+        "Поле <b>birth.month</b> должно принимать значение от 0 до 11 включительно, где 0 это Январь; 11 это Декабрь."
+      ]
+    },
+    "form": {
+      "submitBtn": "Импортировать днюхи",
+      "file": {
+        "label": "Нажми чтобы выбрать файл, или перетащи файл сюда"
+      },
+      "toBeImported": {
+        "title": "Будет импортировано днюх: {{ count }}",
+        "andMore": "и остальные"
+      }
+    }
+  }
+}

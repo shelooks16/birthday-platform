@@ -49,30 +49,6 @@ import { useI18n } from '../../i18n.context';
 import { birthdayField } from '../../lib/birthday/birthday.validation';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 
-const maxAllowedAge = 80;
-const minAllowedAge = 0;
-const yearToday = new Date().getFullYear();
-const upYear = yearToday - minAllowedAge;
-const downYear = yearToday - maxAllowedAge;
-const years = Array(upYear - downYear)
-  .fill(null)
-  .map((_val, idx) => upYear - idx);
-
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
-];
-
 function listDays(monthIdx: number, year: number) {
   const numOfDays = new Date(year, monthIdx + 1, 0).getDate();
 
@@ -179,7 +155,9 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
       } catch (err) {
         notificationService.show({
           status: 'danger',
-          title: err.message
+          title: i18n().t('birthday.addBirthday.error', {
+            message: err.message
+          })
         });
       }
     }
@@ -196,6 +174,33 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
         })
       };
     });
+
+  const yearOptions = () => {
+    const maxYear = new Date().getFullYear();
+    const minYear = 1950;
+
+    return Array(maxYear - minYear + 1)
+      .fill(null)
+      .map((_val, idx) => ({
+        value: maxYear - idx,
+        label: maxYear - idx
+      }));
+  };
+
+  const monthOptions = () => {
+    return Array(12)
+      .fill(null)
+      .map((_val, idx) => {
+        const date = new Date();
+        date.setDate(1);
+        date.setMonth(idx);
+
+        return {
+          value: idx,
+          label: i18n().format.dateToMonth(date)
+        };
+      });
+  };
 
   const channelGroups = createMemo(() =>
     !channelsCtx.error && channelsCtx.latest?.length
@@ -230,50 +235,65 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
 
   return (
     <VStack as="form" ref={form} spacing="$4" alignItems="stretch">
-      <FormSectionTitle>Главная информация</FormSectionTitle>
+      <FormSectionTitle>
+        {i18n().t('birthday.form.mainInfo.title')}
+      </FormSectionTitle>
 
       <FormControl required invalid={!!errors('name')}>
-        <FormLabel>Name</FormLabel>
+        <FormLabel>{i18n().t('birthday.form.mainInfo.name.label')}</FormLabel>
         <Input
           type="text"
           name="name"
           autocomplete="off"
-          placeholder="E.g. DarkForceDemon"
+          placeholder={i18n().t('birthday.form.mainInfo.name.placeholder')}
         />
         <FormErrorMessage>{errors('name')?.[0]}</FormErrorMessage>
       </FormControl>
 
       <FormControl invalid={!!errors('description')}>
-        <FormLabel>Buddy description</FormLabel>
-        <Textarea name="description" placeholder="E.g. DarkForceDemon" />
+        <FormLabel>
+          {i18n().t('birthday.form.mainInfo.buddyDescription.label')}
+        </FormLabel>
+        <Textarea
+          name="description"
+          placeholder={i18n().t(
+            'birthday.form.mainInfo.buddyDescription.placeholder'
+          )}
+        />
         <FormErrorMessage>{errors('description')?.[0]}</FormErrorMessage>
       </FormControl>
 
       <Stack spacing="$3" direction={{ '@initial': 'row', '@md': 'row' }}>
         <FormControl minWidth="$px" required invalid={!!errors('year')}>
-          <FormLabel for="year-trigger">Year</FormLabel>
+          <FormLabel for="year-trigger">
+            {i18n().t('birthday.form.mainInfo.dob.year.label')}
+          </FormLabel>
           <SimpleSelect
             id="year"
             value={data().year}
             onChange={(value) => setFields('year', value)}
           >
-            <For each={years}>
-              {(year) => <SimpleOption value={year}>{year}</SimpleOption>}
+            <For each={yearOptions()}>
+              {(option) => (
+                <SimpleOption value={option.value}>{option.label}</SimpleOption>
+              )}
             </For>
           </SimpleSelect>
           <FormErrorMessage>{errors('year')?.[0]}</FormErrorMessage>
         </FormControl>
 
         <FormControl minWidth="$px" required invalid={!!errors('month')}>
-          <FormLabel for="month-trigger">Month</FormLabel>
+          <FormLabel for="month-trigger">
+            {i18n().t('birthday.form.mainInfo.dob.month.label')}
+          </FormLabel>
           <SimpleSelect
             id="month"
             value={data().month}
             onChange={(value) => setFields('month', value)}
           >
-            <For each={months}>
-              {(monthLabel, monthIdx) => (
-                <SimpleOption value={monthIdx()}>{monthLabel}</SimpleOption>
+            <For each={monthOptions()}>
+              {(option) => (
+                <SimpleOption value={option.value}>{option.label}</SimpleOption>
               )}
             </For>
           </SimpleSelect>
@@ -281,10 +301,12 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
         </FormControl>
 
         <FormControl minWidth="$px" required invalid={!!errors('day')}>
-          <FormLabel for="day-trigger">Day</FormLabel>
+          <FormLabel for="day-trigger">
+            {i18n().t('birthday.form.mainInfo.dob.day.label')}
+          </FormLabel>
           <OptionalTooltip
             showWhen={!canPickBirthDay()}
-            label="Выбери год и месяц"
+            label={i18n().t('birthday.form.mainInfo.dob.day.unavailable')}
           >
             <Box>
               <SimpleSelect
@@ -306,29 +328,30 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
       </Stack>
 
       <Show when={data().day && data().month + 1 && data().year}>
-        <b>
-          {i18n().format.dateToDayMonthYear(
+        {i18n().t('birthday.form.mainInfo.dob.selectedLabel', {
+          dob: i18n().format.dateToDayMonthYear(
             new Date(data().year, data().month, data().day)
-          )}
-        </b>
+          )
+        })}
       </Show>
 
-      <FormSectionTitle>Уведомления</FormSectionTitle>
+      <FormSectionTitle>
+        {i18n().t('birthday.form.notifications.title')}
+      </FormSectionTitle>
 
       <Box>
         <FormHelperText d="block" mb="$2" mt="$0">
-          Хочешь всегда помнить о дни рождении и ничего не пропустить? Мы можем
-          отправить тебе уведомления чтобы ты не забыл.
+          {i18n().t('birthday.form.notifications.description')}
         </FormHelperText>
-        <EditNotificationChannelsBtn size="xs" variant="dashed">
-          Настройки каналов уведомлений
-        </EditNotificationChannelsBtn>
+        <EditNotificationChannelsBtn size="xs" variant="dashed" />
       </Box>
 
       <FormControl invalid={!!errors('setupNotifications')}>
         <OptionalTooltip
           showWhen={!channelsCtx.error && !channelsCtx.latest?.length}
-          label="Хотя бы 1 канал связи"
+          label={i18n().t(
+            'birthday.form.notifications.setupCheckbox.unavailable'
+          )}
           closeOnClick={false}
         >
           <Box d="inline-block">
@@ -340,7 +363,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
               }
               disabled={!channelsCtx.error && !channelsCtx.latest?.length}
             >
-              Окей, я хочу получать уведомления
+              {i18n().t('birthday.form.notifications.setupCheckbox.label')}
             </Checkbox>
           </Box>
         </OptionalTooltip>
@@ -353,7 +376,9 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
 
       <Show when={data().setupNotifications}>
         <FormControl required invalid={!!errors('notifyAtBefore')}>
-          <FormLabel for="notifyAt-trigger">Notify at before</FormLabel>
+          <FormLabel for="notifyAt-trigger">
+            {i18n().t('birthday.form.notifications.notifyAtBefore.label')}
+          </FormLabel>
           <SimpleSelect
             id="notifyAt"
             name="notifyAt"
@@ -371,7 +396,9 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
         </FormControl>
 
         <FormControl required invalid={!!errors('notifyChannelsIds')}>
-          <FormLabel for="verified-channels-trigger">Notify through</FormLabel>
+          <FormLabel for="verified-channels-trigger">
+            {i18n().t('birthday.form.notifications.channelIds.label')}
+          </FormLabel>
           <SimpleSelect
             id="verified-channels"
             name="verified-channels"
@@ -409,7 +436,9 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
         </FormControl>
 
         <FormControl required invalid={!!errors('timeZone')}>
-          <FormLabel for="tz-trigger">Timezone</FormLabel>
+          <FormLabel for="tz-trigger">
+            {i18n().t('birthday.form.notifications.timezone.label')}
+          </FormLabel>
           <TimeZonePicker
             id="tz"
             name="tz"
@@ -418,14 +447,16 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
           />
           <FormErrorMessage>{errors('timeZone')?.[0]}</FormErrorMessage>
           <FormHelperText>
-            So notifications will be delivered to you on time
+            {i18n().t('birthday.form.notifications.timezone.helperText')}
           </FormHelperText>
         </FormControl>
       </Show>
 
       <Box mt="$4">
         <Button width="100%" type="submit" loading={isSubmitting()}>
-          {props.birthdayId ? 'Сохранить изменения' : 'Добавить днюху'}
+          {props.birthdayId
+            ? i18n().t('birthday.form.submitBtn.update')
+            : i18n().t('birthday.form.submitBtn.addNew')}
         </Button>
       </Box>
     </VStack>

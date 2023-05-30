@@ -1,5 +1,5 @@
 import { Component, ParentComponent, Show } from 'solid-js';
-import { Box, Heading, notificationService, Stack } from '@hope-ui/solid';
+import { Box, Heading, Stack } from '@hope-ui/solid';
 import PageTitle from '../../components/PageTitle';
 import EditNotificationChannels from '../../components/notificationChannel/EditNotificationChannels';
 import ExportBirthdaysBtn from '../../components/importExport/ExportBirthdaysBtn';
@@ -29,26 +29,19 @@ const Section: ParentComponent<{ title: string }> = (props) => {
 const DashProfile: Component = () => {
   const [i18n] = useI18n();
 
-  const onProfileSaved = () => {
-    notificationService.show({
-      status: 'success',
-      title: 'Information saved'
-    });
-  };
-
   return (
     <div>
       <PageTitle>{i18n().t('pages.profile.title')}</PageTitle>
 
-      <Section title="Notification channels">
+      <Section title={i18n().t('notificationChannel.title')}>
         <EditNotificationChannels />
       </Section>
 
-      <Section title="Settings">
-        <ProfileForm onAfterSubmit={onProfileSaved} />
+      <Section title={i18n().t('profile.settingsZone.title')}>
+        <ProfileForm />
       </Section>
 
-      <Section title="Import/Export">
+      <Section title={i18n().t('birthday.importExportSection.title')}>
         <Stack
           direction={{ '@initial': 'column', '@sm': 'row' }}
           spacing="$2"
@@ -59,10 +52,8 @@ const DashProfile: Component = () => {
         </Stack>
       </Section>
 
-      <Section title="Danger zone">
-        <DeleteMyProfileBtn w="100%" colorScheme="danger" variant="outline">
-          Delete my account
-        </DeleteMyProfileBtn>
+      <Section title={i18n().t('profile.dangerZone.title')}>
+        <DeleteMyProfileBtn w="100%" colorScheme="danger" variant="outline" />
       </Section>
 
       <Box textAlign="center" mt="$24">

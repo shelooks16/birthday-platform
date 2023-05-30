@@ -1,0 +1,40 @@
+{
+  "title": "Налаштувати канали зв'язку",
+  "backToAllBtn": "Назад до списку",
+  "noItemsAdded": "Нічого не додано",
+  "email": {
+    "addNew": {
+      "btn": "Додати пошту",
+      "success": "Пошту {{ email }} успішно додано",
+      "sendVerificationForm": {
+        "submitBtn": "Надіслати підтвердження на пошту",
+        "email": {
+          "label": "Пошта",
+          "placeholder": "Наприклад, exampleinbox@gmail.com"
+        }
+      },
+      "otpForm": {
+        "submitBtn": "Підтвердити код",
+        "goBack": "Змінити пошту",
+        "otp": {
+          "label": "Введи код надісланий на {{ email }}",
+          "placeholder": "Код із пошти",
+          "helperText": "Надісланий код спливає {{ expiresAt }}"
+        }
+      }
+    }
+  },
+  "telegram": {
+    "connectBot": {
+      "btn": "Підключити телеграм бота",
+      "success": "Телеграм бот був підключений",
+      "error": "Помилка підключення телеграм бота: {{ message }}"
+    }
+  },
+  "remove": {
+    "btn": "Видалити канал зв'язку {{ channel }}",
+    "confirmation": "Усі повідомлення, які повинні бути доставлені до {{ channel }} будуть скасовані. Продовжити?",
+    "success": "{{ channel }} було видалено",
+    "error": "Помилка видалення каналу зв'язку: {{ message }}"
+  }
+}

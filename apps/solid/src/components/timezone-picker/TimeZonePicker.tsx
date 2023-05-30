@@ -87,7 +87,7 @@ const TimeZonePicker = (props: SimpleSelectProps) => {
         checked={showAll()}
         onChange={(ev: any) => setShowAll(ev.target.checked)}
       >
-        Display all time zones in dropdown
+        {i18n().t('timezonePicker.showAll')}
       </Checkbox>
     </Box>
   );

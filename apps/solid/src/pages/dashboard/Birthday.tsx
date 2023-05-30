@@ -32,7 +32,7 @@ const DashBirthday: Component = () => {
 
       <Box display="flex" justifyContent="space-between" mb="$10">
         <Button as={A} variant="ghost" href={ROUTE_PATH.addBirthday}>
-          Add birthday
+          {i18n().t('birthday.addBirthday.btn')}
         </Button>
         <ViewPicker value={view()} onChange={setView} />
       </Box>

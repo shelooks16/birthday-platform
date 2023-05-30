@@ -173,13 +173,11 @@ const BirthdayInfoBtn: Component<BirthdayInfoBtnProps> = (props) => {
               <GenerateBirthdayWishBtn
                 onBeforeOpen={onBeforeOpen}
                 onAfterClose={onAfterClose}
-                birthdayId={localProps.birthday.id}
+                birthday={localProps.birthday}
                 size="sm"
                 colorScheme="accent"
                 variant="subtle"
-              >
-                {localProps.birthday.buddyName}
-              </GenerateBirthdayWishBtn>
+              />
             </Box>
           </Show>
         </PopoverBody>

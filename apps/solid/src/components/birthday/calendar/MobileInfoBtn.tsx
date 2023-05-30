@@ -77,13 +77,11 @@ const BirthInfoItem: Component<BirthInfoItemProps> = (props) => {
       <Show when={props.showGenerateWish}>
         <Box mt="$4">
           <GenerateBirthdayWishBtn
-            birthdayId={props.birthday.id}
+            birthday={props.birthday}
             size="sm"
             colorScheme="accent"
             variant="subtle"
-          >
-            {props.birthday.buddyName}
-          </GenerateBirthdayWishBtn>
+          />
         </Box>
       </Show>
     </Box>

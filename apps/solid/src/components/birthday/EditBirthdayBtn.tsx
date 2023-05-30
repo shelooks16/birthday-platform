@@ -18,6 +18,7 @@ import { IconEdit } from '../Icons';
 import BirthdayForm from './BirthdayForm';
 import DeleteBirthdayBtn from './DeleteBirthdayBtn';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
+import { useI18n } from '../../i18n.context';
 
 type EditBirthdayBtnProps = Omit<
   IconButtonProps<'button'>,
@@ -29,6 +30,7 @@ type EditBirthdayBtnProps = Omit<
 };
 
 const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
+  const [i18n] = useI18n();
   const [, { mutate: mutateBirthdays }] = useBirthdaysCtx();
   const [localProps, btnProps] = splitProps(props, [
     'birthday',
@@ -53,7 +55,9 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
 
     notificationService.show({
       status: 'success',
-      title: `${updatedBirthday.buddyName} updated`
+      title: i18n().t('birthday.editBirthday.update.success', {
+        buddyName: updatedBirthday.buddyName
+      })
     });
   };
 
@@ -65,7 +69,9 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
     );
     notificationService.show({
       status: 'success',
-      title: `${deletedBirthday.buddyName} was removed`
+      title: i18n().t('birthday.editBirthday.remove.success', {
+        buddyName: deletedBirthday.buddyName
+      })
     });
   };
 
@@ -76,7 +82,9 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
         colorScheme="neutral"
         variant="ghost"
         {...btnProps}
-        aria-label={`Edit ${localProps.birthday.buddyName}`}
+        aria-label={i18n().t('birthday.editBirthday.title', {
+          buddyName: localProps.birthday.buddyName
+        })}
         onClick={handleOpen}
         icon={<IconEdit />}
         appearance="auto"
@@ -92,7 +100,11 @@ const EditBirthdayBtn: Component<EditBirthdayBtnProps> = (props) => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Edit {localProps.birthday.buddyName}</DrawerHeader>
+          <DrawerHeader>
+            {i18n().t('birthday.editBirthday.title', {
+              buddyName: localProps.birthday.buddyName
+            })}
+          </DrawerHeader>
 
           <DrawerBody>
             <BirthdayForm

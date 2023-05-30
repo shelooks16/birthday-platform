@@ -1,19 +1,20 @@
 {
   "string": {
-    "minLength": "Must have minimum {{ min }} characters",
-    "maxLength": "Must have maximum {{ max }} characters"
+    "minLength": "Value must have minimum {{ min }} characters",
+    "maxLength": "Value must have maximum {{ max }} characters",
+    "trim": "Value must be a trimmed string"
   },
   "number": {
-    "minLength": "Must be {{ min }} or greater",
-    "maxLength": "Must be {{ max }} or less"
+    "minLength": "Value must be {{ min }} or greater",
+    "maxLength": "Value must be {{ max }} or less"
   },
   "array": {
-    "minLength": "Must have minimum {{ min }} elements",
-    "maxLength": "Must have maximum {{ max }} elements"
+    "minLength": "Value must have minimum {{ min }} elements",
+    "maxLength": "Value must have maximum {{ max }} elements"
   },
   "mixed": {
     "required": "Field is required",
     "notType": "Field must have type {{ type }}",
-    "oneOf": "Value must be one of: {{ values }}"
+    "oneOf": "Field value must be one of: {{ values }}"
   }
 }

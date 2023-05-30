@@ -1,16 +1,6 @@
 {
-  "navs": [
-    {
-      "label": "Birthdays",
-      "hrefKey": "birthday"
-    },
-    {
-      "label": "Add birthday",
-      "hrefKey": "addBirthday"
-    },
-    {
-      "label": "My profile",
-      "hrefKey": "profile"
-    }
-  ]
+  "navs": {
+    "birthday": "Birthdays",
+    "profile": "My profile"
+  }
 }

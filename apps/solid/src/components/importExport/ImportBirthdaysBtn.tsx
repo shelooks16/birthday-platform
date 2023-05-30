@@ -14,6 +14,7 @@ import { Modal, ModalOverlay } from '../Modal';
 import { waitForModalAnimation } from '../../lib/stitches.utils';
 import { BirthdayDocument } from '@shared/types';
 import ImportBirthdaysForm from './ImportBirthdaysForm';
+import { useI18n } from '../../i18n.context';
 
 type ExportBirthdaysBtnProps = Omit<
   ButtonProps<'button'>,
@@ -21,6 +22,7 @@ type ExportBirthdaysBtnProps = Omit<
 >;
 
 const ImportBirthdaysBtn: Component<ExportBirthdaysBtnProps> = (props) => {
+  const [i18n] = useI18n();
   const { isOpen, onOpen, onClose } = createDisclosure();
 
   const handleSuccess = async (data: BirthdayDocument[]) => {
@@ -29,25 +31,28 @@ const ImportBirthdaysBtn: Component<ExportBirthdaysBtnProps> = (props) => {
 
     notificationService.show({
       status: 'success',
-      title: `${data.length} birthdays were imported`
+      title: i18n().t('birthday.importBirthdays.success', {
+        count: data.length
+      })
     });
   };
 
   return (
     <>
       <Button {...props} onClick={onOpen}>
-        {props.children ?? 'Import birthdays'}
+        {i18n().t('birthday.importBirthdays.btn')}
       </Button>
       <Modal
         opened={isOpen()}
         onClose={onClose}
         motionPreset="fade-in-bottom"
         scrollBehavior="inside"
+        blockScrollOnMount={false}
       >
         <ModalOverlay />
         <ModalContent mx="$1">
           <ModalCloseButton />
-          <ModalHeader>Import birthdays</ModalHeader>
+          <ModalHeader>{i18n().t('birthday.importBirthdays.btn')}</ModalHeader>
           <Divider />
           <ModalBody my="$2">
             <ImportBirthdaysForm onAfterSubmit={handleSuccess} />

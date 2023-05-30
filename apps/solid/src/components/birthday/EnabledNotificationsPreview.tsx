@@ -35,8 +35,9 @@ const EnabledNotificationsPreview: Component<
   return (
     <Box>
       <Heading as="h6" fontWeight={props.inTooltip ? '$normal' : undefined}>
-        Notifications enabled (
-        {props.notificationSettings.notifyAtBefore.length})
+        {i18n().t('birthday.enabledNotifications.title', {
+          count: props.notificationSettings.notifyAtBefore.length
+        })}
       </Heading>
       <Box mt={props.inTooltip ? '$2' : '0'} textTransform="lowercase">
         {props.eachItemOnNewLine ? (

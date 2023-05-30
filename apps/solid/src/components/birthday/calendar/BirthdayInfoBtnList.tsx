@@ -4,6 +4,7 @@ import { BirthdayDocument } from '@shared/types';
 import { IconBell } from '../../Icons';
 import BirthdayInfoBtn from './BirthdayInfoBtn';
 import { appConfig } from '../../../appConfig';
+import { useI18n } from '../../../i18n.context';
 
 type BirthdayInfoBtnListProps = {
   birthdays: BirthdayDocument[];
@@ -13,6 +14,7 @@ type BirthdayInfoBtnListProps = {
 };
 
 const BirthdayInfoBtnList: Component<BirthdayInfoBtnListProps> = (props) => {
+  const [i18n] = useI18n();
   const [showMore, setShowMore] = createSignal(false);
 
   const isShowMoreVisible = () =>
@@ -69,8 +71,10 @@ const BirthdayInfoBtnList: Component<BirthdayInfoBtnListProps> = (props) => {
           colorScheme="neutral"
         >
           {showMore()
-            ? 'Show less'
-            : `Show +${props.birthdays.length - visibleItems().length}`}
+            ? i18n().t('birthday.calendar.dayCell.showLess')
+            : i18n().t('birthday.calendar.dayCell.showMore', {
+                amount: props.birthdays.length - visibleItems().length
+              })}
         </Button>
       </Show>
     </>

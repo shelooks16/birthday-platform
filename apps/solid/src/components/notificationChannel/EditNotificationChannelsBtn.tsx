@@ -11,10 +11,11 @@ import { Component, splitProps } from 'solid-js';
 import { Drawer, DrawerOverlay } from '../Modal';
 import { waitForDrawerAnimation } from '../../lib/stitches.utils';
 import EditNotificationChannels from './EditNotificationChannels';
+import { useI18n } from '../../i18n.context';
 
 type EditNotificationChannelsBtnProps = Omit<
   ButtonProps<'button'>,
-  'onClick'
+  'onClick' | 'children'
 > & {
   onAfterClose?: () => any;
 };
@@ -22,6 +23,7 @@ type EditNotificationChannelsBtnProps = Omit<
 const EditNotificationChannelsBtn: Component<
   EditNotificationChannelsBtnProps
 > = (props) => {
+  const [i18n] = useI18n();
   const [localProps, btnProps] = splitProps(props, ['onAfterClose']);
 
   const { isOpen, onOpen, onClose } = createDisclosure();
@@ -34,7 +36,9 @@ const EditNotificationChannelsBtn: Component<
 
   return (
     <>
-      <Button {...btnProps} onClick={onOpen} />
+      <Button {...btnProps} onClick={onOpen}>
+        {i18n().t('notificationChannel.title')}
+      </Button>
       <Drawer
         opened={isOpen()}
         placement="right"
@@ -45,7 +49,7 @@ const EditNotificationChannelsBtn: Component<
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Edit LOL</DrawerHeader>
+          <DrawerHeader> {i18n().t('notificationChannel.title')}</DrawerHeader>
 
           <DrawerBody>
             <EditNotificationChannels isInModal />

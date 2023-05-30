@@ -2,6 +2,7 @@ import { ButtonGroup, IconButton, Tooltip } from '@hope-ui/solid';
 import { createLocalStorage } from '@solid-primitives/storage';
 import { Component, createEffect, createSignal, For, Signal } from 'solid-js';
 import { appConfig } from '../appConfig';
+import { useI18n } from '../i18n.context';
 import { IconBell, IconCalendar, IconList } from './Icons';
 
 export type View = 'list' | 'calendar' | 'notifications';
@@ -27,21 +28,23 @@ type ViewPickerProps = {
 };
 
 const ViewPicker: Component<ViewPickerProps> = (props) => {
+  const [i18n] = useI18n();
+
   const views: ViewConfig[] = [
     {
       icon: <IconCalendar />,
       value: 'calendar',
-      aria: 'Calendar view'
+      aria: i18n().t('birthday.views.calendar')
     },
     {
       icon: <IconList />,
       value: 'list',
-      aria: 'List view'
+      aria: i18n().t('birthday.views.list')
     },
     {
       icon: <IconBell />,
       value: 'notifications',
-      aria: 'Notifications view'
+      aria: i18n().t('birthday.views.notifications')
     }
   ];
 

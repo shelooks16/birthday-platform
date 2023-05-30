@@ -1,16 +1,6 @@
 {
-  "navs": [
-    {
-      "label": "Мои днюхи",
-      "hrefKey": "birthday"
-    },
-    {
-      "label": "Добавить днюху",
-      "hrefKey": "addBirthday"
-    },
-    {
-      "label": "Профиль",
-      "hrefKey": "profile"
-    }
-  ]
+  "navs": {
+    "birthday": "Мои днюхи",
+    "profile": "Профиль"
+  }
 }

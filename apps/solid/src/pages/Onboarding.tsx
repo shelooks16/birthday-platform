@@ -1,15 +1,10 @@
-import {
-  Box,
-  Container,
-  Heading,
-  notificationService,
-  Center
-} from '@hope-ui/solid';
+import { Box, Container, Heading, Center } from '@hope-ui/solid';
 import { useNavigate } from '@solidjs/router';
 import { Component, Match, Switch } from 'solid-js';
 import LogoLoader from '../components/LogoLoader';
 import ProfileForm from '../components/profile/ProfileForm';
 import SignOutBtn from '../components/signin/SignOutBtn';
+import { useI18n } from '../i18n.context';
 import { useUserProfileCtx } from '../lib/user/user-profile.context';
 import { useRedirectIfSignedOut } from '../lib/user/user.context';
 import { ROUTE_PATH } from '../routes';
@@ -17,21 +12,18 @@ import { ROUTE_PATH } from '../routes';
 const Onboarding: Component = () => {
   useRedirectIfSignedOut();
 
+  const [i18n] = useI18n();
   const [profileCtx] = useUserProfileCtx();
   const navigate = useNavigate();
 
   const handleFinishOnboarding = async () => {
-    notificationService.show({
-      status: 'success',
-      title: 'Information saved'
-    });
     navigate(ROUTE_PATH.birthday);
   };
 
   return (
     <Container py="$10">
       <Heading textAlign="center" size="xl" mb="$8">
-        Finish your profile before we can start
+        {i18n().t('profile.onboarding.title')}
       </Heading>
 
       <Switch>
