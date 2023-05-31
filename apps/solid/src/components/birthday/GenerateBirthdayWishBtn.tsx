@@ -1,6 +1,5 @@
 /* eslint-disable solid/no-innerhtml */
 import {
-  Alert,
   Box,
   Button,
   ButtonGroup,
@@ -21,6 +20,7 @@ import { useI18n } from '../../i18n.context';
 import { birthdayService } from '../../lib/birthday/birthday.service';
 import { useCopyToClipboard } from '../../lib/clipboard/useCopyToClipboard';
 import { waitForModalAnimation } from '../../lib/stitches.utils';
+import ErrorMessage from '../error/ErrorMessage';
 import { IconArrowLeft, IconArrowRight } from '../Icons';
 import { Modal, ModalOverlay } from '../Modal';
 
@@ -131,9 +131,7 @@ const GenerateBirthdayWishBtn: ParentComponent<GenerateBirthdayWishBtnProps> = (
           <Divider />
           <ModalBody my="$2">
             <Show when={regenerateError()}>
-              <Alert status="danger" mb="$4">
-                {regenerateError()!.message}
-              </Alert>
+              <ErrorMessage mb="$4">{regenerateError()!.message}</ErrorMessage>
             </Show>
             <Show when={result()}>
               <HStack mb="$2" justifyContent="space-between">

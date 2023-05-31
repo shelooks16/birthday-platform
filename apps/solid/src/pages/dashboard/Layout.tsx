@@ -1,12 +1,4 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Center,
-  Divider,
-  Heading,
-  HStack
-} from '@hope-ui/solid';
+import { Box, Button, Center, Divider, Heading, HStack } from '@hope-ui/solid';
 import {
   For,
   createSignal,
@@ -31,6 +23,7 @@ import LogoLoader from '../../components/LogoLoader';
 import { usePreviewModeCtx } from '../../lib/previewMode/preview-mode.context';
 import ExitPreviewModeBtn from '../../components/previewMode/ExitPreviewModeBtn';
 import { TranslationKeyWeb } from '@shared/locales';
+import ErrorMessage from '../../components/error/ErrorMessage';
 
 const Header = () => {
   const [profilectx] = useUserProfileCtx();
@@ -114,9 +107,9 @@ export default function DashboardLayout() {
         </Center>
       </Match>
       <Match when={profileCtx.error}>
-        <Alert status="danger" mt="$2">
+        <ErrorMessage mt="$10" action="refresh">
           {profileCtx.error!.message}
-        </Alert>
+        </ErrorMessage>
       </Match>
       <Match when={profileCtx.profile}>
         <Box mb="$6">

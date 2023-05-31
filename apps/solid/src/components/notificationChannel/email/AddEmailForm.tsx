@@ -1,6 +1,5 @@
 import { Show, createSignal, Component, onMount } from 'solid-js';
 import {
-  Alert,
   Box,
   Button,
   FormControl,
@@ -21,6 +20,7 @@ import { useNotificationChannelsCtx } from '../../../lib/notificationChannel/not
 import { fadeInCss } from '../../../lib/stitches.utils';
 import { IconArrowLeft } from '../../Icons';
 import { useI18n } from '../../../i18n.context';
+import ErrorMessage from '../../error/ErrorMessage';
 
 type AddEmailFormProps = {
   onAfterSubmit?: (data: ConfirmEmailOtpResult) => any;
@@ -128,9 +128,9 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
                 </FormErrorMessage>
               </FormControl>
               <Show when={sendVerificationError()}>
-                <Alert status="danger" mt="$2" variant="left-accent">
+                <ErrorMessage mt="$2">
                   {sendVerificationError()?.message}
-                </Alert>
+                </ErrorMessage>
               </Show>
               <Button
                 type="submit"
@@ -187,9 +187,7 @@ const AddEmailForm: Component<AddEmailFormProps> = (props) => {
               </FormHelperText>
             </FormControl>
             <Show when={submitError()}>
-              <Alert status="danger" mt="$2" variant="left-accent">
-                {submitError()?.message}
-              </Alert>
+              <ErrorMessage mt="$2">{submitError()?.message}</ErrorMessage>
             </Show>
             <Button
               type="submit"

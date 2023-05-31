@@ -1,6 +1,7 @@
 import { Box, Container, Heading, Center } from '@hope-ui/solid';
 import { useNavigate } from '@solidjs/router';
 import { Component, Match, Switch } from 'solid-js';
+import ErrorMessage from '../components/error/ErrorMessage';
 import LogoLoader from '../components/LogoLoader';
 import ProfileForm from '../components/profile/ProfileForm';
 import SignOutBtn from '../components/signin/SignOutBtn';
@@ -33,7 +34,9 @@ const Onboarding: Component = () => {
           </Center>
         </Match>
         <Match when={profileCtx.error}>
-          <div>{profileCtx.error!.message}</div>
+          <ErrorMessage action="refresh">
+            {profileCtx.error?.message}
+          </ErrorMessage>
         </Match>
         <Match when={profileCtx.profile}>
           <ProfileForm onAfterSubmit={handleFinishOnboarding} />

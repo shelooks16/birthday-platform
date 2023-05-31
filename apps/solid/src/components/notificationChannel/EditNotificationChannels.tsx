@@ -14,8 +14,7 @@ import {
   Skeleton,
   notificationService,
   IconButton,
-  Button,
-  Alert
+  Button
 } from '@hope-ui/solid';
 import { IconArrowLeft, IconTimes } from '../Icons';
 import { fadeInCss } from '../../lib/stitches.utils';
@@ -33,6 +32,7 @@ import AddEmailForm from './email/AddEmailForm';
 import { useI18n } from '../../i18n.context';
 import IconChannelType from '../notification/IconChannelType';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
+import ErrorMessage from '../error/ErrorMessage';
 
 const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
   props
@@ -142,7 +142,8 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
   props
 ) => {
   const [i18n] = useI18n();
-  const [channelsCtx] = useNotificationChannelsCtx();
+  const [channelsCtx, { refetch: refetchChannels }] =
+    useNotificationChannelsCtx();
   const [currentScreen, setCurrentScreen] = createSignal<ChannelType | null>(
     null
   );
@@ -216,7 +217,9 @@ const EditNotificationChannels: Component<EditNotificationChannelsProps> = (
 
               <Switch fallback={<ChannelListSkeleton />}>
                 <Match when={channelsCtx.error}>
-                  <Alert status="danger">{channelsCtx.error.message}</Alert>
+                  <ErrorMessage action={refetchChannels}>
+                    {channelsCtx.error.message}
+                  </ErrorMessage>
                 </Match>
                 <Match when={channelsCtx.latest}>
                   <Show

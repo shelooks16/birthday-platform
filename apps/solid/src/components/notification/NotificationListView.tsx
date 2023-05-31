@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Heading,
   HStack,
@@ -24,6 +23,7 @@ import {
   useNotificationList
 } from '../../lib/notification/useNotificationList';
 import { fadeInCss } from '../../lib/stitches.utils';
+import ErrorMessage from '../error/ErrorMessage';
 import NotificationList from './NotificationList';
 
 const NotificationListView: Component = () => {
@@ -31,7 +31,8 @@ const NotificationListView: Component = () => {
   const [filter, setFilter] = createSignal<NotificationsFilter>({
     orderByNotifyAt: 'asc'
   });
-  const [list, listResource] = useNotificationList(filter);
+  const [list, listResource, { refetch: refetchList }] =
+    useNotificationList(filter);
   const [isApplyingFilter, setIsApplyingFilter] = createSignal(false);
 
   let filterTimeout: number;
@@ -100,7 +101,9 @@ const NotificationListView: Component = () => {
 
       <Switch>
         <Match when={listResource.error}>
-          <Alert status="danger">{listResource.error.message}</Alert>
+          <ErrorMessage action={refetchList}>
+            {listResource.error.message}
+          </ErrorMessage>
         </Match>
         <Match when={list()}>
           <Box css={fadeInCss()}>

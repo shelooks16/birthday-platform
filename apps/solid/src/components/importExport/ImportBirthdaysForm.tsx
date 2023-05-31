@@ -1,19 +1,13 @@
 /* eslint-disable solid/no-innerhtml */
 import { Component, createSignal, Show, For } from 'solid-js';
-import {
-  Alert,
-  Box,
-  Button,
-  Input,
-  ListItem,
-  UnorderedList
-} from '@hope-ui/solid';
+import { Box, Button, Input, ListItem, UnorderedList } from '@hope-ui/solid';
 import { BirthdayDocument, BirthdayImportExport } from '@shared/types';
 import * as yup from 'yup';
 import { birthdayService } from '../../lib/birthday/birthday.service';
 import { birthdayField } from '../../lib/birthday/birthday.validation';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 import { useI18n } from '../../i18n.context';
+import ErrorMessageList from '../error/ErrorMessageList';
 
 const ShowExampleBtn = () => {
   const [i18n] = useI18n();
@@ -241,13 +235,7 @@ const ImportBirthdaysForm: Component<ImportBirthdaysFormProps> = (props) => {
       </Box>
 
       <Show when={errors().length > 0}>
-        <Alert status="danger" mb="$2">
-          <UnorderedList>
-            <For each={errors().slice(0, 10)}>
-              {(msg) => <ListItem>{msg}</ListItem>}
-            </For>
-          </UnorderedList>
-        </Alert>
+        <ErrorMessageList errors={errors().slice(0, 10)} mb="$2" />
       </Show>
 
       <Show when={importedBirthdays()}>

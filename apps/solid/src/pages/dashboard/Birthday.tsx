@@ -1,4 +1,4 @@
-import { Alert, Box, Button } from '@hope-ui/solid';
+import { Box, Button } from '@hope-ui/solid';
 import { Component, Show, Match, Switch, lazy, Suspense } from 'solid-js';
 import { A } from '@solidjs/router';
 import { useCheatCodes } from '../../lib/useCheatCodes';
@@ -8,6 +8,7 @@ import { ROUTE_PATH } from '../../routes';
 import { useBirthdaysCtx } from '../../lib/birthday/birthdays.context';
 import NoBirthdaysText from '../../components/birthday/NoBirthdaysText';
 import { useI18n } from '../../i18n.context';
+import ErrorMessage from '../../components/error/ErrorMessage';
 
 const BirthdayCalendar = lazy(
   () => import('../../components/birthday/calendar/BirthdayCalendar')
@@ -23,7 +24,7 @@ const DashBirthday: Component = () => {
   const [i18n] = useI18n();
   useCheatCodes();
 
-  const [birthdayList] = useBirthdaysCtx();
+  const [birthdayList, { refetch: refetchBirthdays }] = useBirthdaysCtx();
   const [view, setView] = useView();
 
   return (
@@ -40,7 +41,9 @@ const DashBirthday: Component = () => {
       <Suspense>
         <Switch>
           <Match when={birthdayList.error}>
-            <Alert status="danger">{birthdayList.error.message}</Alert>
+            <ErrorMessage action={refetchBirthdays}>
+              {birthdayList.error.message}
+            </ErrorMessage>
           </Match>
           <Match when={birthdayList.latest}>
             <Switch>
