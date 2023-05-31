@@ -1,10 +1,4 @@
-import type {
-  NextOrObserver,
-  ErrorFn,
-  CompleteFn,
-  User,
-  UserCredential
-} from 'firebase/auth';
+import type { NextOrObserver, User, UserCredential } from 'firebase/auth';
 import { isMobileView } from '../browser';
 import { asyncLoadAuth } from '../firebase/loaders';
 import { previewModeProxy } from '../previewMode/preview-mode.context';
@@ -24,14 +18,10 @@ export const userService = previewModeProxy({
 
     return login(auth, new GoogleAuthProvider());
   },
-  async onAuthStateChanged(
-    nextOrObserver: NextOrObserver<User>,
-    error?: ErrorFn,
-    completed?: CompleteFn
-  ) {
+  async onAuthStateChanged(nextOrObserver: NextOrObserver<User>) {
     const { auth } = await asyncLoadAuth();
 
-    return auth.onAuthStateChanged(nextOrObserver, error, completed);
+    return auth.onAuthStateChanged(nextOrObserver);
   },
   async signOut() {
     const { auth } = await asyncLoadAuth();

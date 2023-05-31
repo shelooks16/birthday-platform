@@ -10,14 +10,11 @@ export const profileService = previewModeProxy(
     isProfileCompleted(profile: ProfileDocument) {
       return profile.timeZone && profile.locale;
     },
-    async $getMyProfile(
-      listener: (data: ProfileDocument | null) => void,
-      onError?: (error: Error) => void
-    ) {
+    async $getMyProfile(listener: (data: ProfileDocument | null) => void) {
       const { auth } = await asyncLoadAuth();
       const db = await this.db();
 
-      return db.$findById(auth.currentUser!.uid, listener, onError);
+      return db.$findById(auth.currentUser!.uid, listener);
     },
     async updateMyProfile(
       data: Pick<ProfileDocument, 'displayName' | 'timeZone' | 'locale'>

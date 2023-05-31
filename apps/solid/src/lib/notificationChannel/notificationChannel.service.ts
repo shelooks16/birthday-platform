@@ -27,8 +27,7 @@ export const notificationChannelService = previewModeProxy({
   },
   async $findLatestUpdatedChannelForMyProfile(
     channelType: ChannelType,
-    listener: (channel: NotificationChannelDocument) => void,
-    onError?: (error: Error) => void
+    listener: (channel: NotificationChannelDocument) => void
   ) {
     const now = new Date().toISOString();
 
@@ -51,8 +50,7 @@ export const notificationChannelService = previewModeProxy({
         if (channel) {
           listener(channel);
         }
-      },
-      onError
+      }
     );
   },
   async sendEmailVerification(payload: SendEmailVerificationPayload) {

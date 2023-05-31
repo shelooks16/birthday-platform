@@ -85,19 +85,10 @@ export function UserContextProvider(props: ParentProps) {
 
     let unsub: () => void;
     try {
-      unsub = await userService.onAuthStateChanged(
-        (authUser) => {
-          unsub && unsub();
-          setUser(authUser);
-        },
-        (err) => {
-          setUser(null, err);
-          notificationService.show({
-            status: 'danger',
-            title: err.message
-          });
-        }
-      );
+      unsub = await userService.onAuthStateChanged((authUser) => {
+        unsub && unsub();
+        setUser(authUser);
+      });
     } catch (err) {
       setUser(null, err);
       notificationService.show({
