@@ -46,7 +46,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Firebase CLI
-        run: npm i -g firebase-tools@11.21.0
+        run: npm i -g firebase-tools@^12.2.1
 
       - name: Install monorepo dependencies
         if: ${{ env.ONLY_HOSTING != '' || env.ONLY_FUNCTIONS != '' }}

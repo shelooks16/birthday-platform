@@ -18,7 +18,7 @@
 ### First time setup after cloning
 
 1. Create `.firebaserc` in root folder next to `.firebaserc.example`. Fill all fields with Firebase project ids. If you have created only one project - fill all fields with the same project id.
-2. Install Firebase CLI: `npm install -g firebase-tools`
+2. Install Firebase CLI: `npm install -g firebase-tools@^12.2.1`
 3. Run to init Firebase CLI: `firebase login` then `firebase use dev`
 4. From root folder install dependencies: `npm install`
 5. Setup local env files: `npm run setup-env`
