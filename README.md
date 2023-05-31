@@ -60,6 +60,10 @@ Required Github action variables:
 - `WEB_ENV_FILE_PROD` - production `.env` file for web app. See `apps/solid/.env.example`
 - `WEB_ENV_FILE_STAGE` - staging `.env` file for web app. See `apps/solid/.env.example`
 
+### Post deployment
+
+After functions are deployed, set `telegramBot` function URL as telegram bot webhook. To get an idea see `initTelegramBotWebhook.mjs`. This needs to be done only once.
+
 ## Future considerations
 
 - Discord bot integration
