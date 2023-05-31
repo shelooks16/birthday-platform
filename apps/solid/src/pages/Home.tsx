@@ -46,9 +46,12 @@ const Home: Component = () => {
         css={fadeInCss()}
       >
         <Switch>
-          <Match when={usrCtx.isLoading}>{/* <Box>...</Box> */}</Match>
-          <Match when={usrCtx.isSignedOut}>
-            <GoogleSignInBtn colorScheme="primary" variant="solid" />
+          <Match when={usrCtx.isSignedOut || usrCtx.isLoading}>
+            <GoogleSignInBtn
+              colorScheme="primary"
+              variant="solid"
+              loading={usrCtx.isLoading}
+            />
           </Match>
           <Match when={usrCtx.user}>
             <Button

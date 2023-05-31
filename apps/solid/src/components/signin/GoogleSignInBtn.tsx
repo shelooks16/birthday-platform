@@ -8,7 +8,7 @@ export { useHandleGoogleSigninRedirect } from '../../lib/user/signin';
 
 type GoogleSignInBtnProps = Omit<
   ButtonProps<'button'>,
-  'onClick' | 'loading' | 'leftIcon' | 'children'
+  'onClick' | 'leftIcon' | 'children'
 >;
 
 const GoogleSignInBtn: Component<GoogleSignInBtnProps> = (props) => {
@@ -19,7 +19,7 @@ const GoogleSignInBtn: Component<GoogleSignInBtnProps> = (props) => {
     <Button
       {...props}
       leftIcon={<IconGoogle />}
-      loading={isSigningInWithGoogle()}
+      loading={props.loading || isSigningInWithGoogle()}
       onClick={signInWithGoogle}
     >
       {i18n().t('signin.googleLogin.btn')}
