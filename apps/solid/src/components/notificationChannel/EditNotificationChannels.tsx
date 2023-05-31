@@ -86,7 +86,7 @@ const ChannelItem: Component<{ channel: NotificationChannelDocument }> = (
       notificationService.show({
         status: 'danger',
         title: i18n().t('notificationChannel.remove.error', {
-          channel: err.message
+          message: err.message
         })
       });
     }

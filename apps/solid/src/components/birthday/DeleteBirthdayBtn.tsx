@@ -24,7 +24,7 @@ const DeleteBirthdayBtn: Component<DeleteBirthdayBtnProps> = (props) => {
       notificationService.show({
         status: 'danger',
         title: i18n().t('birthday.editBirthday.remove.error', {
-          buddyName: props.birthday.buddyName
+          message: err.message
         })
       });
     }
