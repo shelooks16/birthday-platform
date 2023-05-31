@@ -97,9 +97,8 @@ export function UserProfileContextProvider(props: ParentProps) {
                 if (appConfig.isLanguageSupported(profile.locale)) {
                   locale(profile.locale);
                 }
+                setProfile(profile);
               }
-
-              setProfile(profile);
             },
             (err) => {
               setProfile(null, err);
