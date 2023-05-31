@@ -16,15 +16,18 @@ const BirthdaySublistGrid: Component<BirthdaySublistGridProps> = (props) => {
   return (
     <Show when={props.list.length > 0}>
       <Box
-        mb="$10"
-        py="$4"
-        as="fieldset"
+        mb="$14"
+        py="$6"
+        position="relative"
         css={
           props.isToday ? borderSpinCss() : { borderTop: '1px solid $neutral6' }
         }
       >
         <Box
-          as="legend"
+          position="absolute"
+          top={0}
+          left="50%"
+          css={{ transform: 'translate(-50%, -50%)' }}
           mx="auto"
           px="$2"
           borderRadius="$md"
