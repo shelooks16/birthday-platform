@@ -49,12 +49,12 @@ describe('Notification timestamp considers timezone', () => {
 
   test('Europe/Kyiv', () => {
     const timestamp = calculateNotificationTimestamp(
-      ...createArgsForTimestamp('Europe/Kyiv', 2, 28, targetYear, '3d')
+      ...createArgsForTimestamp('Europe/Kyiv', 2, 20, targetYear, '3d')
     );
-    // local 2023-03-25, 00:00 (tz +2)
-    // utc 2023-03-24, 22:00
+    // local 2023-03-17, 00:00 (tz +2)
+    // utc 2023-03-16, 22:00
 
-    expect(timestamp).toBe('2023-03-24T22:00:00.000Z');
+    expect(timestamp).toBe('2023-03-16T22:00:00.000Z');
   });
 
   test('Asia/Shanghai', () => {
