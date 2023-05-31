@@ -4,7 +4,9 @@ import { Component, Match, Show, Switch } from 'solid-js';
 import { appConfig } from '../appConfig';
 import EnterPreviewModeFloatingBar from '../components/previewMode/EnterPreviewModeFloatingBar';
 import ExitPreviewModeBtn from '../components/previewMode/ExitPreviewModeBtn';
-import GoogleSignInBtn from '../components/signin/GoogleSignInBtn';
+import GoogleSignInBtn, {
+  useHandleGoogleSigninRedirect
+} from '../components/signin/GoogleSignInBtn';
 import SignOutBtn from '../components/signin/SignOutBtn';
 import { useI18n } from '../i18n.context';
 import { usePreviewModeCtx } from '../lib/previewMode/preview-mode.context';
@@ -18,6 +20,7 @@ const Home: Component = () => {
   const [isPreviewMode] = usePreviewModeCtx();
   const [usrCtx] = useUserCtx();
   const [profileCtx] = useUserProfileCtx();
+  useHandleGoogleSigninRedirect();
 
   return (
     <Box>

@@ -7,13 +7,12 @@ import type { UserCredential } from 'firebase/auth';
 import { notificationService } from '@hope-ui/solid';
 import { useI18n } from '../../i18n.context';
 
-export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
+const useUpdateStateAndRedirect = () => {
   const [i18n] = useI18n();
-  const [isLoading, setIsLoading] = createSignal(false);
   const [, { setUser }] = useUserCtx();
   const navigate = useNavigate();
 
-  const updateStateAndRedirect = async (credential: UserCredential | null) => {
+  return async (credential: UserCredential | null) => {
     if (credential) {
       setUser(credential.user);
 
@@ -29,10 +28,15 @@ export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
           persistent: true
         });
       } else {
-        navigate(redirectLocation);
+        navigate(ROUTE_PATH.birthday);
       }
     }
   };
+};
+
+export const useHandleGoogleSigninRedirect = () => {
+  const [i18n] = useI18n();
+  const updateStateAndRedirect = useUpdateStateAndRedirect();
 
   onMount(async () => {
     try {
@@ -45,6 +49,12 @@ export const useGoogleSignin = (redirectLocation = ROUTE_PATH.birthday) => {
       });
     }
   });
+};
+
+export const useGoogleSignin = () => {
+  const [i18n] = useI18n();
+  const [isLoading, setIsLoading] = createSignal(false);
+  const updateStateAndRedirect = useUpdateStateAndRedirect();
 
   return {
     signInWithGoogle: async () => {

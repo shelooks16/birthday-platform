@@ -4,6 +4,8 @@ import { IconGoogle } from '../Icons';
 import { useGoogleSignin } from '../../lib/user/signin';
 import { useI18n } from '../../i18n.context';
 
+export { useHandleGoogleSigninRedirect } from '../../lib/user/signin';
+
 type GoogleSignInBtnProps = Omit<
   ButtonProps<'button'>,
   'onClick' | 'loading' | 'leftIcon' | 'children'
