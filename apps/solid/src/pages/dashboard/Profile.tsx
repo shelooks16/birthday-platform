@@ -10,6 +10,8 @@ import { appConfig } from '../../appConfig';
 import DeleteMyProfileBtn from '../../components/profile/DeleteMyProfileBtn';
 import SignOutBtn from '../../components/signin/SignOutBtn';
 import { useI18n } from '../../i18n.context';
+import { usePreviewModeCtx } from '../../lib/previewMode/preview-mode.context';
+import ExitPreviewModeBtn from '../../components/previewMode/ExitPreviewModeBtn';
 
 const Section: ParentComponent<{ title: string }> = (props) => {
   return (
@@ -27,6 +29,7 @@ const Section: ParentComponent<{ title: string }> = (props) => {
 };
 
 const DashProfile: Component = () => {
+  const [isPreviewMode] = usePreviewModeCtx();
   const [i18n] = useI18n();
 
   return (
@@ -57,7 +60,12 @@ const DashProfile: Component = () => {
       </Section>
 
       <Box textAlign="center" mt="$24">
-        <SignOutBtn colorScheme="danger" variant="ghost" />
+        <Show
+          when={!isPreviewMode()}
+          fallback={<ExitPreviewModeBtn colorScheme="danger" variant="ghost" />}
+        >
+          <SignOutBtn colorScheme="danger" variant="ghost" />
+        </Show>
 
         <Box mt="$10">
           <Box mt="$3">
