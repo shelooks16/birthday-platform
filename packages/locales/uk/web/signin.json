@@ -4,9 +4,9 @@
     "error": "Помилка входу з Google: {{ message }}"
   },
   "signout": {
-    "btn": "Вийти з аккаунта",
+    "btn": "Вийти з акаунта",
     "success": "Успішний вихід",
-    "error": "Помилка виходу з аккаунта: {{ message }}"
+    "error": "Помилка виходу з акаунта: {{ message }}"
   },
   "alreadyLoggedInBtn": "Продовжити як {{ name }}"
 }
