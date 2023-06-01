@@ -37,7 +37,7 @@ const formatError = async (error: any, locale?: string) => {
 const telegramBot = async () => {
   const { Telegraf } = await import('telegraf');
 
-  const bot = new Telegraf(appConfig.env().telegram.bot_token);
+  const bot = new Telegraf(appConfig.secrets.telegram.bot_token.value());
 
   bot.start(async (ctx) => {
     try {

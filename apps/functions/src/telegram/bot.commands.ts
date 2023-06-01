@@ -234,7 +234,7 @@ export const getMe = async (chatId: number) => {
 
     messages.push(
       i18n.t('telegramBot./me.noItems', {
-        website: appConfig.env().platform.website
+        website: appConfig.secrets.platform.website.value()
       })
     );
   }

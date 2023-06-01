@@ -1,7 +1,28 @@
 import ngrok from 'ngrok';
 import got from 'got';
-import runtimeCfg from './env/.runtimeconfig.json' assert { type: 'json' };
+import fs from 'node:fs';
 import serviceAccount from './env/service-account.json' assert { type: 'json' };
+
+const parseEnvFile = (path) => {
+  const secretLocal = fs.readFileSync(path).toString();
+
+  const obj = {};
+
+  secretLocal
+    .replace(/\r/g, '')
+    .split('\n')
+    .forEach((line) => {
+      const f = line.split('=');
+      const key = f[0];
+
+      if (key) {
+        const value = f[1].replace(/\s/g, '');
+        obj[key] = value;
+      }
+    });
+
+  return obj;
+};
 
 function log(...args) {
   console.log('[TELEGRAM_BOT_WEBHOOK]', ...args);
@@ -11,7 +32,7 @@ async function main() {
   const FN_REGION = 'europe-west1';
   const FN_NAME = 'telegramBot';
   const FN_PORT = 5001;
-  const BOT_TOKEN = runtimeCfg.telegram.bot_token;
+  const BOT_TOKEN = parseEnvFile('./env/.secret.local').TELEGRAM_BOT_TOKEN;
   const PROJECT_ID = serviceAccount.project_id;
 
   try {

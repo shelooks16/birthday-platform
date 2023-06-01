@@ -9,7 +9,12 @@ import generatePackageJson from 'rollup-plugin-generate-package-json';
 import pckJson from './package.json';
 
 // dependencies which must NOT be packaged along with functions
-const externalDepsList = ['node:path', /firebase-admin/, /@formatjs/];
+const externalDepsList = [
+  'node:path',
+  /firebase-admin/,
+  /@formatjs/,
+  /firebase-functions/
+];
 // dependencies that functions use but they are not listed in package.json
 const additionalDependencies = {
   '@formatjs/intl-datetimeformat': '^6.8.0',
