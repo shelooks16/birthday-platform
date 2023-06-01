@@ -1,12 +1,18 @@
 import * as fnHttps from 'firebase-functions/v2/https';
 import * as fnFirestore from 'firebase-functions/v2/firestore';
 import * as fnScheduler from 'firebase-functions/v2/scheduler';
+import * as fnOptions from 'firebase-functions/v2/options';
 import * as functionsV1 from 'firebase-functions/v1';
 import { HttpsErrorInternal } from './errors';
 import { logger } from './logger';
 import { appConfig } from '../appConfig';
 
 const REGION = 'europe-west1';
+fnOptions.setGlobalOptions({
+  maxInstances: 10,
+  concurrency: 80,
+  region: REGION
+});
 
 type ChangeType = 'create' | 'update' | 'delete';
 
