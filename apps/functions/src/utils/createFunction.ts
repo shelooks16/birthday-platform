@@ -1,6 +1,8 @@
-import * as functions from 'firebase-functions';
-import type { UserRecord } from 'firebase-admin/auth';
-import type { DocumentSnapshot } from 'firebase-admin/firestore';
+import * as fnHttps from 'firebase-functions/v2/https';
+import * as fnFirestore from 'firebase-functions/v2/firestore';
+import * as fnScheduler from 'firebase-functions/v2/scheduler';
+import * as functionsV1 from 'firebase-functions/v1';
+import { HttpsErrorInternal } from './errors';
 import { logger } from './logger';
 import { appConfig } from '../appConfig';
 
@@ -9,12 +11,14 @@ const REGION = 'europe-west1';
 type ChangeType = 'create' | 'update' | 'delete';
 
 const getChangeType = (
-  change: functions.Change<DocumentSnapshot>
+  writeEvent: fnFirestore.FirestoreEvent<
+    fnFirestore.Change<fnFirestore.DocumentSnapshot> | undefined
+  >
 ): ChangeType => {
-  if (!change.after.exists) {
+  if (!writeEvent.data?.after?.exists) {
     return 'delete';
   }
-  if (!change.before.exists) {
+  if (!writeEvent.data?.before?.exists) {
     return 'create';
   }
   return 'update';
@@ -25,17 +29,19 @@ const logUnhandledType = (changeType: ChangeType) => {
 };
 
 export type OnCreateHandler = (
-  docSnap: DocumentSnapshot,
-  ctx: functions.EventContext
+  createEvent: fnFirestore.FirestoreEvent<
+    fnFirestore.Change<fnFirestore.DocumentSnapshot> | undefined
+  >
 ) => any;
 export type OnUpdateHandler = (
-  docSnapBeforeUpdate: DocumentSnapshot,
-  docSnapAfterUpdate: DocumentSnapshot,
-  ctx: functions.EventContext
+  updateEvent: fnFirestore.FirestoreEvent<
+    fnFirestore.Change<fnFirestore.DocumentSnapshot>
+  >
 ) => any;
 export type OnDeleteHandler = (
-  docSnapBeforeDeleted: DocumentSnapshot,
-  ctx: functions.EventContext
+  deleteEvent: fnFirestore.FirestoreEvent<
+    fnFirestore.Change<fnFirestore.DocumentSnapshot> | undefined
+  >
 ) => any;
 
 type handleOnWriteOptions = {
@@ -46,117 +52,140 @@ type handleOnWriteOptions = {
 
 export const createOnWriteFunction = (
   documentPath: string,
-  handlers: handleOnWriteOptions
+  handlers: handleOnWriteOptions,
+  options?: Omit<fnFirestore.DocumentOptions<string>, 'region' | 'document'>
 ) => {
-  return functions
-    .region(REGION)
-    .firestore.document(documentPath)
-    .onWrite(async (change, ctx) => {
+  return fnFirestore.onDocumentWritten(
+    {
+      ...options,
+      region: REGION,
+      document: documentPath
+    },
+    async (writeEvent) => {
       const {
         onCreate = () => logUnhandledType('create'),
         onUpdate = () => logUnhandledType('update'),
         onDelete = () => logUnhandledType('delete')
       } = handlers;
 
-      const changeType = getChangeType(change);
+      const changeType = getChangeType(writeEvent);
 
       logger.info('Document write', {
         changeType,
-        docId: change.after?.id ?? change.before.id,
+        docId: writeEvent.data?.after?.id ?? writeEvent.data?.before.id,
         documentPath
       });
 
       switch (changeType) {
         case 'create':
-          await onCreate(change.after, ctx);
+          await onCreate(writeEvent);
           break;
         case 'delete':
-          await onDelete(change.before, ctx);
+          await onDelete(writeEvent);
           break;
         case 'update':
-          await onUpdate(change.before, change.after, ctx);
+          await onUpdate(writeEvent as any);
           break;
         default: {
-          throw new Error(`Invalid change type: ${changeType}`);
+          logger.warn('Invalid change type', { changeType });
         }
       }
-    });
+    }
+  );
 };
 
 export const createOnCreateFunction = (
   documentPath: string,
-  handler: (snapshot: DocumentSnapshot, context: functions.EventContext) => any
+  handler: (
+    changeEvent: fnFirestore.FirestoreEvent<fnFirestore.QueryDocumentSnapshot>
+  ) => any,
+  options?: Omit<fnFirestore.DocumentOptions<string>, 'region' | 'document'>
 ) => {
-  return functions
-    .region(REGION)
-    .firestore.document(documentPath)
-    .onCreate(async (snapshot, ctx) => {
+  return fnFirestore.onDocumentCreated(
+    {
+      ...options,
+      region: REGION,
+      document: documentPath
+    },
+    async (createEvent) => {
       logger.info('Document created', {
-        docId: snapshot.id,
+        docId: createEvent.data?.id,
         documentPath
       });
 
-      await handler(snapshot, ctx);
-    });
+      await handler(createEvent as any);
+    }
+  );
 };
 
 export const createOnUpdateFunction = (
   documentPath: string,
   handler: (
-    change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-    context: functions.EventContext
-  ) => any
+    changeEvent: fnFirestore.FirestoreEvent<
+      fnFirestore.Change<fnFirestore.QueryDocumentSnapshot>
+    >
+  ) => any,
+  options?: Omit<fnFirestore.DocumentOptions<string>, 'region' | 'document'>
 ) => {
-  return functions
-    .region(REGION)
-    .firestore.document(documentPath)
-    .onUpdate(async (change, ctx) => {
+  return fnFirestore.onDocumentUpdated(
+    {
+      ...options,
+      region: REGION,
+      document: documentPath
+    },
+    async (changeEvent) => {
       logger.info('Document updated', {
-        docId: change.after.id,
+        docId: changeEvent.data?.after?.id,
         documentPath
       });
 
-      await handler(change, ctx);
-    });
+      await handler(changeEvent as any);
+    }
+  );
 };
 
 export const createOnDeleteFunction = (
   documentPath: string,
   handler: (
-    snapshot: functions.firestore.QueryDocumentSnapshot,
-    context: functions.EventContext
-  ) => any
+    deleteEvent: fnFirestore.FirestoreEvent<fnFirestore.QueryDocumentSnapshot>
+  ) => any,
+  options?: Omit<fnFirestore.DocumentOptions<string>, 'region' | 'document'>
 ) => {
-  return functions
-    .region(REGION)
-    .firestore.document(documentPath)
-    .onDelete(async (snapshot, ctx) => {
+  return fnFirestore.onDocumentDeleted(
+    {
+      ...options,
+      region: REGION,
+      document: documentPath
+    },
+    async (deleteEvent) => {
       logger.info('Document deleted', {
-        docId: snapshot.id,
+        docId: deleteEvent.data?.id,
         documentPath
       });
 
-      await handler(snapshot, ctx);
-    });
+      await handler(deleteEvent as any);
+    }
+  );
 };
 
 /** Timezone is always UTC */
 export const createScheduledFunction = (
   schedule: string,
-  handler: (context: functions.EventContext) => any
+  handler: (event: fnScheduler.ScheduledEvent) => any,
+  options?: Omit<fnHttps.HttpsOptions, 'region' | 'schedule'>
 ) => {
-  return functions
-    .region(REGION)
-    .pubsub.schedule(schedule)
-    .timeZone('UTC')
-    .onRun(handler);
+  return fnScheduler.onSchedule(
+    { ...options, schedule, region: REGION, timeZone: 'UTC' },
+    handler
+  );
 };
 
 export const createDebugHttpFn = (
-  cb?: (req: functions.https.Request, res: functions.Response<any>) => any
+  cb?: (req: fnHttps.Request, res: functionsV1.Response) => any,
+  options?: Omit<fnHttps.HttpsOptions, 'region'>
 ) => {
   return appConfig.isDevEnv
-    ? functions.region(REGION).https.onRequest(async (req, res) => {
+    ? fnHttps.onRequest({ ...options, region: REGION }, async (req, res) => {
         let body: any = { status: 'ok' };
 
         try {
@@ -174,9 +203,12 @@ export const createDebugHttpFn = (
 
 export const createAuthFunction = (
   triggerType: 'onDelete' | 'onCreate',
-  handler: (user: UserRecord, context: functions.EventContext) => any
+  handler: (
+    user: functionsV1.auth.UserRecord,
+    context: functionsV1.EventContext
+  ) => any
 ) => {
-  return functions
+  return functionsV1
     .region(REGION)
     .auth.user()
     [triggerType](async (user, ctx) => {
@@ -191,33 +223,35 @@ export const createAuthFunction = (
     });
 };
 
-export const createCallableFunction = (
-  handler: (data: any, context: functions.https.CallableContext) => any
+export const createCallableFunction = <TData = any>(
+  handler: (req: fnHttps.CallableRequest<TData>) => any,
+  options?: Omit<fnHttps.CallableOptions, 'region'>
 ) => {
-  return functions.region(REGION).https.onCall(async (data, ctx) => {
+  return fnHttps.onCall({ ...options, region: REGION }, async (req) => {
     try {
-      const responseBody = await handler(data, ctx);
+      const responseBody = await handler(req);
 
       return responseBody;
     } catch (err) {
-      throw new functions.https.HttpsError('internal', err.message);
+      throw new HttpsErrorInternal(err.message);
     }
   });
 };
 
 export const createOnRequestFunction = (
   handler: (
-    req: functions.https.Request,
-    res: functions.Response<any>
-  ) => void | Promise<void>
+    req: fnHttps.Request,
+    res: functionsV1.Response
+  ) => void | Promise<void>,
+  options?: Omit<fnHttps.HttpsOptions, 'region'>
 ) => {
-  return functions.region(REGION).https.onRequest(async (req, res) => {
+  return fnHttps.onRequest({ ...options, region: REGION }, async (req, res) => {
     try {
       const responseBody = await handler(req, res);
 
       return responseBody;
     } catch (err) {
-      throw new functions.https.HttpsError('internal', err.message);
+      throw new HttpsErrorInternal(err.message);
     }
   });
 };

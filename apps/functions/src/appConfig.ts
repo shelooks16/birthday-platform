@@ -68,8 +68,21 @@ const secrets: Secrets = {
   }
 };
 
+const secretsNames = {
+  telegramBot: [secrets.telegram.bot_token.name, secrets.platform.website.name],
+  email: [
+    secrets.mailclient.host.name,
+    secrets.mailclient.secure.name,
+    secrets.mailclient.port.name,
+    secrets.mailclient.sender.name,
+    secrets.mailclient.password.name
+  ],
+  openAi: [secrets.openai.secretkey.name]
+};
+
 export const appConfig = {
   secrets,
+  secretsNames,
   platformName: 'Buddy Birthday',
   birthdayWishLimitPerGenerate: 3,
   isDevEnv: process.env['FUNCTIONS_EMULATOR'] === 'true',

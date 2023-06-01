@@ -7,8 +7,10 @@ import { birthdayWishRepo } from './birthdayWish.repository';
 
 export const cleanupWishesOnBirthdayDeleted = createOnDeleteFunction(
   FireCollection.birthdays.docMatch,
-  async (snap) => {
-    const deletedBirthday = firestoreSnapshotToData<BirthdayDocument>(snap)!;
+  async (deleteEvent) => {
+    const deletedBirthday = firestoreSnapshotToData<BirthdayDocument>(
+      deleteEvent.data
+    )!;
 
     logger.info('Cleaning up birthday wishes', {
       birthdayId: deletedBirthday.id

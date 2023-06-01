@@ -10,8 +10,10 @@ import { notificationChannelRepo } from '../notificationChannel/notificationChan
 
 export const deleteUserOnProfileDeleted = createOnDeleteFunction(
   FireCollection.profiles.docMatch,
-  async (snap) => {
-    const deletedProfile = firestoreSnapshotToData<ProfileDocument>(snap)!;
+  async (deleteEvent) => {
+    const deletedProfile = firestoreSnapshotToData<ProfileDocument>(
+      deleteEvent.data
+    )!;
 
     logger.info('Deleting user', {
       profileId: deletedProfile.id
@@ -35,8 +37,10 @@ export const deleteUserOnProfileDeleted = createOnDeleteFunction(
 
 export const cleanupProfileDataOnProfileDeleted = createOnDeleteFunction(
   FireCollection.profiles.docMatch,
-  async (snap) => {
-    const deletedProfile = firestoreSnapshotToData<ProfileDocument>(snap)!;
+  async (deleteEvent) => {
+    const deletedProfile = firestoreSnapshotToData<ProfileDocument>(
+      deleteEvent.data
+    )!;
 
     logger.info('Cleaning up profile data', {
       profileId: deletedProfile.id

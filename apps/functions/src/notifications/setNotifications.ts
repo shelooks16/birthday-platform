@@ -140,8 +140,10 @@ const buildNotificationDocs = async (
   return docs;
 };
 
-const onCreate: OnCreateHandler = async (docSnap) => {
-  const birthdayDoc = firestoreSnapshotToData<BirthdayDocument>(docSnap)!;
+const onCreate: OnCreateHandler = async (createEvent) => {
+  const birthdayDoc = firestoreSnapshotToData<BirthdayDocument>(
+    createEvent.data!.after
+  )!;
   const { id, notificationSettings, birth, profileId } = birthdayDoc;
 
   if (!notificationSettings) {
@@ -172,11 +174,13 @@ const onCreate: OnCreateHandler = async (docSnap) => {
   });
 };
 
-const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
-  const birthdayBefore =
-    firestoreSnapshotToData<BirthdayDocument>(docSnapBefore)!;
-  const birthdayAfter =
-    firestoreSnapshotToData<BirthdayDocument>(docSnapAfter)!;
+const onUpdate: OnUpdateHandler = async (updateEvent) => {
+  const birthdayBefore = firestoreSnapshotToData<BirthdayDocument>(
+    updateEvent.data.before
+  )!;
+  const birthdayAfter = firestoreSnapshotToData<BirthdayDocument>(
+    updateEvent.data.after
+  )!;
 
   const isBirthDateTheSame =
     birthdayBefore.birth.day === birthdayAfter.birth.day &&
@@ -255,8 +259,10 @@ const onUpdate: OnUpdateHandler = async (docSnapBefore, docSnapAfter) => {
   });
 };
 
-const onDelete: OnDeleteHandler = async (docSnap) => {
-  const { id } = firestoreSnapshotToData<BirthdayDocument>(docSnap)!;
+const onDelete: OnDeleteHandler = async (deleteEvent) => {
+  const { id } = firestoreSnapshotToData<BirthdayDocument>(
+    deleteEvent.data!.before
+  )!;
 
   logger.info('Deleting notifications for birthday', { id });
 
