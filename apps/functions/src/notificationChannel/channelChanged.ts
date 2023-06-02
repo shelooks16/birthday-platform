@@ -11,12 +11,14 @@ import { birthdayRepo } from '../birthday/birthday.repository';
 import { sendTelegramMessage } from '../telegram/sendMessage';
 import { profileRepo } from '../profile/profile.repository';
 import { useI18n } from '../i18n.context';
+import { appConfig } from '../appConfig';
 
 export const onChannelDeleteUpdateAffectedDocuments = createOnDeleteFunction(
   FireCollection.notificationChannel.docMatch,
-  async (snap) => {
-    const deletedChannel =
-      firestoreSnapshotToData<NotificationChannelDocument>(snap)!;
+  async (deleteEvent) => {
+    const deletedChannel = firestoreSnapshotToData<NotificationChannelDocument>(
+      deleteEvent.data
+    )!;
 
     logger.info('Updating affected documents', {
       channelId: deletedChannel.id
@@ -66,9 +68,10 @@ export const onChannelDeleteUpdateAffectedDocuments = createOnDeleteFunction(
 
 export const onChannelDeleteSendByeMessage = createOnDeleteFunction(
   FireCollection.notificationChannel.docMatch,
-  async (snap) => {
-    const deletedChannel =
-      firestoreSnapshotToData<NotificationChannelDocument>(snap)!;
+  async (deleteEvent) => {
+    const deletedChannel = firestoreSnapshotToData<NotificationChannelDocument>(
+      deleteEvent.data
+    )!;
 
     logger.info('Sending bye-bye message to channel', {
       type: deletedChannel.type
@@ -98,5 +101,8 @@ export const onChannelDeleteSendByeMessage = createOnDeleteFunction(
         logger.warn('Unhandled channel type', { type: deletedChannel.type });
       }
     }
+  },
+  {
+    secrets: appConfig.secretsNames.telegramBot
   }
 );

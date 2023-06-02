@@ -1,10 +1,10 @@
-import * as functions from 'firebase-functions';
+import * as fnLogger from 'firebase-functions/logger';
 
 export const logger = {
   info: (message: string, data?: Record<string, any>) => {
-    functions.logger.info(message, data);
+    fnLogger.info(message, data);
   },
   warn: (message: string, data?: Record<string, any>) => {
-    functions.logger.warn(message, data);
+    fnLogger.warn(message, data);
   }
 };

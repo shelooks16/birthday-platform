@@ -18,14 +18,14 @@
 ### First time setup after cloning
 
 1. Create `.firebaserc` in root folder next to `.firebaserc.example`. Fill all fields with Firebase project ids. If you have created only one project - fill all fields with the same project id.
-2. Install Firebase CLI: `npm install -g firebase-tools`
+2. Install Firebase CLI: `npm install -g firebase-tools@^12.2.1`
 3. Run to init Firebase CLI: `firebase login` then `firebase use dev`
 4. From root folder install dependencies: `npm install`
 5. Setup local env files: `npm run setup-env`
 6. Fill in created:
    - `apps/solid/.env`
    - `apps/functions/env/service-account.json` - download firebase-adminsdk from Google Cloud Console
-   - `apps/functions/env/.runtimeconfig`
+   - `apps/functions/env/.secret.local`
 
 ### Develop locally
 
@@ -47,7 +47,9 @@ All supported environments can be categorized as:
 - `stage` - live stage
 - `prod` - live production
 
-Deployment takes place through Github Actions.
+Deployment takes place through Github Actions `deploy` workflow.
+
+### Environment and secrets
 
 Required Github action secrets:
 
@@ -60,6 +62,8 @@ Required Github action variables:
 - `WEB_ENV_FILE_PROD` - production `.env` file for web app. See `apps/solid/.env.example`
 - `WEB_ENV_FILE_STAGE` - staging `.env` file for web app. See `apps/solid/.env.example`
 
+GCP Secret Manager must have secrets with the same name as written in `apps/functions/env/.secret.local.example`. During local development functions use that file, when deployed - functions use values from Secret Manager.
+
 ### Post deployment
 
 After functions are deployed, set `telegramBot` function URL as telegram bot webhook. To get an idea see `initTelegramBotWebhook.mjs`. This needs to be done only once.
@@ -67,7 +71,6 @@ After functions are deployed, set `telegramBot` function URL as telegram bot web
 ## Future considerations
 
 - Discord bot integration
-- Move firebase functions to 2nd gen
 
 ## Contribution
 

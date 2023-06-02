@@ -46,4 +46,4 @@ firebase-debug.*.log*
 # Google credentials
 service-account*.json
 !service-account*.example.json
-.runtimeconfig.json
+.secret.local

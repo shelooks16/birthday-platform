@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-import { execSync } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs';
 
@@ -13,7 +12,10 @@ function createLogger(prefix) {
 }
 
 function setupFunctions() {
-  const runtimeCfg = path.resolve('apps/functions/env/.runtimeconfig.json');
+  const secrets = path.resolve('apps/functions/env/.secret.local');
+  const secretsExample = path.resolve(
+    'apps/functions/env/.secret.local.example'
+  );
   const serviceAcc = path.resolve('apps/functions/env/service-account.json');
   const serviceAccExample = path.resolve(
     'apps/functions/env/service-account.example.json'
@@ -21,14 +23,14 @@ function setupFunctions() {
 
   const log = createLogger('functions:');
 
-  log.raw('Runtime config', runtimeCfg);
+  log.raw('Local secrets', secrets);
 
-  if (fs.existsSync(runtimeCfg)) {
-    log.info('Skipping. Runtime config already exists');
+  if (fs.existsSync(secrets)) {
+    log.info('Skipping. File already exists');
   } else {
     try {
-      execSync(`firebase functions:config:get > ${runtimeCfg}`);
-      log.success('Pulled runtime config from functions');
+      fs.copyFileSync(secretsExample, secrets);
+      log.success('Created empty secrets file. Fill in env secrets inside.');
     } catch (error) {
       log.error('Error', error.message);
     }

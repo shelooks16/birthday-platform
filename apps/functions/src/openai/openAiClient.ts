@@ -4,7 +4,7 @@ import { appConfig } from '../appConfig';
 const openAiClient = async () => {
   const { Configuration, OpenAIApi } = await import('openai');
 
-  const apiKey = appConfig.env().openai?.secretkey;
+  const apiKey = appConfig.secrets.openai.secretkey.value();
 
   if (!apiKey) {
     throw new Error('Open AI key is not provided');

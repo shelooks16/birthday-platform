@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions';
 import {
   BirthdayDocument,
   BirthdayWishDocument,
@@ -7,7 +6,7 @@ import {
 } from '@shared/types';
 import { getTimestamp } from '@shared/firestore-utils';
 import { documentId } from '@shared/firestore-admin-utils';
-import { requireAuth } from '../utils/auth';
+import { HttpsErrorFailedPrecondition, throwIfUnauth } from '../utils/errors';
 import { createCallableFunction } from '../utils/createFunction';
 import { birthdayRepo } from '../birthday/birthday.repository';
 import { createCompletion } from '../openai/completion';
@@ -41,94 +40,98 @@ const generateRandomWish = async (
 
     return completionResult[0].text || '';
   } catch (err) {
-    throw new functions.https.HttpsError('failed-precondition', err.message);
+    throw new HttpsErrorFailedPrecondition(err.message);
   }
 };
 
-export const generateBirthdayWish = createCallableFunction(
-  async (data: GenerateBirthdayWishPayload, ctx) => {
-    requireAuth(ctx);
+export const generateBirthdayWish =
+  createCallableFunction<GenerateBirthdayWishPayload>(
+    async (req) => {
+      const reqAuth = throwIfUnauth(req.auth);
 
-    const profile = await profileRepo().findById(ctx.auth!.uid);
-    const i18n = await useI18n(profile?.locale);
+      const userId = reqAuth.uid;
+      const data = req.data;
 
-    if (!profile) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        i18n.t('errors.profile.notFound')
-      );
-    }
+      const profile = await profileRepo().findById(userId);
+      const i18n = await useI18n(profile?.locale);
 
-    const birthday = await birthdayRepo()
-      .findMany({
+      if (!profile) {
+        throw new HttpsErrorFailedPrecondition(
+          i18n.t('errors.profile.notFound')
+        );
+      }
+
+      const birthday = await birthdayRepo()
+        .findMany({
+          where: [
+            [documentId(), '==', data.birthdayId],
+            ['profileId', '==', userId]
+          ],
+          limit: 1
+        })
+        .then((r) => (r.length > 0 ? r[0] : null));
+
+      if (!birthday) {
+        throw new HttpsErrorFailedPrecondition(
+          i18n.t('errors.birthday.notFound')
+        );
+      }
+
+      const targetYear = new Date().getFullYear();
+
+      const generatedWishes = await birthdayWishRepo().findMany({
         where: [
-          [documentId(), '==', data.birthdayId],
-          ['profileId', '==', ctx.auth!.uid]
+          ['year', '==', targetYear],
+          ['birthdayId', '==', birthday.id]
         ],
-        limit: 1
-      })
-      .then((r) => (r.length > 0 ? r[0] : null));
+        limit: appConfig.birthdayWishLimitPerGenerate
+      });
 
-    if (!birthday) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        i18n.t('errors.birthday.notFound')
-      );
-    }
+      const limitReached =
+        generatedWishes.length >= appConfig.birthdayWishLimitPerGenerate;
+      const clampToLimit = data.clampToLimit ?? false;
 
-    const targetYear = new Date().getFullYear();
+      if (limitReached && clampToLimit) {
+        const result: GenerateBirthdayWishResult = {
+          wishes: generatedWishes.map((doc) => doc.wish),
+          year: targetYear,
+          generatedCount: generatedWishes.length,
+          generateMaxCount: appConfig.birthdayWishLimitPerGenerate
+        };
 
-    const generatedWishes = await birthdayWishRepo().findMany({
-      where: [
-        ['year', '==', targetYear],
-        ['birthdayId', '==', birthday.id]
-      ],
-      limit: appConfig.birthdayWishLimitPerGenerate
-    });
+        return result;
+      }
 
-    const limitReached =
-      generatedWishes.length >= appConfig.birthdayWishLimitPerGenerate;
-    const clampToLimit = data.clampToLimit ?? false;
+      if (limitReached) {
+        throw new HttpsErrorFailedPrecondition(
+          i18n.t('errors.birthdayWish.generateWish.limitReached', {
+            limit: appConfig.birthdayWishLimitPerGenerate
+          })
+        );
+      }
 
-    if (limitReached && clampToLimit) {
-      const result: GenerateBirthdayWishResult = {
-        wishes: generatedWishes.map((doc) => doc.wish),
+      const wish = await generateRandomWish(birthday, profile.locale);
+
+      const newWishDoc: BirthdayWishDocument = {
+        id: birthdayWishRepo().getRandomDocId(),
+        createdAt: getTimestamp(),
+        birthdayId: birthday.id,
         year: targetYear,
-        generatedCount: generatedWishes.length,
+        wish
+      };
+
+      await birthdayWishRepo().setOne(newWishDoc);
+
+      const result: GenerateBirthdayWishResult = {
+        wishes: generatedWishes.concat(newWishDoc).map((doc) => doc.wish),
+        year: targetYear,
+        generatedCount: generatedWishes.length + 1,
         generateMaxCount: appConfig.birthdayWishLimitPerGenerate
       };
 
       return result;
+    },
+    {
+      secrets: appConfig.secretsNames.openAi
     }
-
-    if (limitReached) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        i18n.t('errors.birthdayWish.generateWish.limitReached', {
-          limit: appConfig.birthdayWishLimitPerGenerate
-        })
-      );
-    }
-
-    const wish = await generateRandomWish(birthday, profile.locale);
-
-    const newWishDoc: BirthdayWishDocument = {
-      id: birthdayWishRepo().getRandomDocId(),
-      createdAt: getTimestamp(),
-      birthdayId: birthday.id,
-      year: targetYear,
-      wish
-    };
-
-    await birthdayWishRepo().setOne(newWishDoc);
-
-    const result: GenerateBirthdayWishResult = {
-      wishes: generatedWishes.concat(newWishDoc).map((doc) => doc.wish),
-      year: targetYear,
-      generatedCount: generatedWishes.length + 1,
-      generateMaxCount: appConfig.birthdayWishLimitPerGenerate
-    };
-
-    return result;
-  }
-);
+  );

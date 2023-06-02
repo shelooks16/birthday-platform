@@ -1,4 +1,3 @@
-import 'firebase-functions';
 import path from 'node:path';
 import { initializeApp } from 'firebase-admin/app';
 import { appConfig } from './appConfig';

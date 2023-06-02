@@ -11,15 +11,16 @@ import { notificationRepo } from './notification.repository';
 import { birthdayRepo } from '../birthday/birthday.repository';
 import { profileRepo } from '../profile/profile.repository';
 import { useI18n } from '../i18n.context';
+import { appConfig } from '../appConfig';
 
 export const sendNotification = createOnUpdateFunction(
   FireCollection.notifications.docMatch,
-  async (change) => {
+  async (updateEvent) => {
     const notificationBefore = firestoreSnapshotToData<NotificationDocument>(
-      change.before
+      updateEvent.data.before
     )!;
     const notificationAfter = firestoreSnapshotToData<NotificationDocument>(
-      change.after
+      updateEvent.data.after
     )!;
 
     const mustSend =
@@ -122,5 +123,11 @@ export const sendNotification = createOnUpdateFunction(
         error: err.message
       });
     }
+  },
+  {
+    secrets: [
+      ...appConfig.secretsNames.email,
+      ...appConfig.secretsNames.telegramBot
+    ]
   }
 );

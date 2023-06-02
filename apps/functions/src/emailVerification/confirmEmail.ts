@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions';
 import {
   ChannelType,
   ConfirmEmailOtpPayload,
@@ -14,12 +13,17 @@ import {
   createCallableFunction,
   createOnCreateFunction
 } from '../utils/createFunction';
-import { requireAuth } from '../utils/auth';
+import {
+  HttpsErrorFailedPrecondition,
+  HttpsErrorInvalidArgument,
+  throwIfUnauth
+} from '../utils/errors';
 import { sendEmail } from '../email/sendEmail';
 import { emailVerificationRepo } from './emailVerification.repository';
 import { notificationChannelRepo } from '../notificationChannel/notificationChannel.repository';
 import { profileRepo } from '../profile/profile.repository';
 import { useI18n } from '../i18n.context';
+import { appConfig } from '../appConfig';
 
 function randomizeInRange(min: number, max: number) {
   const random = Math.random();
@@ -35,30 +39,29 @@ function generateOTP(length = 6, allowedChars = '0123456789') {
   return otp;
 }
 
-export const sendEmailVerification = createCallableFunction(
-  async (data: SendEmailVerificationPayload, ctx) => {
-    requireAuth(ctx);
+export const sendEmailVerification =
+  createCallableFunction<SendEmailVerificationPayload>(async (req) => {
+    const reqAuth = throwIfUnauth(req.auth);
 
-    const profile = await profileRepo().findById(ctx.auth!.uid);
+    const userId = reqAuth.uid;
+    const data = req.data;
+
+    const profile = await profileRepo().findById(userId);
     const i18n = await useI18n(profile?.locale);
 
     if (!profile) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        i18n.t('errors.profile.notFound')
-      );
+      throw new HttpsErrorFailedPrecondition(i18n.t('errors.profile.notFound'));
     }
 
     const existingEmailChannel =
       await notificationChannelRepo().findChannelByProfileId(
-        ctx.auth!.uid,
+        userId,
         ChannelType.email,
         data.email
       );
 
     if (existingEmailChannel) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
+      throw new HttpsErrorFailedPrecondition(
         i18n.t('errors.emailVerification.confirmEmail.alreadyVerified', {
           email: existingEmailChannel.value
         })
@@ -71,7 +74,7 @@ export const sendEmailVerification = createCallableFunction(
     const emailVerificationData: Omit<EmailVerificationDocument, 'id'> = {
       createdAt: getTimestamp(),
       email: data.email,
-      profileId: ctx.auth!.uid,
+      profileId: userId,
       otp: generateOTP(),
       expiresAt: getTimestamp(expiresAt),
       isSent: false,
@@ -86,14 +89,14 @@ export const sendEmailVerification = createCallableFunction(
     };
 
     return result;
-  }
-);
+  });
 
 export const processEmailForVerification = createOnCreateFunction(
   FireCollection.emailVerification.docMatch,
-  async (snap) => {
-    const verificationDoc =
-      firestoreSnapshotToData<EmailVerificationDocument>(snap)!;
+  async (createEvent) => {
+    const verificationDoc = firestoreSnapshotToData<EmailVerificationDocument>(
+      createEvent.data
+    )!;
 
     try {
       const profile = await profileRepo().findById(verificationDoc.profileId);
@@ -126,27 +129,30 @@ export const processEmailForVerification = createOnCreateFunction(
         error: err.message
       });
     }
+  },
+  {
+    secrets: appConfig.secretsNames.email
   }
 );
 
-export const confirmEmailOtp = createCallableFunction(
-  async (data: ConfirmEmailOtpPayload, ctx) => {
-    requireAuth(ctx);
+export const confirmEmailOtp = createCallableFunction<ConfirmEmailOtpPayload>(
+  async (req) => {
+    const reqAuth = throwIfUnauth(req.auth);
 
-    const profile = await profileRepo().findById(ctx.auth!.uid);
+    const userId = reqAuth.uid;
+    const data = req.data;
+
+    const profile = await profileRepo().findById(userId);
     const i18n = await useI18n(profile?.locale);
 
     if (!profile) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        i18n.t('errors.profile.notFound')
-      );
+      throw new HttpsErrorFailedPrecondition(i18n.t('errors.profile.notFound'));
     }
 
     const verification = await emailVerificationRepo()
       .findMany({
         where: [
-          ['profileId', '==', ctx.auth!.uid],
+          ['profileId', '==', userId],
           ['email', '==', data.email]
         ],
         limitToLast: 1,
@@ -157,22 +163,19 @@ export const confirmEmailOtp = createCallableFunction(
       .then((r) => (r.length > 0 ? r[0] : null));
 
     if (!verification) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
+      throw new HttpsErrorFailedPrecondition(
         i18n.t('errors.emailVerification.notFound')
       );
     }
 
     if (verification.otp !== data.otpGuess) {
-      throw new functions.https.HttpsError(
-        'invalid-argument',
+      throw new HttpsErrorInvalidArgument(
         i18n.t('errors.emailVerification.confirmEmail.otpWrong')
       );
     }
 
     if (getTimestamp() > verification.expiresAt) {
-      throw new functions.https.HttpsError(
-        'invalid-argument',
+      throw new HttpsErrorInvalidArgument(
         i18n.t('errors.emailVerification.confirmEmail.otpExpired')
       );
     }
