@@ -5,7 +5,8 @@ import {
   onCleanup,
   ParentComponent,
   createContext,
-  useContext
+  useContext,
+  untrack
 } from 'solid-js';
 import {
   Modal as HopeModal,
@@ -23,7 +24,9 @@ const Z_INDEX_CACHE_KEY = 'zIndexModal';
 /**
  * Correctly manage nested modals z-index since hope-ui does not manage nested z-index in modals :(
  */
-const useManageZIndex = (): Accessor<ModalOverlayProps<'div'>> => {
+const useManageZIndex = (
+  isFullHeight = false
+): Accessor<ModalOverlayProps<'div'>> => {
   const [myIdx, setMyIdx] = createSignal(0);
 
   const props = (): ModalOverlayProps<'div'> => {
@@ -34,7 +37,8 @@ const useManageZIndex = (): Accessor<ModalOverlayProps<'div'>> => {
       css: {
         zIndex: zOverlay,
         '& + div': {
-          zIndex: zContent
+          zIndex: zContent,
+          ...(isFullHeight ? { height: '100%' } : {})
         }
       }
     };
@@ -77,7 +81,9 @@ export const ModalOverlay: ParentComponent<ModalOverlayProps<'div'>> = (
 };
 
 export const Drawer: ParentComponent<DrawerProps> = (props) => {
-  const managerProps = useManageZIndex();
+  const managerProps = useManageZIndex(
+    untrack(() => props.placement === 'left' || props.placement === 'right')
+  );
   return (
     <ZIndexCtx.Provider value={managerProps}>
       <HopeDrawer {...props} />
