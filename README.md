@@ -71,7 +71,6 @@ After functions are deployed, set `telegramBot` function URL as telegram bot web
 ## Future considerations
 
 - Discord bot integration
-- Move firebase functions to 2nd gen
 
 ## Contribution
 
