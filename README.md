@@ -25,7 +25,7 @@
 6. Fill in created:
    - `apps/solid/.env`
    - `apps/functions/env/service-account.json` - download firebase-adminsdk from Google Cloud Console
-   - `apps/functions/env/.runtimeconfig`
+   - `apps/functions/env/.secret.local`
 
 ### Develop locally
 
@@ -47,7 +47,9 @@ All supported environments can be categorized as:
 - `stage` - live stage
 - `prod` - live production
 
-Deployment takes place through Github Actions.
+Deployment takes place through Github Actions `deploy` workflow.
+
+### Environment and secrets
 
 Required Github action secrets:
 
@@ -59,6 +61,8 @@ Required Github action variables:
 - `FIREBASE_PROJECT_ID_STAGE` - staging firebase project id
 - `WEB_ENV_FILE_PROD` - production `.env` file for web app. See `apps/solid/.env.example`
 - `WEB_ENV_FILE_STAGE` - staging `.env` file for web app. See `apps/solid/.env.example`
+
+GCP Secret Manager must have secrets with the same name as written in `apps/functions/env/.secret.local.example`. During local development functions use that file, when deployed - functions use values from Secret Manager.
 
 ### Post deployment
 
