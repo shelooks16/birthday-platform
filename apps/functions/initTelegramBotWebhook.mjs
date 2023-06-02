@@ -24,22 +24,28 @@ const parseEnvFile = (path) => {
   return obj;
 };
 
-function log(...args) {
-  console.log('[TELEGRAM_BOT_WEBHOOK]', ...args);
-}
-
-async function main() {
+async function getSetWebhookParams() {
   const FN_REGION = 'europe-west1';
   const FN_NAME = 'telegramBot';
   const FN_PORT = 5001;
   const BOT_TOKEN = parseEnvFile('./env/.secret.local').TELEGRAM_BOT_TOKEN;
   const PROJECT_ID = serviceAccount.project_id;
 
-  try {
-    const url = await ngrok.connect(FN_PORT);
-    log('ngrok tunnel up');
+  const url = await ngrok.connect(FN_PORT);
+  log('ngrok tunnel up');
 
-    const webhookUrl = `${url}/${PROJECT_ID}/${FN_REGION}/${FN_NAME}`;
+  const webhookUrl = `${url}/${PROJECT_ID}/${FN_REGION}/${FN_NAME}`;
+
+  return { BOT_TOKEN, webhookUrl };
+}
+
+function log(...args) {
+  console.log('[TELEGRAM_BOT_WEBHOOK]', ...args);
+}
+
+async function main() {
+  try {
+    const { BOT_TOKEN, webhookUrl } = await getSetWebhookParams();
 
     const result = await got
       .get(
