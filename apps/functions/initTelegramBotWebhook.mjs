@@ -14,8 +14,9 @@ const parseEnvFile = (path) => {
     .forEach((line) => {
       const f = line.split('=');
       const key = f[0];
+      const value = f[1];
 
-      if (key) {
+      if (key && value) {
         const value = f[1].replace(/\s/g, '');
         obj[key] = value;
       }
