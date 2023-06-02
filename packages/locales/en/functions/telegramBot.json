@@ -3,6 +3,7 @@
   "commandList": {
     "title": "Command list",
     "command": {
+      "about": "About this bot",
       "me": "Accounts connected to this bot",
       "birthdays": "List of your birthdays",
       "notifications": "List of upcoming notifications",
@@ -31,6 +32,9 @@
     "title": "Upcoming notifications for {{ name }}",
     "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
     "noItems": "Notifications are not configured"
+  },
+  "/about": {
+    "message": "This bot is part of platform {{ website }}"
   },
   "notificationMessage": "Hellooo! {{ buddyName }} will soon celebrate his birthday on {{ birthday }}",
   "disconnectMessage": "This bot was disconnected for {{ name }}"

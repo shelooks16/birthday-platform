@@ -19,6 +19,7 @@ const getCommandListMsg = async (locale?: string) => {
 
   return (
     `${t('telegramBot.commandList.title')}:\n\n` +
+    `/about - ${t('telegramBot.commandList.command.about')}\n` +
     `/me - ${t('telegramBot.commandList.command.me')}\n` +
     `/birthdays - ${t('telegramBot.commandList.command.birthdays')}\n` +
     `/notifications - ${t('telegramBot.commandList.command.notifications')}\n` +
@@ -56,6 +57,21 @@ const telegramBot = async () => {
 
       await ctx.replyWithSticker(WELCOME_STICKER_ID);
       await ctx.sendMessage(await getCommandListMsg(locale));
+    } catch (err) {
+      await ctx.sendMessage(await formatError(err));
+    }
+  });
+  bot.command('about', async (ctx) => {
+    try {
+      const { profiles } = await getConnectedProfiles(ctx.chat.id);
+
+      const i18n = await useI18n(profiles[0]?.locale);
+
+      await ctx.sendMessage(
+        i18n.t('telegramBot./about.message', {
+          website: appConfig.secrets.platform.website.value()
+        })
+      );
     } catch (err) {
       await ctx.sendMessage(await formatError(err));
     }

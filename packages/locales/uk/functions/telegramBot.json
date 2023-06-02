@@ -3,6 +3,7 @@
   "commandList": {
     "title": "Список команд",
     "command": {
+      "about": "Інформація про цього бота",
       "me": "Акаунти підключені до цього бота",
       "birthdays": "Список твоїх днюх",
       "notifications": "Список найближчих повідомлень",
@@ -31,6 +32,9 @@
     "title": "Найближчі повідомлення для {{ name }}",
     "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
     "noItems": "Повідомлення не налаштовано"
+  },
+  "/about": {
+    "message": "Цей бот є частиною платформи {{ website }}"
   },
   "notificationMessage": "Привіт! {{ buddyName }} скоро буде відмічати свою днюху на {{ birthday }}",
   "disconnectMessage": "Цей бот було відключено для {{ name }}"
