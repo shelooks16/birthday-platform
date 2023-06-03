@@ -31,7 +31,7 @@
   "/notifications": {
     "title": "Найближчі повідомлення для {{ name }}",
     "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
-    "noItems": "Повідомлення не налаштовано"
+    "noItems": "Найближчих повідомлень немає"
   },
   "/about": {
     "message": "Цей бот є частиною платформи {{ website }}"

@@ -49,7 +49,7 @@
       "asc": "Closest first",
       "desc": "Later first"
     },
-    "noNotificationsFound": "You have not setup any notifications for birthdays"
+    "noNotificationsFound": "There is no upcoming notifications"
   },
   "form": {
     "submitBtn": {

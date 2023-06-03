@@ -31,7 +31,7 @@
   "/notifications": {
     "title": "Upcoming notifications for {{ name }}",
     "item": "{{ notifyAt }} | {{ buddyName }} | {{ channelType }}: {{ channel }}",
-    "noItems": "Notifications are not configured"
+    "noItems": "No upcoming notifications"
   },
   "/about": {
     "message": "This bot is part of platform {{ website }}"

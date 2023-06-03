@@ -49,7 +49,7 @@
       "asc": "Сначала ближайшие",
       "desc": "Сначала поздние"
     },
-    "noNotificationsFound": "Ты не настроил уведомления для днюх"
+    "noNotificationsFound": "Ближайших уведомлений нет"
   },
   "form": {
     "submitBtn": {
