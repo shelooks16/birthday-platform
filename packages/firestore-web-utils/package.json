@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "@shared/firestore-utils": "*",
-    "firebase": "9.20.0"
+    "firebase": "9.22.1"
   }
 }

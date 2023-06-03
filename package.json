@@ -18,8 +18,8 @@
   },
   "devDependencies": {
     "eslint-config-base": "*",
-    "prettier": "2.8.7",
-    "turbo": "1.9.3",
+    "prettier": "2.8.8",
+    "turbo": "1.10.1",
     "wait-on": "^7.0.1"
   },
   "engines": {
