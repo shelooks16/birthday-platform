@@ -19,7 +19,7 @@ service cloud.firestore {
       }
       function validateDoB(val) {
         return verifyObjectFieldsPresence(val, ['year', 'month', 'day'], [])
-          && val.year >= 1950 && val.year <= request.time.year()
+          && val.year >= 1920 && val.year <= request.time.year()
           && val.month >= 0 && val.month <= 11
           && val.day >= 1 && val.day <= 31;
       }

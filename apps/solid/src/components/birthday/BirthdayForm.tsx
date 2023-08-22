@@ -177,7 +177,7 @@ const BirthdayForm: Component<BirthdayFormProps> = (props) => {
 
   const yearOptions = () => {
     const maxYear = new Date().getFullYear();
-    const minYear = 1950;
+    const minYear = 1920;
 
     return Array(maxYear - minYear + 1)
       .fill(null)

@@ -8,7 +8,7 @@ export const birthdayField = {
   birth: {
     day: () => yup.number().min(1).max(31),
     month: () => yup.number().min(0).max(11),
-    year: () => yup.number().min(1950).max(new Date().getFullYear())
+    year: () => yup.number().min(1920).max(new Date().getFullYear())
   },
   notificationSettings: {
     notifyAtBefore: () =>
