@@ -1,17 +1,14 @@
-import type { CreateCompletionRequestPrompt } from 'openai';
 import { createOpenAiClient } from './openAiClient';
 
-export const createCompletion = async (
-  prompt: CreateCompletionRequestPrompt
-) => {
+export const createCompletion = async (prompt: string): Promise<string> => {
   const openai = await createOpenAiClient();
 
-  const completion = await openai.createCompletion({
-    model: 'text-davinci-003',
+  const completion = await openai.completions.create({
+    model: 'gpt-3.5-turbo',
     prompt,
     max_tokens: 2048,
     temperature: 1
   });
 
-  return completion.data.choices;
+  return completion.choices?.[0]?.text || '';
 };

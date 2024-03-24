@@ -38,7 +38,7 @@ const generateRandomWish = async (
   try {
     const completionResult = await createCompletion(prompt);
 
-    return completionResult[0].text || '';
+    return completionResult;
   } catch (err) {
     throw new HttpsErrorFailedPrecondition(err.message);
   }

@@ -2,19 +2,17 @@ import { MemoryCache } from '@shared/memory-cache';
 import { appConfig } from '../appConfig';
 
 const openAiClient = async () => {
-  const { Configuration, OpenAIApi } = await import('openai');
-
   const apiKey = appConfig.secrets.openai.secretkey.value();
 
   if (!apiKey) {
-    throw new Error('Open AI key is not provided');
+    throw new Error('Open AI is disabled. Reason: missing secret key');
   }
 
-  const configuration = new Configuration({
+  const { default: OpenAi } = await import('openai');
+
+  return new OpenAi({
     apiKey
   });
-
-  return new OpenAIApi(configuration);
 };
 
 export const createOpenAiClient = async () =>
