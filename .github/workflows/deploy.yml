@@ -42,11 +42,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16.15.0
+          node-version: 20.11.0
           cache: 'npm'
 
       - name: Install Firebase CLI
-        run: npm i -g firebase-tools@^12.2.1
+        run: npm i -g firebase-tools@^13.2.1
 
       - name: Install monorepo dependencies
         if: ${{ env.ONLY_HOSTING != '' || env.ONLY_FUNCTIONS != '' }}

@@ -9,7 +9,7 @@
 
 ### Requirements:
 
-- Node.js ^16.15.0
+- Node.js ^20.11.0
 - [Firebase project setup](https://console.firebase.google.com/) - web app, auth google login, firestore, functions
 - [Telegram bot token](https://core.telegram.org/bots/tutorial#obtain-your-bot-token)
 - (Optional) [OpenAI API key](https://platform.openai.com/account/api-keys) - birthday wish generation
