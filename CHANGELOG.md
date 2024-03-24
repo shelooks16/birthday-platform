@@ -1,3 +1,17 @@
+# [1.1.0](https://github.com/shelooks16/birthday-platform/compare/v1.0.0...v1.1.0) (2024-03-24)
+
+
+### Bug Fixes
+
+* **timezoneList:** remove invalid tz names from supported tz list ([3db8768](https://github.com/shelooks16/birthday-platform/commit/3db8768e6a1a5cde488c727376e95740bd1b5096))
+
+
+### Features
+
+* change min birthday year to 1920 ([843a908](https://github.com/shelooks16/birthday-platform/commit/843a908a85492aa31d84bd98b6524e8ac0d31e80))
+* **manifest:** set /dash for start_url ([3780485](https://github.com/shelooks16/birthday-platform/commit/3780485a8ca7c0f1f43ec8e710eb5c1acb362095))
+* update open ai sdk to latest. switch completion model to gpt-3.5-turbo ([7e2ce76](https://github.com/shelooks16/birthday-platform/commit/7e2ce76dc2323cf3a206bb3758623b365f61d98c))
+
 # 1.0.0 (2023-06-04)
 
 
